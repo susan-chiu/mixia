@@ -1,0 +1,1128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}.home-link{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}</style>
+<title>校園七大不可思議</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: one-screen school-night console — HUD with the seven-wonders tracker, a living classroom scene behind the story. Single dark look by design. */
+:root{
+  --ink:#0f0d16; --wall:#191624; --panel:#1d1a2a; --line:#352f4a;
+  --sil:#151221; --sil2:#262137;
+  --paper:#ece4cf; --paper-ink:#2c2620;
+  --line-color:#b48ef0; --amber:#f2c35a; --red:#ef5b6b; --ok:#8fd3a6;
+  --text:#e9e6f0; --muted:#9a93ad;
+  --f-display:"Noto Serif TC","Songti TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-hand:"LXGW WenKai TC","Kaiti TC",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.7;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--line-color);outline-offset:2px}
+#app{height:100%;max-width:480px;margin:0 auto;padding-inline:16px;padding-block:10px 14px;display:flex;flex-direction:column;gap:10px}
+.bar{display:flex;align-items:center;gap:8px}
+.chap{flex:1;min-width:0;font-size:13px;color:var(--muted);letter-spacing:.08em}
+.chap b{color:var(--text);font-weight:500}
+.clock{font-family:var(--f-mono);font-size:14px;color:var(--amber);padding:2px 8px;border:1px solid var(--line);border-radius:6px}
+.tools{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.icon-btn{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 4px;font-size:13px;color:var(--text);min-height:36px}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.wonders{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.wonders i{font-style:normal;text-align:center;font-family:var(--f-display);font-weight:900;font-size:13px;padding:2px 0;border-radius:6px;border:1px dashed var(--line);color:var(--muted)}
+.wonders i.on{border-style:solid;border-color:var(--line-color);background:#2a2240;color:var(--line-color)}
+.wonders i.q{color:var(--red)}
+
+.stage-wrap{flex:1;min-height:0;position:relative;display:flex}
+.stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.scene{position:absolute;inset:0;border-radius:14px;overflow:hidden;pointer-events:none;background:linear-gradient(#1a1628,#0d0b14)}
+.scene[data-k=club]{background:linear-gradient(#2a2238,#151020)}
+#sceneArt{position:absolute;inset:0;animation:sceneIn 1.2s ease}
+#sceneArt svg{position:absolute;inset:0;width:100%;height:100%}
+#motes{position:absolute;inset:0;width:100%;height:100%}
+@keyframes sceneIn{from{opacity:0;transform:scale(1.04)}}
+.s1{fill:var(--sil)} .s2{fill:var(--sil2)}
+.flick{animation:flick 6s infinite}
+@keyframes flick{0%,38%,42%,46%,100%{opacity:.8}40%,44%{opacity:.08}}
+
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+.dialog{margin-top:auto;cursor:pointer;min-height:132px;display:flex;flex-direction:column;gap:6px;background:rgba(27,24,40,.94);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.who{font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.who.me{color:var(--ok)} .who.an{color:#9fc7f0} .who.qq{color:#f2b6d0} .who.dm{color:#f2c35a} .who.lin{color:#8fc7a8} .who.hsu{color:#d6b8f0} .who.voice{color:var(--red)}
+.line{font-size:17px;min-height:2.6em}
+.line.narr{color:#cdc8d8}
+.line.voice{font-family:var(--f-hand);font-size:19px;color:#f6d5da}
+.cont{align-self:flex-end;font-size:12px;color:var(--muted)}
+.choices{display:grid;gap:8px;margin-top:4px}
+.choice{text-align:left;background:var(--wall);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.choice:hover{border-color:var(--line-color)}
+.tag{display:inline-block;background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:2px 10px;font-weight:500;transform:rotate(-1deg);animation:evin .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes evin{from{opacity:0;transform:translateY(-24px) rotate(-12deg) scale(1.2)}}
+.solved{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.solved .stamp{font-family:var(--f-display);font-weight:900;font-size:28px;color:var(--line-color);border:3px solid var(--line-color);border-radius:8px;padding:2px 14px;transform:rotate(-6deg);animation:stampin .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes stampin{from{transform:scale(2.4) rotate(-14deg);opacity:0}}
+
+.ptitle{font-family:var(--f-display);font-weight:900;font-size:20px;margin:0}
+.pdesc{color:#cdc8d8;margin:4px 0 0;font-size:15px}
+.msg{font-size:14px;color:var(--muted);min-height:1.6em}
+.msg.good{color:var(--ok)} .msg.bad{color:var(--red)}
+.btn{background:var(--line-color);color:#1c0f2e;border:0;border-radius:10px;padding:12px 16px;font-weight:700;min-height:44px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:500}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cap{font-size:12px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+.paper{background:var(--paper);color:var(--paper-ink);border-radius:3px;padding:12px 14px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.opts{display:grid;gap:6px;margin-top:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--wall);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.5}
+.opt i{flex:none;width:18px;height:18px;border-radius:4px;border:2px solid var(--muted);margin-top:2px}
+.opt.on{border-color:var(--line-color);background:#251f38}
+.opt.on i{background:var(--line-color);border-color:var(--line-color)}
+.opt.round i{border-radius:50%}
+.answer{display:flex;gap:8px;margin-top:12px}
+.answer input{flex:1;min-width:0;background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--text);font-size:18px;letter-spacing:.2em}
+
+/* piano score */
+.score{display:grid;gap:8px;margin-top:12px}
+.score .lbl{font-size:12px;color:var(--muted)}
+.notes{display:grid;grid-template-columns:repeat(15,minmax(0,1fr));gap:3px}
+.notes span,.notes button{font-family:var(--f-mono);font-size:15px;text-align:center;padding:4px 0;border-radius:4px;background:var(--wall);border:1px solid transparent;min-width:0}
+.notes button{border-color:var(--line)}
+.notes button.on{background:var(--red);color:#fff;border-color:var(--red)}
+.notes span.bar,.notes button.bar{box-shadow:inset -2px 0 0 var(--line-color)}
+/* painting */
+.paint{width:min(220px,80%);margin:12px auto 6px;display:block;border:10px solid #6b4a2a;border-radius:4px;box-shadow:0 8px 20px rgba(0,0,0,.6)}
+.slide{width:100%;accent-color:var(--line-color);height:32px}
+/* books */
+.shelf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
+.book{position:relative;background:linear-gradient(90deg,#3a2f52,#2a2440);border-radius:3px;padding:8px 4px 6px;min-height:118px;display:flex;flex-direction:column;align-items:center;gap:4px;border-left:4px solid #5a4a7a}
+.book b{writing-mode:vertical-rl;font-family:var(--f-display);font-size:13px;line-height:1.2;letter-spacing:.06em;flex:1}
+.book small{font-family:var(--f-mono);font-size:10px;color:var(--amber)}
+.book .star{position:absolute;top:2px;right:2px;color:var(--amber);font-size:12px}
+/* log table */
+.logs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (max-width:400px){.logs{grid-template-columns:1fr}}
+.logs .paper{font-size:14px;line-height:1.7}
+.logs b{font-family:var(--f-mono);font-weight:500}
+
+/* overlays */
+.sheet{position:fixed;inset:0;background:rgba(5,4,8,.75);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+.sheet>div{width:100%;max-width:480px;max-height:85%;overflow:auto;background:var(--panel);border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet h3{font-family:var(--f-display);margin:0 0 10px;font-size:18px}
+.sheet ul{padding-left:0;list-style:none;margin:0;display:grid;gap:8px}
+.sheet li{background:var(--wall);border-radius:8px;padding:10px 12px;font-size:15px}
+.locked{color:var(--muted)}
+.title{position:fixed;inset:0;z-index:5;background:radial-gradient(ellipse at 50% 28%,#3a2650 0%,var(--ink) 62%);display:flex;align-items:center;justify-content:center;padding-inline:24px}
+.title-inner{max-width:420px;display:grid;gap:14px}
+.title h1{font-family:var(--f-display);font-weight:900;font-size:clamp(36px,10.5vw,52px);line-height:1.15;margin:0;color:var(--paper);text-wrap:balance}
+.title h1 em{font-style:normal;display:block;font-family:var(--f-hand);color:var(--line-color);font-size:.42em;letter-spacing:.2em;margin-bottom:6px}
+.title p{color:#cdc8d8;margin:0}
+.title .meta{font-size:12px;letter-spacing:.14em;color:var(--muted)}
+.chapcard{position:fixed;inset:0;z-index:8;background:var(--ink);display:flex;align-items:center;justify-content:center;padding-inline:24px;text-align:center;cursor:pointer;animation:ccIn 3.2s ease forwards}
+@keyframes ccIn{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.cc-k{font-family:var(--f-mono);font-size:13px;letter-spacing:.4em;color:var(--line-color);animation:ccT 3s ease}
+.cc-n{font-family:var(--f-display);font-weight:900;font-size:clamp(34px,10vw,52px);color:var(--paper);margin:8px 0;animation:ccT 3s ease}
+.cc-s{color:var(--muted);font-size:14px;letter-spacing:.1em}
+@keyframes ccT{from{letter-spacing:.9em;opacity:0;filter:blur(6px)}40%{opacity:1;filter:none}}
+.flash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;background:#e8eef7}
+.flash.flicker{animation:fl 1.1s steps(1)}
+@keyframes fl{0%{opacity:0}8%{opacity:.18}14%{opacity:0}30%{opacity:.12}36%{opacity:0}}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(239,91,107,.4) 100%)}
+.vignette.red{animation:beat .9s ease-out}
+@keyframes beat{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.ping{animation:ping 1.2s ease-out}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(180,142,240,.8)}100%{box-shadow:0 0 0 14px rgba(180,142,240,0)}}
+#app.quake{animation:quake .5s}
+@keyframes quake{10%,50%,90%{transform:translate(-6px,3px)}30%,70%{transform:translate(6px,-3px)}}
+.endcard h2{font-family:var(--f-display);font-weight:900;font-size:28px;margin:0 0 6px;color:var(--paper)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.stats div{background:var(--wall);border-radius:8px;padding:10px;text-align:center}
+.stats b{display:block;font-family:var(--f-mono);font-size:22px;color:var(--amber)}
+.stats span{font-size:12px;color:var(--muted)}
+.next{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px;color:#cdc8d8;font-size:15px}
+
+/* cutscenes — base state is the END state */
+.cut{position:relative;flex:1;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;padding-block:12px}
+.cut>.cont{position:absolute;bottom:4px;right:4px}
+.cap2{font-family:var(--f-display);font-weight:600;font-size:18px;color:var(--paper);text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.9);animation:fadeUp .9s var(--d,0s) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
+.board{width:min(300px,100%);background:#5a4030;padding:12px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.board .paper{font-family:var(--f-hand);font-size:15px;line-height:1.6;transform:rotate(-1.5deg);animation:unroll .9s ease both;transform-origin:top}
+@keyframes unroll{from{transform:scaleY(.05) rotate(-1.5deg);opacity:0}}
+.board .w{animation:fadeUp .4s var(--d) both}
+.board .w7{color:#b8322a;animation:fadeUp .4s var(--d) both,glitch 1.6s 3s steps(1) infinite}
+@keyframes glitch{0%,80%,100%{transform:none}84%{transform:translateX(-2px);opacity:.5}90%{transform:translateX(2px)}}
+.keys{position:relative;display:flex;width:min(300px,100%);height:110px;background:#0a0a0c;padding:6px;border-radius:6px;gap:3px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.keys i{flex:1;background:#e9e6df;border-radius:0 0 4px 4px;transform-origin:top;animation:press .4s var(--d) ease both}
+@keyframes press{0%{transform:none}40%{transform:scaleY(.94);background:#c9c4b8}100%{transform:none}}
+.bang{position:fixed;inset:0;z-index:7;pointer-events:none;background:#000;opacity:0;animation:bang .7s var(--d,2.4s) ease-out both}
+@keyframes bang{0%{opacity:.95}20%{opacity:.4;background:#fff}35%{opacity:.9;background:#000}100%{opacity:0}}
+.frame{width:180px;height:220px;border:12px solid #6b4a2a;border-radius:4px;background:#2a2433;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.frame .face{position:absolute;left:50%;top:40px;width:90px;height:110px;margin-left:-45px;border-radius:45px 45px 40px 40px;background:#c9b08e}
+.frame .eye{position:absolute;top:84px;width:16px;height:9px;border-radius:50%;background:#fff;overflow:hidden}
+.frame .eye::after{content:"";position:absolute;left:5px;top:1px;width:7px;height:7px;border-radius:50%;background:#1a1410;animation:look 3s 1s ease-in-out both}
+@keyframes look{30%{transform:translateX(-4px)}60%{transform:translateX(3px)}}
+.frame .lid{position:absolute;top:84px;width:16px;height:0;background:#b89e7c;animation:blink .5s 2.4s ease-in-out both}
+@keyframes blink{50%{height:9px}}
+.frame .body{position:absolute;left:50%;bottom:0;width:150px;height:60px;margin-left:-75px;border-radius:60px 60px 0 0;background:#1d1a24}
+.stalls{display:flex;gap:6px;width:min(300px,100%);height:180px;background:#cfd6d8;padding:10px 10px 0;border-radius:6px 6px 0 0}
+.stalls i{flex:1;background:#7a8f94;border-radius:3px 3px 0 0;position:relative}
+.stalls i::after{content:"";position:absolute;right:6px;top:50%;width:6px;height:6px;border-radius:50%;background:#3a4a4e}
+.stalls i.s3{transform-origin:left;animation:sbang .35s 1s 3,sopen .5s 2.2s ease-out both;background:#6a7f84}
+@keyframes sbang{50%{transform:translateX(2px) rotate(.6deg)}}
+@keyframes sopen{to{transform:perspective(400px) rotateY(-55deg)}}
+.model{width:120px;height:230px;position:relative;animation:mfall 1.2s 1s cubic-bezier(.5,0,.7,1) both}
+@keyframes mfall{0%{transform:rotate(0)}70%{transform:rotate(-18deg) scale(1.1)}100%{transform:rotate(-70deg) scale(1.8) translateY(40px);opacity:.2}}
+.model .h{position:absolute;left:38px;top:0;width:44px;height:52px;border-radius:50%;background:#d8cfc0}
+.model .h::after{content:"";position:absolute;right:6px;top:18px;width:16px;height:22px;background:#b85a4a;border-radius:0 8px 8px 0}
+.model .t{position:absolute;left:28px;top:56px;width:64px;height:100px;border-radius:20px;background:#d8cfc0}
+.model .t::after{content:"";position:absolute;left:32px;top:14px;width:28px;height:60px;background:#b85a4a;border-radius:6px 14px 14px 6px;opacity:.85}
+.model .l{position:absolute;top:156px;width:20px;height:74px;background:#d8cfc0;border-radius:10px}
+.chairs{display:flex;gap:8px;align-items:flex-end}
+.chairs i{width:34px;height:60px;position:relative;animation:fadeUp .5s var(--d) both}
+.chairs i::before{content:"";position:absolute;left:0;top:0;width:34px;height:30px;border:4px solid #8a7a9a;border-bottom:0;border-radius:4px 4px 0 0}
+.chairs i::after{content:"";position:absolute;left:0;top:30px;width:34px;height:30px;border-left:4px solid #8a7a9a;border-right:4px solid #8a7a9a;border-top:6px solid #8a7a9a;box-sizing:border-box}
+.chairs i.extra{animation:fadeUp 2.4s var(--d) both;filter:drop-shadow(0 0 6px rgba(239,91,107,.6))}
+@media (prefers-reduced-motion:reduce){.cut *,.flick,.tag,.cc-k,.cc-n,#sceneArt,.solved .stamp,#app.quake{animation:none!important}.vignette,.flash,.bang{display:none}}
+
+/* ===== cinema kit ===== */
+.dialog.withp{padding-left:104px;min-height:120px}
+.pt{position:absolute;left:14px;top:14px;width:76px;height:76px;border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.pt svg{display:block;width:100%;height:100%}
+.pt.enter{animation:ptin .4s cubic-bezier(.2,1.3,.4,1)}
+@keyframes ptin{from{opacity:0;transform:translateX(-14px) scale(.9)}}
+.pt.sil{animation:ptin .4s, ptgl 2.2s steps(1) infinite}
+@keyframes ptgl{0%,86%,100%{transform:none;filter:none}88%{transform:translateX(-3px);filter:hue-rotate(40deg)}92%{transform:translateX(3px)}}
+.dialog{animation:dlgin .35s ease-out}
+@keyframes dlgin{from{opacity:.4;transform:translateY(8px)}}
+body::before,body::after{content:"";position:fixed;left:0;right:0;height:0;background:#000;z-index:3;transition:height .5s ease;pointer-events:none}
+body::before{top:0} body::after{bottom:0}
+body.cine::before,body.cine::after{height:7vh}
+.scene::before{content:"";position:absolute;inset:0;background:#000;opacity:0;z-index:2;pointer-events:none}
+.scene.dip::before{animation:dip .9s ease}
+@keyframes dip{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+#sceneArt svg{animation:kb 24s ease-in-out infinite alternate;transform-origin:50% 55%}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.08) translate(-1%,1%)}}
+/* shared cutscene props */
+.cs-stage{position:relative;width:min(300px,100%);height:190px;border-radius:10px;overflow:hidden;background:#06080b;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.cs-rain{position:absolute;inset:0;background:repeating-linear-gradient(105deg,rgba(170,190,220,.0) 0 9px,rgba(170,190,220,.22) 9px 10px);background-size:40px 40px;animation:rainmv .5s linear infinite}
+@keyframes rainmv{to{background-position:-12px 40px}}
+.cs-sign{position:absolute;left:50%;top:38px;transform:translateX(-50%);font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.3em;color:#f2d39a;text-shadow:0 0 14px rgba(255,190,120,.7);opacity:.95;animation:signon 2.4s .6s steps(1) both}
+@keyframes signon{0%{opacity:0}12%{opacity:.9}16%{opacity:0}30%{opacity:.9}34%{opacity:.1}55%,100%{opacity:.95}}
+.cs-house{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:190px;height:110px;background:#0d1016;clip-path:polygon(0 35%,50% 0,100% 35%,100% 100%,0 100%)}
+.cs-house i{position:absolute;width:18px;height:16px;background:#1d222c}
+.cs-lights{position:absolute;bottom:14px;left:18px;display:flex;gap:22px;animation:hl 2.6s ease both}
+.cs-lights i{width:16px;height:10px;border-radius:50%;background:#fff3c8;box-shadow:0 0 22px 10px rgba(255,240,200,.45)}
+@keyframes hl{from{opacity:0;transform:translateX(-60px)}}
+.cs-door{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:120px;height:170px;background:linear-gradient(90deg,#3b2a1f,#4a3424);border:4px solid #2a1c12;animation:dshake .3s 1.1s 3}
+.cs-door::after{content:"";position:absolute;right:12px;top:84px;width:8px;height:8px;border-radius:50%;background:#c9b39a}
+@keyframes dshake{50%{transform:translateX(-50%) rotate(.8deg)}}
+.cs-gap{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:120px;height:7px;background:#e8d9a8;box-shadow:0 0 12px rgba(232,217,168,.7)}
+.cs-feet{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:120px;height:7px;display:flex;justify-content:center;gap:16px;animation:feet 1s .4s both}
+.cs-feet i{width:20px;height:7px;background:#06080b}
+@keyframes feet{from{opacity:0;transform:translateX(-30%)}}
+.cs-bed{position:absolute;left:30px;right:30px;bottom:30px;height:70px;border-radius:6px;background:#2a303c}
+.cs-quilt{position:absolute;left:60px;right:120px;bottom:72px;height:22px;border-radius:4px;background:#c9cdd6;box-shadow:0 6px 0 #a9aebb,0 12px 0 #8e93a0}
+.cs-phone{position:absolute;right:62px;bottom:76px;width:22px;height:36px;border-radius:4px;background:#0a0e12;border:2px solid #333}
+.cs-phone::after{content:"";position:absolute;inset:3px;border-radius:2px;background:#9ec3f0;box-shadow:0 0 18px 6px rgba(158,195,240,.45);animation:pglow 1.6s ease-in-out infinite alternate}
+@keyframes pglow{from{opacity:.5}}
+.cs-push{animation:push 4s ease-out both}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.18)}}
+.cs-mirror{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:150px;height:176px;border-radius:70px 70px 8px 8px;border:6px solid #6b7b72;background:linear-gradient(160deg,#24302b,#111814);overflow:hidden}
+.cs-me{position:absolute;left:44px;bottom:0;width:60px;height:110px;background:#0a0d0c;border-radius:30px 30px 0 0}
+.cs-behind{position:absolute;left:66px;bottom:20px;width:54px;height:110px;background:#1a1414;border-radius:27px 27px 0 0;opacity:.9;animation:behind 2.4s .8s ease both}
+.cs-behind::after{content:"";position:absolute;left:-26px;top:58px;width:30px;height:8px;border-radius:4px;background:#1a1414}
+@keyframes behind{from{opacity:0;transform:translateX(10px)}}
+.cs-train{position:absolute;bottom:22px;left:0;width:100%;height:84px;border-radius:10px;background:linear-gradient(180deg,#5a6a72,#3a4a52);animation:arriveL 2s .2s cubic-bezier(.2,.8,.3,1) both}
+.cs-train::before{content:"";position:absolute;left:14px;right:14px;top:14px;height:30px;background:repeating-linear-gradient(90deg,#0c1013 0 36px,transparent 36px 44px)}
+.cs-train::after{content:"";position:absolute;left:0;right:0;bottom:16px;height:5px;background:var(--line-color,#2fb3a3)}
+@keyframes arriveL{from{transform:translateX(110%)}}
+.cs-pfsign{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#2fb3a3;color:#04201c;font-weight:700;padding:3px 12px;border-radius:4px;font-size:14px;white-space:nowrap}
+.cs-led{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:13px;color:#f0b44c;background:#000;padding:2px 10px;border-radius:3px;white-space:nowrap;animation:fadeUp .6s 1.8s both}
+.cs-under{position:absolute;inset:0;background:#030405}
+.cs-beam{position:absolute;inset:0;background:radial-gradient(circle at var(--bx,60%) 60%,rgba(255,240,200,.55),rgba(255,240,200,.15) 22%,transparent 40%);animation:beam 2.6s ease-in-out both}
+@keyframes beam{0%{--bx:10%;opacity:.6}50%{opacity:1}}
+.cs-coat{position:absolute;left:46%;top:52%;width:70px;height:34px;border-radius:6px;background:#e8c43a;box-shadow:0 5px 0 #c9a42a,0 10px 0 #a8871f;transform:translateX(-50%)}
+.cs-note{position:absolute;left:58%;top:46%;width:30px;height:22px;background:#f2ead6;transform:rotate(12deg)}
+.cs-cab{position:absolute;inset:0;background:#06090b}
+.cs-slit{position:absolute;left:50%;top:10px;bottom:10px;width:70px;transform:translateX(-50%);background:linear-gradient(90deg,#0a0f12,#132027)}
+.cs-slit::before{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;background:#fff1c8;box-shadow:0 0 24px 8px rgba(255,241,200,.5);animation:slit 2.6s .4s ease-in-out both}
+@keyframes slit{from{width:1px;opacity:.4}}
+.cs-eyes{position:absolute;right:calc(50% - 30px);top:46%;display:flex;gap:7px;animation:fadeUp .6s 2.2s both}
+.cs-eyes i{width:5px;height:5px;border-radius:50%;background:#f2f2f2;box-shadow:0 0 6px #fff}
+@media (prefers-reduced-motion:reduce){.pt,.dialog,#sceneArt svg,.cs-rain,.scene.dip::before{animation:none!important}body::before,body::after{transition:none}}
+
+</style>
+
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div class="chap" id="chap">第一章 · <b>入社</b></div>
+    <div class="clock" id="clock">16:40</div>
+  </div>
+  <div class="tools">
+    <button class="icon-btn" id="btnNote">證物</button>
+    <button class="icon-btn" id="btnTesti">怪談表</button>
+    <button class="icon-btn" id="btnHint" disabled>提示</button>
+    <a class="icon-btn home-link" href="../index.html" aria-label="回到謎匣">匣</a>
+    <button class="icon-btn" id="btnSound" aria-label="音效開關">音效</button>
+  </div>
+  <div class="wonders" id="wonders" aria-label="已破解的不可思議"></div>
+  <div class="stage-wrap">
+    <div class="scene" id="scene" aria-hidden="true"><div id="sceneArt"></div><canvas id="motes"></canvas></div>
+    <div class="stage" id="stage"></div>
+  </div>
+</div>
+
+<div class="title" id="title">
+  <div class="title-inner">
+    <div class="meta">謎匣 · 第肆匣 · 輕恐怖推理</div>
+    <h1><em>北辰高中</em>校園七大不可思議</h1>
+    <p>一夜之間，全校的公告欄都貼上同一張紙：解開七大不可思議的人，可以實現一個願望。快要被廢社的怪談研究社，決定一個一個查清楚。</p>
+    <div class="row">
+      <button class="btn" id="btnStart">加入怪談研究社</button>
+      <button class="btn ghost" id="btnResume" hidden>繼續調查</button>
+      <button class="btn ghost" id="btnChap">選擇章節</button>
+      <a class="btn ghost home-link" href="../index.html">回到謎匣</a>
+    </div>
+    <p class="meta">難度 ★★ · 不會死亡 · 有驚嚇橋段 · 約 50 分鐘</p>
+  </div>
+</div>
+<div class="sheet" id="sheet" hidden><div id="sheetBody"></div></div>
+<div class="vignette" id="vig" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="chapcard" id="chapcard" hidden><div><div class="cc-k" id="ccK"></div><div class="cc-n" id="ccN"></div><div class="cc-s" id="ccS"></div></div></div>
+
+<script>
+window.MIXIA_V='../v/';
+function recordEnding(game,name){try{const k='mixia_endings';const o=JSON.parse(localStorage.getItem(k)||'{}');o[game]=o[game]||[];if(!o[game].includes(name))o[game].push(name);localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
+function recordDeath(game,id){try{const k='mixia_deaths';const o=JSON.parse(localStorage.getItem(k)||'{}');o[game]=o[game]||[];if(!o[game].includes(id))o[game].push(id);localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
+
+/* ================= data ================= */
+const WONDERS=['會自己彈奏的鋼琴','會眨眼的校長畫像','晚上多一階的樓梯','女廁第三間的敲門聲','自己換位置的書','會走到窗邊的人體模型','？？？'];
+const BOOK_BASE=[3,3,4,5,5,4,3,2,1,1,2,3,3,2,2];
+const BOOK_REC=[3,3,4,5,5,4,3,2,1,6,2,3,3,2,2];
+const SHELF=[
+ {t:'能源與未來',cn:'447',s:true},{t:'星空觀測入門',cn:'323'},{t:'閉上眼睛數到十',cn:'857.7',s:true},{t:'社會心理學',cn:'100.5',s:true},{t:'校園植物圖鑑',cn:'375'},
+ {t:'倒數一百天',cn:'563',s:true},{t:'台灣鬼故事',cn:'539'},{t:'不可思議的物理',cn:'318.9',s:true},{t:'數學遊戲',cn:'310'},{t:'團體遊戲大全',cn:'220.3',s:true}];
+const SUSPECTS=[{t:'江予安（社長）'},{t:'周芊芊'},{t:'王大明'},{t:'林伯（校工）'}];
+const EVID=[
+ {t:'鋼琴裡那支手機上的小貓貼紙，和芊芊鉛筆盒上的一模一樣',ok:true},
+ {t:'光柵貼紙的收據，只剩一個「周」字',ok:true},
+ {t:'樓梯紙箱寫著「社團道具」，那兩週負責管道具的是芊芊',ok:true},
+ {t:'被移動的書，去年都被社長借過'},
+ {t:'林伯有全校每一間教室的鑰匙'}];
+const MATCH=[
+ {q:'會自己彈奏的鋼琴',o:['音樂老師半夜練琴','每晚 23:00 定時播放的舊手機','風吹動琴鍵'],a:1},
+ {q:'會眨眼的校長畫像',o:['光柵貼紙，換個角度就換一張臉','投影機','顏料受潮變色'],a:0},
+ {q:'晚上多一階的樓梯',o:['數錯了','夜間施工','漆成台階顏色的道具紙箱'],a:2},
+ {q:'女廁第三間的敲門聲',o:['水塔馬達','每 15 分鐘的沖水器，加上 22:30 巡邏的林伯','隔壁班惡作劇'],a:1},
+ {q:'自己換位置的書',o:['排成「社團不能倒閉」的暗號','許老師整理書架','書架傾斜'],a:0},
+ {q:'會走到窗邊的人體模型',o:['地震','林伯打掃時移動','芊芊每天晚上把它推到窗邊'],a:2}];
+
+const SCRIPT=[
+ {t:'chapter',n:1,name:'入社'},
+ {t:'cut',id:'board',clock:'16:40',scene:'corridor'},
+ {t:'say',who:'narr',text:'開學第二週，這張紙一夜之間，貼滿了全校的公告欄。'},
+ {t:'say',who:'narr',text:'你站在公告欄前看了很久。有人拍了拍你的肩膀。'},
+ {t:'say',who:'an',f:'h',text:'新生？你對怪談有興趣嗎？我是怪談研究社社長，江予安。'},
+ {t:'say',who:'an',f:'t',text:'老實說，社團只剩三個人。學期末前湊不到五個，就要被廢社了。'},
+ {t:'say',who:'dm',f:'h',scene:'club',clock:'17:05',text:'我王大明！社團的肌肉擔當！旁邊那個是周芊芊，她超怕鬼，可是是她自己要入社的喔。'},
+ {t:'say',who:'qq',f:'s',text:'你、你好……'},
+ {t:'say',who:'an',text:'我們要一個一個查清楚這七大不可思議，寫成社刊。這是社團最後的機會。'},
+ {t:'choice',key:'join',options:[{v:'yes',text:'「好，我加入。」'},{v:'maybe',text:'「……我先跟著看看。」'}]},
+ {t:'say',who:'dm',f:'h',if:['join','yes'],text:'第四個社員！社長，我們快湊齊了！'},
+ {t:'say',who:'an',f:'sly',if:['join','maybe'],text:'跟著看看的人，通常最後都走不掉喔。'},
+ {t:'say',who:'narr',clock:'22:50',scene:'music',text:'當天晚上，你們四個偷偷留在學校。第一個不可思議：沒有人的音樂教室，每晚十一點會傳出鋼琴聲。'},
+ {t:'say',who:'dm',f:'s',text:'先說好，我只是來保護你們的，不是因為我怕。'},
+ {t:'say',who:'narr',text:'22:59。鋼琴蓋是闔著的。教室裡只有你們四個人的呼吸聲。'},
+ {t:'cut',id:'piano'},
+ {t:'say',who:'narr',fx:'flicker',text:'琴聲停了。芊芊整個人躲到你背後，大明抱著社長的手臂。'},
+ {t:'say',who:'an',f:'a',text:'冷靜。如果是鬼，它不會每天晚上彈同一首歌，還連錯音都錯在同一個地方。'},
+ {t:'say',who:'narr',text:'大明前兩天晚上都偷偷在門外錄了音。社長把兩段錄音的簡譜，寫在白板上。'},
+ {t:'ev',id:'rec',name:'兩晚的錄音',text:'週一和週三 23:00 的琴聲，被記成簡譜。'},
+ {t:'puzzle',id:'piano'},
+ {t:'say',who:'narr',text:'你掀開鋼琴蓋。琴弦旁邊，用膠帶黏著一支舊手機，螢幕上的鬧鐘寫著：23:00 播放。'},
+ {t:'ev',id:'oldphone',name:'鋼琴裡的舊手機',text:'背面貼著一張小貓貼紙。設定每晚 23:00 自動播放《歡樂頌》。'},
+ {t:'solve',w:1},
+ {t:'say',who:'qq',f:'t',text:'……是、是誰放的啊。'},
+ {t:'say',who:'narr',text:'芊芊說這句話的時候，一直盯著自己的鉛筆盒。'},
+ {t:'end',ch:1},
+
+ {t:'chapter',n:2,name:'眨眼的畫像'},
+ {t:'say',who:'narr',clock:'21:30',scene:'stairs',text:'第三個不可思議：北棟樓梯，白天十二階，晚上會變成十三階。'},
+ {t:'say',who:'dm',f:'h',text:'我來數！一、二、三……十一、十二、十三！真的是十三階！'},
+ {t:'say',who:'narr',text:'大明往最後一階踩下去。那一階突然「啪」地塌了。'},
+ {t:'say',who:'dm',f:'shock',text:'哇啊啊啊——！'},
+ {t:'say',who:'narr',text:'那不是台階。是一個漆成樓梯顏色的紙箱，剛好放在樓梯最下面。'},
+ {t:'ev',id:'stairbox',name:'台階形狀的紙箱',text:'晚上才出現在北棟樓梯口。側面用麥克筆寫著「社團道具」。'},
+ {t:'solve',w:3},
+ {t:'say',who:'an',f:'sly',text:'社團道具……全校會在紙箱上寫這四個字的社團，可不多。'},
+ {t:'say',who:'narr',scene:'art',text:'第二個不可思議：美術教室裡，創校校長的畫像，晚上會眨眼。'},
+ {t:'cut',id:'blink'},
+ {t:'say',who:'qq',f:'s',text:'它、它剛剛眨眼了……真的眨了！'},
+ {t:'puzzle',id:'painting'},
+ {t:'say',who:'narr',text:'你摸了摸畫框。畫的表面，貼著一層透明、帶細條紋的薄片。'},
+ {t:'ev',id:'lenti',name:'光柵貼紙',text:'從不同角度看，會看到不同的畫面。畫框後面夾著半張收據，只剩一個「周」字。'},
+ {t:'solve',w:2},
+ {t:'say',who:'dm',f:'a',text:'周……？全校姓周的人多得要命好不好。'},
+ {t:'say',who:'narr',text:'芊芊一直低著頭，沒有說話。'},
+ {t:'end',ch:2},
+
+ {t:'chapter',n:3,name:'第三間'},
+ {t:'say',who:'narr',clock:'21:55',scene:'toilet',text:'第四個不可思議：二樓女廁的第三間，晚上會傳出敲門聲。'},
+ {t:'say',who:'dm',f:'s',text:'我、我不能進女廁啦！我在外面幫你們計時！'},
+ {t:'say',who:'narr',text:'你、芊芊和社長站在門口。大明在走廊上拿著手機，記下每一次敲門的時間。'},
+ {t:'say',who:'narr',clock:'22:31',text:'一個小時過去了。叩、叩、叩。這一次，聲音特別近。'},
+ {t:'cut',id:'stall'},
+ {t:'say',who:'lin',f:'a',text:'又是你們這些學生喔！三更半夜在女廁做什麼啦！'},
+ {t:'say',who:'narr',text:'第三間的門被推開。拿著拖把的林伯，一臉不耐煩地瞪著你們。'},
+ {t:'say',who:'lin',f:'t',text:'這間的沖水器每十五分鐘會自己沖一次，水管就叩叩叫，叫好幾年了，學校都不修。我十點半來巡一下而已啦。'},
+ {t:'ev',id:'knocklog',name:'大明的敲門紀錄',text:'22:00、22:15、22:31、22:45、23:00'},
+ {t:'ev',id:'schedule',name:'牆上的設備表',text:'自動沖水器：每 15 分鐘（整點起算）。水塔馬達：06:00–18:00 運轉。校工巡邏：22:30 前後一次。'},
+ {t:'puzzle',id:'knock'},
+ {t:'solve',w:4},
+ {t:'say',who:'narr',clock:'22:50',scene:'library',text:'第五個不可思議：圖書館的書，每天晚上都會自己換位置。'},
+ {t:'say',who:'hsu',f:'t',text:'你們也發現了？我每天早上都要把那幾本書放回去，已經兩個禮拜了。'},
+ {t:'say',who:'hsu',text:'被移動的書，書背上都會多一張小星星貼紙。我還沒撕掉，你們看。'},
+ {t:'puzzle',id:'books'},
+ {t:'say',who:'an',f:'a',text:'「社團不能倒閉」。這不是鬼。是有人想讓全校都注意到我們。'},
+ {t:'solve',w:5},
+ {t:'say',who:'narr',text:'回頭的時候，你發現芊芊站在書架的影子裡。她的眼眶是紅的。'},
+ {t:'end',ch:3},
+
+ {t:'chapter',n:4,name:'理化教室'},
+ {t:'say',who:'narr',clock:'23:10',scene:'lab',text:'第六個不可思議：理化教室的人體模型，晚上會自己走到窗邊。'},
+ {t:'say',who:'narr',text:'今晚，芊芊說她身體不舒服，先回家了。'},
+ {t:'say',who:'dm',f:'s',text:'少一個人，怎麼感覺更恐怖了……'},
+ {t:'say',who:'narr',text:'人體模型果然站在窗邊，背對著你們。你們慢慢靠近。'},
+ {t:'cut',id:'model'},
+ {t:'say',who:'qq',f:'shock',text:'啊啊！對、對不起！對不起！'},
+ {t:'say',who:'narr',text:'模型倒下的那一刻，後面有人跟著尖叫。是芊芊。她手上，還拿著一卷星星貼紙。'},
+ {t:'ev',id:'stars',name:'一卷星星貼紙',text:'和圖書館那幾本書上的貼紙，是同一款。'},
+ {t:'say',who:'an',f:'t',text:'……芊芊。'},
+ {t:'say',who:'qq',f:'t',text:'我、我不是故意要嚇人的……'},
+ {t:'say',who:'an',text:'先別急著說。讓新生把事情理清楚，我們不能只憑今晚就下結論。'},
+ {t:'puzzle',id:'culprit'},
+ {t:'solve',w:6},
+ {t:'say',who:'qq',f:'t',text:'……社團要是被廢掉，我就沒有地方可以去了。我在班上，一個朋友都沒有。'},
+ {t:'say',who:'qq',f:'t',text:'所以我想，如果大家都在討論七大不可思議，就會有人想來怪談研究社……'},
+ {t:'say',who:'dm',f:'t',text:'笨蛋，妳有我們啊。'},
+ {t:'end',ch:4},
+
+ {t:'chapter',n:5,name:'第七個不可思議'},
+ {t:'say',who:'narr',clock:'16:30',scene:'club',text:'隔天放學，社辦。白板上寫著六個不可思議，每一個後面都打了勾。'},
+ {t:'say',who:'an',text:'新生，你來總結吧。把每一個不可思議，和它的真相對起來。'},
+ {t:'puzzle',id:'match'},
+ {t:'say',who:'dm',f:'h',text:'全部破解！我們怪談研究社超強！'},
+ {t:'say',who:'qq',f:'t',text:'那……第七個呢？'},
+ {t:'say',who:'an',f:'sly',text:'公告上，第七個是問號。是妳故意留白的吧？'},
+ {t:'say',who:'qq',f:'s',text:'我、我只寫了六個。第七個……不是我寫的。'},
+ {t:'say',who:'narr',text:'社辦突然安靜下來。'},
+ {t:'choice',key:'last',options:[
+   {v:'public',text:'「我們公開真相。芊芊，要道歉的話，我們陪妳一起。」'},
+   {v:'keep',text:'「把七大不可思議變成社團的夜間導覽，一起守住這個秘密。」'}]},
+ {t:'say',who:'narr',if:['last','public'],text:'隔週朝會，芊芊站上台，把六個不可思議的真相全部說了出來。台下先是一片安靜，然後，有人開始拍手。'},
+ {t:'say',who:'an',f:'h',if:['last','public'],text:'第二天，社辦門口排了七個人，說想加入「會把怪談拆穿」的社團。'},
+ {t:'say',who:'narr',if:['last','keep'],text:'你們把七大不可思議做成「北辰夜間導覽」。第一場報名，三分鐘就額滿了。'},
+ {t:'say',who:'qq',f:'h',if:['last','keep'],text:'這一次，鋼琴聲是我親手彈的喔。'},
+ {t:'say',who:'narr',clock:'18:20',text:'那天收社辦的時候，大明數了一下椅子。'},
+ {t:'cut',id:'chairs'},
+ {t:'say',who:'dm',f:'s',text:'欸……我們社團不是五個人嗎？為什麼，有六張椅子？'},
+ {t:'say',who:'narr',scene:'corridor',text:'走廊盡頭的公告欄上，第七個不可思議的問號，不知道什麼時候，被人用鉛筆補上了一行字。'},
+ {t:'say',who:'voice',label:'公告欄 · 第七個不可思議',text:'「怪談研究社的社辦裡，永遠多一張椅子。」'},
+ {t:'solve',w:7},
+ {t:'finale'}
+];
+const PORTRAITS={
+ an:{style:'short',hair:'#1a1620',cloth:'#2a3550',collar:'#e6e2d8',glasses:true,bg:'#1d2236'},
+ qq:{style:'long',hair:'#2a1a14',cloth:'#e6e2d8',collar:'#8a3a5a',bg:'#2c1d2a'},
+ dm:{style:'messy',hair:'#111',cloth:'#c94a3a',skin:'#e0b48e',bg:'#2a1c16',f:'h'},
+ lin:{style:'none',cap:'#5a6a5a',cloth:'#4a5a4a',skin:'#d0a07a',bg:'#1a2418',f:'a'},
+ hsu:{style:'bun',hair:'#2a2420',cloth:'#6a4a7a',glasses:true,skin:'#ecc8a8',bg:'#241c2c'},
+ voice:{sil:true}
+};
+const PUZZLE_INFO={
+ piano:{hints:['把錄音和課本的簡譜一個音一個音對照，找出不一樣的地方。','第 10 個音，課本是 1，兩晚的錄音都是 6。','點第 10 個音，再選「錄音」那個結論。']},
+ painting:{hints:['慢慢拖動滑桿，觀察畫像的眼睛。','角度在正中間附近的時候，眼睛會閉起來。','把滑桿拖到中間（約 45～55），再選「光柵貼紙」。']},
+ knock:{hints:['先看哪些時間剛好是每 15 分鐘一次。','水塔馬達只在白天運轉。只有一個時間不在 15 分鐘的格子上。','22:00、22:15、22:45、23:00 是沖水器；22:31 是巡邏的林伯。']},
+ books:{hints:['只看有星星貼紙的書。','把有星星的書，照索書號從小排到大。','100.5 社、220.3 團、318.9 不、447 能、563 倒、857.7 閉：社團不能倒閉。']},
+ culprit:{hints:['今晚只能證明人體模型。要證明所有不可思議，需要其他章節的證物。','借閱紀錄是去年的事；有鑰匙不代表做了。','周芊芊，加上小貓貼紙、「周」字收據、社團道具三樣證據。']},
+ match:{hints:['每一個不可思議，你都親自拆穿過。打開「證物」回想。','敲門聲有兩個原因；樓梯是道具；畫像是貼紙。','鋼琴→手機、畫像→光柵、樓梯→紙箱、敲門→沖水器＋林伯、書→暗號、模型→芊芊。']}
+};
+const CHAP_PUZZLES={1:['piano'],2:['painting'],3:['knock','books'],4:['culprit'],5:['match']};
+const CHAP_NEXT={1:{name:'眨眼的畫像',text:'樓梯多一階，畫像會眨眼。這一次，換大明出糗。',btn:'進入第二章'},
+ 2:{name:'第三間',text:'女廁第三間的敲門聲，和圖書館裡會移動的書。',btn:'進入第三章'},
+ 3:{name:'理化教室',text:'最後一個能拆穿的不可思議。今晚，芊芊沒有來。',btn:'進入第四章'},
+ 4:{name:'第七個不可思議',text:'六個都破解了。可是公告上的第七個，到底是誰寫的？',btn:'進入最終章'}};
+const CH_LABEL=['','第一章','第二章','第三章','第四章','最終章'];
+const CC_SUB={1:'16:40 · 公告欄',2:'21:30 · 北棟樓梯',3:'21:55 · 二樓女廁',4:'23:10 · 理化教室',5:'16:30 · 社辦'};
+const WHO={narr:'',me:'你',an:'江予安 · 社長',qq:'周芊芊',dm:'王大明',lin:'林伯 · 校工',hsu:'許老師 · 圖書館',voice:'？？？'};
+
+/* ================= state ================= */
+const $=id=>document.getElementById(id);
+const stage=$('stage');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fresh(){return {i:0,ev:[],testi:[],ch:{},chText:{},hints:{},wrong:0,clock:'16:40',chap:1,chapName:'入社',scene:'corridor',solved:[]}}
+let S=fresh();
+function save(){try{localStorage.setItem('wonders',JSON.stringify(S))}catch(e){}}
+function load(){try{const r=localStorage.getItem('wonders');return r?JSON.parse(r):null}catch(e){return null}}
+
+/* ================= audio ================= */
+const audio={ctx:null,on:true,mg:null,n:0,resolved:false,
+  init(){
+    if(this.ctx)return;
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;const c=this.ctx=new C();
+      this.mg=c.createGain();this.mg.gain.value=0;this.mg.connect(c.destination);
+      const len=c.sampleRate*2,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;this.noiseBuf=buf;
+      this.wet=c.createDelay(1);this.wet.delayTime.value=.3;const fb=c.createGain();fb.gain.value=.45;const wl=c.createBiquadFilter();wl.type='lowpass';wl.frequency.value=1800;
+      this.wet.connect(wl).connect(fb).connect(this.wet);wl.connect(this.mg);
+      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=300;f.Q.value=3;
+      [[73.4,'triangle',.04],[110,'sine',.025]].forEach(([hz,ty,g])=>{const o=c.createOscillator();o.type=ty;o.frequency.value=hz;const gn=c.createGain();gn.gain.value=g;o.connect(gn).connect(f);o.start()});
+      this.drone=c.createGain();this.drone.gain.value=1;f.connect(this.drone).connect(this.mg);
+      setInterval(()=>this.tick(),1000);this.apply();
+    }catch(e){this.ctx=null}
+  },
+  apply(){if(this.mg)this.mg.gain.setTargetAtTime(this.on?.55:0,this.ctx.currentTime,1)},
+  tone(hz,o={}){if(!this.mg)return;const {type='sine',a=2,d=4,g=.02,glide=0,wet=true}=o;const c=this.ctx,t=c.currentTime,osc=c.createOscillator(),e=c.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(hz,t);if(glide)osc.frequency.linearRampToValueAtTime(hz*glide,t+a+d);
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+a);e.gain.linearRampToValueAtTime(0,t+a+d);
+    osc.connect(e);e.connect(this.mg);if(wet)e.connect(this.wet);osc.start(t);osc.stop(t+a+d+.1)},
+  pianoNote(n){const hz={1:261.63,2:293.66,3:329.63,4:349.23,5:392,6:440,7:493.88}[n];if(!hz||!this.on)return;this.tone(hz,{type:'triangle',a:.005,d:.9,g:.06});this.tone(hz*2,{type:'sine',a:.005,d:.5,g:.015})},
+  playTune(seq,gap){seq.forEach((n,i)=>setTimeout(()=>this.pianoNote(n),i*gap))},
+  bell(){if(!this.on)return;[659.25,523.25,587.33,392,392,587.33,659.25,523.25].forEach((hz,i)=>setTimeout(()=>this.tone(hz,{a:.01,d:1.2,g:.035}),i*380))},
+  click(){if(this.on)this.tone(1700,{a:.003,d:.05,g:.05,wet:false})},
+  tk(){if(this.on&&this.mg)this.tone(2300,{a:.002,d:.022,g:.007,wet:false})},
+  knock(){if(!this.mg||!this.on)return;[0,.3,.6].forEach(at=>{const c=this.ctx,t=c.currentTime+at,src=c.createBufferSource();src.buffer=this.noiseBuf;
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=200;bp.Q.value=2;const e=c.createGain();
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(1.1,t+.005);e.gain.exponentialRampToValueAtTime(.001,t+.18);
+    src.connect(bp).connect(e).connect(c.destination);src.start(t,Math.random());src.stop(t+.2)})},
+  scare(){if(!this.mg||!this.on)return;const c=this.ctx,t=c.currentTime;
+    const src=c.createBufferSource();src.buffer=this.noiseBuf;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;const e=c.createGain();
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(1.2,t+.01);e.gain.exponentialRampToValueAtTime(.001,t+.5);src.connect(lp).connect(e).connect(c.destination);src.start(t,.3);src.stop(t+.55);
+    [65.4,69.3,98,103.8,146.8].forEach(hz=>{const o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.value=hz;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.055,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+1.6);o.connect(g).connect(c.destination);o.start(t);o.stop(t+1.7)})},
+  sting(kind){if(!this.on)return;
+    if(kind==='wrong')[98,103.8].forEach(hz=>this.tone(hz,{type:'triangle',a:.02,d:.9,g:.05,wet:false}));
+    if(kind==='ev')this.tone(1046.5,{a:.01,d:1.6,g:.02});
+    if(kind==='solve')[523.25,659.25,783.99,1046.5].forEach((hz,i)=>setTimeout(()=>this.tone(hz,{a:.01,d:1.2,g:.03}),i*110))},
+  tick(){if(!this.on||!this.mg||this.resolved)return;this.n++;
+    if(this.n%11===0)[[220,261.63],[196,233.08],[174.6,220]][this.n%3].forEach(hz=>this.tone(hz,{type:'triangle',a:3,d:5,g:.009}));
+    if(Math.random()<.18)this.tone(4200+Math.random()*600,{type:'sine',a:.01,d:.08,g:.004,wet:false})},
+  resolve(){if(!this.mg||this.resolved)return;this.resolved=true;this.drone.gain.setTargetAtTime(0,this.ctx.currentTime,2);
+    if(this.on)this.playTune([3,3,4,5,5,4,3,2,1,1,2,3,3,2,2],330)},
+  unresolve(){if(!this.mg||!this.resolved)return;this.resolved=false;this.drone.gain.setTargetAtTime(1,this.ctx.currentTime,1)}
+};
+$('btnSound').onclick=()=>{audio.init();audio.on=!audio.on;$('btnSound').textContent=audio.on?'音效':'靜音';audio.apply()};
+
+/* ================= scenes ================= */
+const svgWrap=b=>`<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">${b}</svg>`;
+function rep(n,f){let s='';for(let i=0;i<n;i++)s+=f(i);return s}
+const winNight=(x,y)=>`<rect x="${x}" y="${y}" width="90" height="80" fill="#0c0e1c" stroke="#3a3350" stroke-width="5"/><line x1="${x+45}" y1="${y}" x2="${x+45}" y2="${y+80}" stroke="#3a3350" stroke-width="3"/><circle cx="${x+66}" cy="${y+22}" r="9" fill="#ece4cf" opacity=".45"/>`;
+const SCENES={
+ corridor:svgWrap(`<polygon points="0,0 150,110 150,200 0,300" class="s1"/><polygon points="400,0 250,110 250,200 400,300" class="s1"/><polygon points="0,300 150,200 250,200 400,300" fill="#1a1626"/>
+  <rect x="150" y="110" width="100" height="90" fill="#0b0912"/>${rep(3,i=>`<rect x="${20+i*45}" y="${50+i*22}" width="${24-i*5}" height="${150-i*44}" class="s2"/>`)}
+  <rect x="290" y="70" width="70" height="90" fill="#5a4030"/><rect x="298" y="78" width="54" height="70" fill="#ece4cf" opacity=".85"/>${rep(6,i=>`<rect x="304" y="${86+i*10}" width="${30+(i%3)*6}" height="3" fill="#2c2620" opacity=".6"/>`)}<rect x="304" y="140" width="20" height="3" fill="#b8322a"/>
+  <g class="flick"><rect x="185" y="18" width="30" height="4" fill="#dfe8f0"/></g>`),
+ club:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#231c30"/>${winNight(280,30)}<rect x="20" y="40" width="110" height="150" class="s2"/>${rep(4,i=>`<rect x="20" y="${70+i*30}" width="110" height="4" fill="#3a3350"/>${rep(7,j=>`<rect x="${26+j*14}" y="${56+i*30}" width="10" height="14" fill="${['#5a4a7a','#7a4a5a','#4a6a7a'][j%3]}"/>`)}`)}
+  <rect x="0" y="220" width="400" height="80" fill="#1a1524"/><rect x="120" y="170" width="170" height="16" rx="3" fill="#4a3a5a"/>${rep(5,i=>`<rect x="${130+i*32}" y="186" width="5" height="40" fill="#3a3350"/><rect x="${118+i*34}" y="${200}" width="24" height="5" fill="#5a4a6a"/>`)}
+  <rect x="160" y="60" width="90" height="56" fill="#e6e2d8" opacity=".9"/>${rep(6,i=>`<rect x="168" y="${68+i*7}" width="${60-(i%2)*14}" height="3" fill="#2a3550" opacity=".6"/><rect x="236" y="${67+i*7}" width="6" height="5" fill="#2e8a5a" opacity=".8"/>`)}`),
+ music:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#141221"/>${winNight(290,30)}<rect x="0" y="230" width="400" height="70" fill="#0e0c18"/>
+  <path d="M60 230 L60 150 Q60 120 110 120 L240 120 Q270 120 280 150 L300 230Z" fill="#06050a"/><rect x="60" y="190" width="240" height="14" fill="#0e0c14"/>${rep(16,i=>`<rect x="${64+i*14.5}" y="191" width="12" height="12" fill="#cfc8bb" opacity=".35"/>`)}
+  ${rep(5,i=>`<text x="${30+i*18}" y="${60+i*8}" font-size="12" fill="#ece4cf" opacity=".12">♪</text>`)}`),
+ stairs:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#16131f"/>${rep(13,i=>`<rect x="${40+i*24}" y="${260-i*17}" width="${360-i*24}" height="17" fill="${i===0?'#3a3046':'#221d2e'}" stroke="#2c2640" stroke-width="1"/>`)}<line x1="40" y1="240" x2="360" y2="30" stroke="#5a4a6a" stroke-width="4"/>
+  <g class="flick"><circle cx="350" cy="20" r="6" fill="#dfe8f0"/></g>`),
+ art:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#1a1622"/><rect x="0" y="230" width="400" height="70" fill="#120f18"/>
+  <rect x="150" y="40" width="100" height="125" fill="#2a2433" stroke="#6b4a2a" stroke-width="9"/><ellipse cx="200" cy="92" rx="22" ry="27" fill="#a8916f"/><rect x="186" y="88" width="9" height="4" fill="#1a1410"/><rect x="205" y="88" width="9" height="4" fill="#1a1410"/><path d="M165 165 Q200 120 235 165Z" fill="#1d1a24"/>
+  <path d="M40 240 L70 140 L100 240 M70 140 L70 250" stroke="#4a3a2a" stroke-width="5" fill="none"/><rect x="50" y="150" width="44" height="54" fill="#d8cfc0" opacity=".5"/>${winNight(300,40)}`),
+ toilet:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#8a9a9e" opacity=".22"/><rect x="0" y="0" width="400" height="300" fill="#121518" opacity=".85"/>
+  ${rep(10,i=>`<line x1="${i*40}" y1="0" x2="${i*40}" y2="300" stroke="#2a3236" stroke-width="1"/>`)}${rep(8,i=>`<line x1="0" y1="${i*40}" x2="400" y2="${i*40}" stroke="#2a3236" stroke-width="1"/>`)}
+  ${rep(4,i=>`<rect x="${30+i*90}" y="60" width="80" height="190" fill="${i===2?'#3a4a4e':'#2a3538'}" stroke="#1a2224" stroke-width="3"/><circle cx="${100+i*90}" cy="150" r="3" fill="#0a0e10"/>`)}<text x="${30+2*90+40}" y="50" text-anchor="middle" font-size="14" fill="#cfd6d8" opacity=".5">3</text>
+  <g class="flick"><rect x="170" y="10" width="60" height="5" fill="#dfe8f0"/></g>`),
+ library:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#15121c"/>${rep(5,i=>`<g transform="translate(${10+i*80},${40+i%2*8})"><rect width="64" height="250" class="s2"/>${rep(5,r=>`<rect y="${30+r*46}" width="64" height="4" fill="#3a3350"/>${rep(7,b=>`<rect x="${4+b*8.5}" y="${10+r*46+(b%3)*2}" width="6" height="${20-(b%3)*2}" fill="${(b+r+i)%5===0?'#f2c35a':'#3a3046'}" opacity="${(b+r+i)%5===0?.7:1}"/>`)}`)}</g>`)}`),
+ lab:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#121820"/>${winNight(280,30)}<rect x="0" y="230" width="400" height="70" fill="#0c1016"/>
+  ${rep(3,i=>`<rect x="${20+i*90}" y="190" width="80" height="12" fill="#2a3a44"/><rect x="${26+i*90}" y="202" width="6" height="40" fill="#1a242c"/><rect x="${90+i*90}" y="202" width="6" height="40" fill="#1a242c"/>`)}
+  <g transform="translate(300,110)"><circle cx="20" cy="12" r="12" fill="#cfc6b6"/><rect x="8" y="26" width="24" height="44" rx="8" fill="#cfc6b6"/><rect x="20" y="30" width="10" height="30" fill="#b85a4a" opacity=".8"/><rect x="10" y="70" width="8" height="40" fill="#cfc6b6"/><rect x="22" y="70" width="8" height="40" fill="#cfc6b6"/></g>`)
+};
+let curScene=null,motes=[];
+function setScene(k){
+  if(k===curScene)return;if(curScene)sceneDip();curScene=k;$('scene').dataset.k=k;
+  const art=$('sceneArt');art.style.animation='none';void art.offsetWidth;art.style.animation='';art.innerHTML=SCENES[k]||'';
+}
+motes=Array.from({length:26},()=>({x:Math.random(),y:Math.random(),r:.5+Math.random()*1.3,vx:(Math.random()-.5)*.0002,vy:(Math.random()-.5)*.00015,p:Math.random()*6.28}));
+const mc=$('motes'),mx=mc.getContext('2d');
+function drawMotes(t){
+  const dpr=Math.min(2,devicePixelRatio||1),w=mc.clientWidth,h=mc.clientHeight;if(!w||!h)return;
+  if(mc.width!==Math.round(w*dpr)){mc.width=Math.round(w*dpr);mc.height=Math.round(h*dpr)}
+  mx.setTransform(dpr,0,0,dpr,0,0);mx.clearRect(0,0,w,h);
+  for(const m of motes){if(!reduce){m.x+=m.vx;m.y+=m.vy;if(m.x<0)m.x=1;if(m.x>1)m.x=0;if(m.y<0)m.y=1;if(m.y>1)m.y=0}
+    mx.fillStyle=`rgba(200,170,255,${.1+.08*Math.sin(t*.001+m.p)})`;mx.beginPath();mx.arc(m.x*w,m.y*h,m.r,0,6.28);mx.fill()}
+}
+if(!reduce)(function loop(t){drawMotes(t);requestAnimationFrame(loop)})(0);
+
+/* ================= HUD & fx ================= */
+function drawWonders(){$('wonders').innerHTML=['一','二','三','四','五','六','七'].map((c,i)=>`<i class="${S.solved.includes(i+1)?'on':''}${i===6?' q':''}" title="${WONDERS[i]}">${c}</i>`).join('')}
+function fxRestart(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+function shake(el){audio.sting('wrong');fxRestart($('vig'),'red');S.wrong=(S.wrong||0)+1;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
+function quake(){const a=$('app');a.classList.remove('quake');void a.offsetWidth;a.classList.add('quake')}
+function solved(){audio.sting('solve')}
+function showChapterCard(n,name){
+  const c=$('chapcard');$('ccK').textContent=n===5?'FINAL CHAPTER':'CHAPTER '+n;$('ccN').textContent=name;$('ccS').textContent=CC_SUB[n]||'';
+  c.hidden=false;c.style.animation='none';void c.offsetWidth;c.style.animation='';
+  clearTimeout(c._t);c._t=setTimeout(()=>c.hidden=true,3200);c.onclick=()=>{clearTimeout(c._t);c.hidden=true};
+}
+
+/* ================= cinema kit: portraits, letterbox, scene dips, type ticks ================= */
+const FACES={
+ n:`<circle cx="33" cy="38" r="1.9" fill="#1a1410"/><circle cx="47" cy="38" r="1.9" fill="#1a1410"/><path d="M29 32.5h7M44 32.5h7" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M36 47q4 1.6 8 0" stroke="#7a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+ h:`<path d="M30.5 39q2.5-3 5 0M44.5 39q2.5-3 5 0" stroke="#1a1410" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M29 31h7M44 31h7" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M34.5 45.5q5.5 5 11 0" stroke="#7a4a3a" stroke-width="1.8" fill="#b65a4a" stroke-linecap="round"/>`,
+ s:`<circle cx="33" cy="38" r="3.3" fill="#fff"/><circle cx="47" cy="38" r="3.3" fill="#fff"/><circle cx="33" cy="38.3" r="1.4" fill="#1a1410"/><circle cx="47" cy="38.3" r="1.4" fill="#1a1410"/><path d="M29 31.5l7-2.2M44 29.3l7 2.2" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="40" cy="48" rx="2.3" ry="2.9" fill="#5a2a22"/>`,
+ a:`<circle cx="33" cy="38.5" r="1.9" fill="#1a1410"/><circle cx="47" cy="38.5" r="1.9" fill="#1a1410"/><path d="M29 30.5l7 2.6M51 30.5l-7 2.6" stroke="#2a201a" stroke-width="1.8" stroke-linecap="round"/><path d="M35.5 48h9" stroke="#7a4a3a" stroke-width="1.8" stroke-linecap="round"/>`,
+ t:`<path d="M30.5 38.5h5M44.5 38.5h5" stroke="#1a1410" stroke-width="1.8" stroke-linecap="round"/><path d="M29 33l7-2M44 31l7 2" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M36 49q4-2.6 8 0" stroke="#7a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+ sly:`<circle cx="33" cy="38.5" r="1.9" fill="#1a1410"/><path d="M44.5 38.5q2.5-1.6 5 0" stroke="#1a1410" stroke-width="1.8" fill="none"/><path d="M29 32.5h7M44 30l7 1.5" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M35 47.5q6 1.6 10-2" stroke="#7a4a3a" stroke-width="1.7" fill="none" stroke-linecap="round"/>`,
+ shock:`<circle cx="33" cy="37.5" r="3.7" fill="#fff"/><circle cx="47" cy="37.5" r="3.7" fill="#fff"/><circle cx="33" cy="37.5" r="1.2" fill="#1a1410"/><circle cx="47" cy="37.5" r="1.2" fill="#1a1410"/><path d="M29 29.5l7-1.4M44 28.1l7 1.4" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="40" cy="49" rx="3.4" ry="4.4" fill="#5a2a22"/>`
+};
+function portraitSVG(p,f){
+  if(p.sil)return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="#0a0506"/><path d="M8 80q4-24 32-24t32 24z" fill="#020202"/><ellipse cx="40" cy="38" rx="17" ry="20" fill="#020202"/><circle cx="33" cy="38" r="2.4" fill="#ff3b30"/><circle cx="47" cy="38" r="2.4" fill="#ff3b30"/><circle cx="33" cy="38" r="6" fill="#ff3b30" opacity=".18"/><circle cx="47" cy="38" r="6" fill="#ff3b30" opacity=".18"/></svg>`;
+  const sk=p.skin||'#f0d0b2',hc=p.hair||'#221a16';
+  let back='',hair='',acc='',cloth='';
+  if(p.style==='long')back=`<path d="M21 36q0-21 19-21t19 21l2 30H19z" fill="${hc}"/>`;
+  if(p.style==='pony')back=`<ellipse cx="59" cy="32" rx="5" ry="10" fill="${hc}"/>`;
+  const top={short:`<path d="M23 37q1-20 17-20t17 20q-5-10-17-10t-17 10z" fill="${hc}"/>`,
+    messy:`<path d="M23 35l2-12 5 4 3-9 5 7 5-8 3 8 6-5 1 9 4 6q-7-8-17-8t-17 8z" fill="${hc}"/>`,
+    pony:`<path d="M23 37q1-20 17-20t17 20q-6-11-17-11t-17 11z" fill="${hc}"/>`,
+    long:`<path d="M23 36q4-14 17-14t17 14q-8-7-17-7t-17 7z" fill="${hc}"/>`,
+    bun:`<circle cx="40" cy="17" r="6" fill="${hc}"/><path d="M23 37q1-19 17-19t17 19q-6-10-17-10t-17 10z" fill="${hc}"/>`,
+    none:''}[p.style||'short'];
+  hair=top;
+  cloth=`<path d="M8 80q3-21 32-23t32 23z" fill="${p.cloth||'#445'}"/>`;
+  if(p.collar)cloth+=`<path d="M33 57l7 9 7-9" fill="${p.collar}"/>`;
+  if(p.tie)cloth+=`<path d="M38.5 60h3l1.5 14-3 3-3-3z" fill="${p.tie}"/>`;
+  if(p.vest)cloth+=`<path d="M14 72h52M18 66h44" stroke="#f4f4ec" stroke-width="2.4" opacity=".8"/>`;
+  if(p.glasses)acc+=`<g fill="none" stroke="#2a2a2a" stroke-width="1.4"><circle cx="33" cy="38" r="5"/><circle cx="47" cy="38" r="5"/><path d="M38 38h4"/></g>`;
+  if(p.mask)acc+=`<path d="M26 42q14-3 28 0l-1 9q-13 7-26 0z" fill="${p.mask}"/>`;
+  if(p.cap)acc+=`<path d="M22 31q2-15 18-15t18 15z" fill="${p.cap}"/><rect x="20" y="29" width="40" height="5" rx="2.5" fill="${p.cap}" opacity=".85"/>${p.badge?`<circle cx="40" cy="23" r="2.6" fill="${p.badge}"/>`:''}`;
+  if(p.phones)acc+=`<path d="M22 36q0-22 18-22t18 22" stroke="#1a1a1a" stroke-width="3.4" fill="none"/><rect x="18" y="32" width="7" height="12" rx="3" fill="#1a1a1a"/><rect x="55" y="32" width="7" height="12" rx="3" fill="#1a1a1a"/>`;
+  if(p.lamp)acc+=`<path d="M23 27h34" stroke="#2a2a2a" stroke-width="4"/><circle cx="40" cy="26" r="4" fill="#fff6c8"/><circle cx="40" cy="26" r="10" fill="#fff6c8" opacity=".25"/>`;
+  if(p.hood)acc+=`<path d="M17 52q-2-38 23-39 25 1 23 39h-6q2-28-17-29-19 1-17 29z" fill="${p.hood}"/>`;
+  return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="${p.bg||'#1d2430'}"/>${back}${cloth}<rect x="35" y="50" width="10" height="9" fill="${sk}"/><ellipse cx="40" cy="38" rx="16.5" ry="18.5" fill="${sk}"/><circle cx="29" cy="44" r="2.6" fill="#e89a8a" opacity="${f==='h'?.5:.18}"/><circle cx="51" cy="44" r="2.6" fill="#e89a8a" opacity="${f==='h'?.5:.18}"/>${FACES[f]||FACES.n}${hair}${acc}</svg>`;
+}
+let lastSpeaker=null;
+function addPortrait(box,st){
+  const key=st.who==='voice'?'voice':st.who;const p=PORTRAITS[key];
+  if(!p){lastSpeaker=null;return}
+  const f=st.f||p.f||'n';
+  const d=document.createElement('div');d.className='pt'+(key==='voice'?' sil':'')+(lastSpeaker===key?'':' enter');
+  d.innerHTML=portraitSVG(p,f);box.classList.add('withp');box.prepend(d);lastSpeaker=key;
+}
+function cineOn(){document.body.classList.add('cine')}
+function cineOff(){document.body.classList.remove('cine')}
+function sceneDip(){const s=$('scene');if(!s)return;s.classList.remove('dip');void s.offsetWidth;s.classList.add('dip')}
+
+
+/* ================= engine ================= */
+let typing=null,timers=[];
+function clearTimers(){timers.forEach(t=>clearTimeout(t));timers=[]}
+function current(){return SCRIPT[S.i]}
+function next(){clearTimers();cineOff();S.i++;save();render()}
+function passes(st){return !st.if||S.ch[st.if[0]]===st.if[1]}
+function render(){
+  clearTimers();
+  let st=current(),newChap=false;
+  while(st&&(!passes(st)||st.t==='chapter')){
+    if(st.t==='chapter'&&passes(st)){S.chap=st.n;S.chapName=st.name;newChap=true}
+    S.i++;st=current();
+  }
+  if(newChap)showChapterCard(S.chap,S.chapName);
+  if(st){if(st.scene)S.scene=st.scene;if(st.clock)S.clock=st.clock}
+  setScene(S.scene);drawWonders();
+  if($('clock').textContent!==S.clock){$('clock').textContent=S.clock;fxRestart($('clock'),'ping')}
+  $('chap').innerHTML=CH_LABEL[S.chap]+' · <b>'+S.chapName+'</b>';
+  $('btnHint').disabled=!(st&&st.t==='puzzle');
+  if(st&&st.t==='finale')audio.resolve();else audio.unresolve();
+  stage.innerHTML='';
+  if(!st)return;
+  ({say:renderSay,ev:renderEv,choice:renderChoice,puzzle:st=>PUZZLES[st.id](),cut:renderCut,end:renderEnd,finale:renderFinale,solve:renderSolve})[st.t](st);
+}
+function dialogShell(who,label){
+  const box=document.createElement('div');box.className='box dialog';box.tabIndex=0;box.setAttribute('role','button');
+  const name=label||WHO[who];
+  if(name){const w=document.createElement('div');w.className='who '+who;w.textContent=name;box.appendChild(w)}
+  stage.appendChild(box);return box;
+}
+function typeInto(el,text,done){
+  if(reduce){if(typing&&typing.cancel)typing.cancel();typing=null;el.textContent=text;done&&done();return}
+  let k=0;el.textContent='';
+  if(typing&&typing.cancel)typing.cancel();const me={cancel(){clearInterval(id)},finish(){clearInterval(id);el.textContent=text;if(typing===me)typing=null;done&&done()}};typing=me;
+  const id=setInterval(()=>{k++;el.textContent=text.slice(0,k);if(k%2)audio.tk();if(k>=text.length)me.finish()},30);
+}
+function bindGo(box,go){box.onclick=go;box.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};box.focus({preventScroll:true})}
+function renderSay(st){
+  const box=dialogShell(st.who,st.label);addPortrait(box,st);
+  const line=document.createElement('div');line.className='line '+st.who;box.appendChild(line);
+  const cont=document.createElement('div');cont.className='cont';cont.textContent='點一下繼續 ▸';cont.style.visibility='hidden';box.appendChild(cont);
+  if(st.fx==='flicker')fxRestart($('flash'),'flicker');
+  if(st.who==='voice'){fxRestart($('vig'),'red');audio.scare()}
+  typeInto(line,st.text,()=>cont.style.visibility='visible');
+  bindGo(box,()=>{if(typing){typing.finish();return}next()});
+}
+function renderEv(st){
+  if(!S.ev.find(e=>e.id===st.id))S.ev.push({id:st.id,name:st.name,text:st.text});save();
+  audio.sting('ev');fxRestart($('btnNote'),'ping');
+  const box=dialogShell('narr');box.insertAdjacentHTML('afterbegin','<div class="who">已加入證物</div>');
+  const line=document.createElement('div');line.className='line';line.style.fontSize='15px';
+  line.innerHTML='<span class="tag"></span><div style="margin-top:8px"></div>';line.querySelector('.tag').textContent=st.name;line.lastChild.textContent=st.text;
+  box.appendChild(line);box.insertAdjacentHTML('beforeend','<div class="cont">點一下繼續 ▸</div>');bindGo(box,next);
+}
+function renderSolve(st){
+  if(!S.solved.includes(st.w))S.solved.push(st.w);save();drawWonders();solved();
+  const box=dialogShell('narr');box.classList.add('solved');
+  box.innerHTML=`<div class="who">${st.w===7?'第七個不可思議':'不可思議 · 第'+['一','二','三','四','五','六','七'][st.w-1]+'個'}</div><div class="stamp">${st.w===7?'？？？':'已破解'}</div><div style="font-family:var(--f-display);font-weight:600">${WONDERS[st.w-1]===''?'':(st.w===7?'怪談研究社的社辦裡，永遠多一張椅子。':WONDERS[st.w-1])}</div><div class="cont">點一下繼續 ▸</div>`;
+  bindGo(box,next);
+}
+function renderChoice(st){
+  const box=document.createElement('div');box.className='box dialog';box.style.cursor='default';
+  box.innerHTML='<div class="who me">你要怎麼做？</div><div class="choices"></div>';
+  const c=box.querySelector('.choices');
+  st.options.forEach(o=>{const b=document.createElement('button');b.className='choice';b.textContent=o.text;b.onclick=()=>{S.ch[st.key]=o.v;S.chText[st.key]=o.text;next()};c.appendChild(b)});
+  stage.appendChild(box);
+}
+
+/* ================= puzzles ================= */
+function pbox(title,desc){const box=document.createElement('div');box.className='box';box.innerHTML=`<h2 class="ptitle">${title}</h2><p class="pdesc">${desc}</p>`;stage.appendChild(box);return box}
+function multiOpts(box,list,round){
+  const wrap=document.createElement('div');wrap.className='opts';const sel=new Set();
+  list.forEach((o,i)=>{const b=document.createElement('button');b.className='opt'+(round?' round':'');b.innerHTML='<i></i><span></span>';b.querySelector('span').textContent=o.t||o;
+    b.onclick=()=>{if(round){sel.clear();wrap.querySelectorAll('.opt').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')})}
+      sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle('on',sel.has(i));b.setAttribute('aria-pressed',sel.has(i));wrap.dispatchEvent(new Event('change'))};wrap.appendChild(b)});
+  box.appendChild(wrap);return {wrap,sel};
+}
+function goRow(box,label){box.insertAdjacentHTML('beforeend',`<div class="row" style="margin-top:12px"><button class="btn" id="go">${label}</button><span class="msg" id="m"></span></div>`)}
+function ok(box,text,ms=1300){solved();$('m').className='msg good';$('m').textContent=text;$('go').disabled=true;setTimeout(next,ms)}
+function bad(box,text){$('m').className='msg bad';$('m').textContent=text;shake(box)}
+const PUZZLES={
+ piano(){
+  const box=pbox('謎題一 · 真人，還是錄音？','對照音樂課本的簡譜和錄音，點出錄音裡彈錯的那個音，再選出你的結論。');
+  let pick=-1;
+  const cells=(arr,btn)=>arr.map((n,i)=>btn?`<button data-i="${i}" class="${i%4===3?'bar':''}" aria-label="第${i+1}個音 ${n}">${n}</button>`:`<span class="${i%4===3?'bar':''}">${n}</span>`).join('');
+  box.insertAdjacentHTML('beforeend',`<div class="score"><div class="lbl">音樂課本《歡樂頌》</div><div class="notes">${cells(BOOK_BASE)}</div>
+   <div class="lbl">週一 23:00 錄音（點出錯音）</div><div class="notes" id="recA">${cells(BOOK_REC,true)}</div>
+   <div class="lbl">週三 23:00 錄音</div><div class="notes">${cells(BOOK_REC)}</div></div><div class="row" style="margin-top:8px"><button class="btn ghost" id="listen">播放週一錄音</button></div>`);
+  box.querySelectorAll('#recA button').forEach(b=>b.onclick=()=>{pick=+b.dataset.i;box.querySelectorAll('#recA button').forEach(x=>x.classList.toggle('on',x===b));audio.pianoNote(BOOK_REC[pick])});
+  $('listen').onclick=()=>{audio.init();audio.playTune(BOOK_REC,320)};
+  box.insertAdjacentHTML('beforeend','<div class="cap" style="margin-top:12px">兩晚錯在同一個地方，代表……</div>');
+  const c=multiOpts(box,[{t:'鬼也會彈錯，很正常'},{t:'這是同一段錄音，不是真人在彈'},{t:'有人每天晚上都來練同一首歌'}],true);
+  goRow(box,'說出結論');
+  $('go').onclick=()=>{if(pick!==9)return bad(box,pick<0?'先在週一的錄音裡，點出彈錯的音。':'那個音跟課本一樣。再對照一次。');
+    const v=[...c.sel][0];if(v!==1)return bad(box,v==null?'選一個結論。':'真人每次彈錯的地方會不一樣。兩晚錯得一模一樣，代表什麼？');
+    ok(box,'一模一樣的錯音。這是錄音。')};
+ },
+ painting(){
+  const box=pbox('謎題二 · 眨眼的畫像','慢慢移動你站的位置，找出畫像「眨眼」的那個角度，再解釋它為什麼會眨眼。');
+  box.insertAdjacentHTML('beforeend',`<svg class="paint" id="pp" viewBox="0 0 120 150" aria-label="校長畫像"></svg>
+   <label class="cap" for="ang" style="display:block;text-align:center">你站的位置（左 ← → 右）</label><input class="slide" type="range" id="ang" min="0" max="100" value="10">`);
+  const draw=v=>{const closed=v>=45&&v<=55,dx=v<45?-3:v>55?3:0;
+    $('pp').innerHTML=`<rect width="120" height="150" fill="#2a2433"/>${rep(20,i=>`<rect x="${i*6}" y="0" width="1" height="150" fill="#fff" opacity="${.04+Math.abs(v-50)/1800}"/>`)}<ellipse cx="60" cy="62" rx="30" ry="36" fill="#c9b08e"/><path d="M30 50 Q60 18 90 50 Q80 34 60 34 Q40 34 30 50Z" fill="#3a3a3a"/>
+     ${closed?'<path d="M44 62h12M64 62h12" stroke="#1a1410" stroke-width="2.4"/>':`<ellipse cx="50" cy="62" rx="7" ry="4" fill="#fff"/><ellipse cx="70" cy="62" rx="7" ry="4" fill="#fff"/><circle cx="${50+dx}" cy="62" r="2.6" fill="#1a1410"/><circle cx="${70+dx}" cy="62" r="2.6" fill="#1a1410"/>`}
+     <path d="M50 82 Q60 ${closed?86:88} 70 82" stroke="#6a4a3a" stroke-width="2" fill="none"/><path d="M14 150 Q60 100 106 150Z" fill="#1d1a24"/><rect x="52" y="104" width="16" height="20" fill="#e6e2d8"/>`};
+  draw(10);$('ang').oninput=e=>draw(+e.target.value);
+  box.insertAdjacentHTML('beforeend','<div class="cap" style="margin-top:12px">畫像會眨眼，是因為……</div>');
+  const c=multiOpts(box,[{t:'校長的靈魂還在畫裡'},{t:'光柵貼紙：從不同角度看，會看到不同的畫面'},{t:'有人躲在畫後面'},{t:'油畫顏料受潮變色'}],true);
+  goRow(box,'提出解釋');
+  $('go').onclick=()=>{const v=+$('ang').value,o=[...c.sel][0];
+    if(o!==1)return bad(box,o==null?'選一個解釋。':'這個解釋，說不通為什麼「換個位置」就會眨眼。');
+    if(v<45||v>55)return bad(box,'解釋對了，但要先找到它眨眼的角度，才能證明給大家看。');
+    ok(box,'就是這個角度。每個人經過的時候，都剛好看到它眨眼。')};
+ },
+ knock(){
+  const box=pbox('謎題三 · 敲門聲從哪裡來？','比對大明的紀錄和牆上的設備表，勾出所有造成敲門聲的原因。');
+  box.insertAdjacentHTML('beforeend',`<div class="logs"><div class="paper"><b>大明的紀錄</b><br>22:00 叩叩叩<br>22:15 叩叩叩<br>22:31 叩叩叩（很近）<br>22:45 叩叩叩<br>23:00 叩叩叩</div>
+   <div class="paper"><b>設備表</b><br>自動沖水器：每 15 分鐘，整點起算<br>水塔馬達：06:00–18:00 運轉<br>校工巡邏：22:30 前後一次</div></div>`);
+  const c=multiOpts(box,[{t:'自動沖水器'},{t:'水塔馬達'},{t:'巡邏的林伯'},{t:'第三間裡的「什麼東西」'}]);
+  goRow(box,'確認原因');
+  $('go').onclick=()=>{const s=c.sel;
+    if(s.has(3))return bad(box,'每一聲敲門都有時間可以對得上。不需要「什麼東西」。');
+    if(s.has(1))return bad(box,'水塔馬達晚上不會動。');
+    if(!s.has(0)||!s.has(2))return bad(box,'還有敲門聲沒有被解釋到。看看 22:31 那一次。');
+    ok(box,'四次是沖水器，22:31 那一次，是林伯。')};
+ },
+ books(){
+  const box=pbox('謎題四 · 會移動的書','有星星貼紙的書，是被人特地移動過的。照索書號由小到大排，讀出每本書名的第一個字。');
+  box.insertAdjacentHTML('beforeend',`<div class="shelf">${SHELF.map(b=>`<div class="book">${b.s?'<span class="star">★</span>':''}<b>${b.t}</b><small>${b.cn}</small></div>`).join('')}</div>
+   <div class="answer"><input id="ans" maxlength="10" autocomplete="off" spellcheck="false" placeholder="六個字" aria-label="書名藏著的話"><button class="btn" id="go">送出</button></div><div class="msg" id="m"></div>`);
+  const go=()=>{const v=$('ans').value.replace(/[\s，,。]/g,'');if(!v)return;
+    if(v==='社團不能倒閉'){solved();$('m').className='msg good';$('m').textContent='社團，不能倒閉。';$('ans').disabled=true;$('go').disabled=true;setTimeout(next,1400)}
+    else bad(box,'讀起來不像一句話。只看有星星的書，照索書號排。')};
+  $('go').onclick=go;$('ans').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};
+ },
+ culprit(){
+  const box=pbox('謎題五 · 是誰做的？','選出製造六個不可思議的人，再勾出能證明的證據。只選能證明「所有不可思議」的。');
+  box.insertAdjacentHTML('beforeend','<div class="cap" style="margin-top:12px">是誰</div>');
+  const a=multiOpts(box,SUSPECTS,true);
+  box.insertAdjacentHTML('beforeend','<div class="cap" style="margin-top:12px">證據（可複選）</div>');
+  const b=multiOpts(box,EVID);
+  goRow(box,'說出推理');
+  $('go').onclick=()=>{const who=[...a.sel][0];
+    if(who==null)return bad(box,'先選一個人。');
+    if(who!==1)return bad(box,who===0?'借閱紀錄是去年的事，證明不了這兩週。':who===3?'有鑰匙，不代表做了這些事。':'大明連第三間都不敢進去。');
+    const right=EVID.map((e,i)=>e.ok?i:-1).filter(i=>i>=0);
+    if([...b.sel].some(i=>!EVID[i].ok))return bad(box,'有一樣證據，指的不是她。');
+    if(!right.every(i=>b.sel.has(i)))return bad(box,`人選對了。還差 ${right.filter(i=>!b.sel.has(i)).length} 樣證據。`);
+    ok(box,'芊芊低下頭，小聲地說：「……對不起。」',1500)};
+ },
+ match(){
+  const box=pbox('最終謎題 · 七大不可思議總整理','把六個不可思議，和它們真正的原因配對起來。');
+  const picks=MATCH.map(()=>-1);
+  MATCH.forEach((q,qi)=>{box.insertAdjacentHTML('beforeend',`<div class="cap" style="margin-top:12px">${['一','二','三','四','五','六'][qi]}、${q.q}</div>`);
+    const o=multiOpts(box,q.o.map(t=>({t})),true);o.wrap.style.marginTop='0';o.wrap.addEventListener('change',()=>{picks[qi]=o.sel.size?[...o.sel][0]:-1})});
+  goRow(box,'寫進社刊');
+  $('go').onclick=()=>{if(picks.includes(-1))return bad(box,'六題都要回答。');
+    const r=picks.filter((p,i)=>p===MATCH[i].a).length;
+    if(r===6)ok(box,'六個不可思議，全部破解。');else bad(box,`對了 ${r} / 6。社長在白板上畫了一個問號。`)};
+ }
+};
+
+/* ================= cutscenes ================= */
+const CUTS={
+ board:{dur:5200,html:()=>`<div class="board"><div class="paper"><b>北辰高中 七大不可思議</b><br>
+   ${WONDERS.slice(0,6).map((w,i)=>`<div class="w" style="--d:${.9+i*.45}s">${['一','二','三','四','五','六'][i]}、${w}</div>`).join('')}
+   <div class="w7" style="--d:3.8s">七、？？？</div><div class="w" style="--d:4.2s;font-size:13px;margin-top:4px">解開全部的人，可以實現一個願望。</div></div></div>`,
+  sound(){audio.bell()}},
+ piano:{dur:4600,html:()=>`<div class="keys">${rep(14,i=>`<i style="--d:${.5+[0,0,1,2,2,1,0,6,4,4,5,6,6,5][i]*.02+i*.32}s"></i>`)}</div><div class="cap2" style="--d:3.4s">琴聲，自己響了起來。</div><div class="bang" style="--d:4.3s"></div>`,
+  sound(){audio.playTune([3,3,4,5,5,4,3,2,1,6,2,3],320);setTimeout(()=>{audio.scare();fxRestart($('vig'),'red');quake()},4300)}},
+ blink:{dur:4000,html:()=>`<div class="frame"><div class="face"></div><div class="eye" style="left:58px"></div><div class="eye" style="left:84px"></div><div class="lid" style="left:58px"></div><div class="lid" style="left:84px"></div><div class="body"></div></div><div class="cap2" style="--d:3s">它的眼睛，跟著你們移動。</div>`,
+  sound(){setTimeout(()=>{audio.tone(880,{a:.01,d:.4,g:.03,glide:.5});fxRestart($('vig'),'red')},2400)}},
+ stall:{dur:3800,html:()=>`<div class="stalls"><i></i><i></i><i class="s3"></i><i></i></div><div class="cap2" style="--d:2.6s">第三間的門，猛地被推開。</div><div class="bang" style="--d:2.2s"></div>`,
+  sound(){setTimeout(()=>audio.knock(),900);setTimeout(()=>{audio.scare();quake();fxRestart($('vig'),'red')},2200)}},
+ model:{dur:3600,html:()=>`<div class="model"><div class="h"></div><div class="t"></div><div class="l" style="left:36px"></div><div class="l" style="left:64px"></div></div><div class="cap2" style="--d:2.4s">它朝你們倒了下來——</div><div class="bang" style="--d:1.9s"></div>`,
+  sound(){setTimeout(()=>{audio.scare();quake();fxRestart($('vig'),'red')},1900)}},
+ chairs:{dur:5200,html:()=>`<div class="chairs">${rep(5,i=>`<i style="--d:${.3+i*.35}s"></i>`)}<i class="extra" style="--d:2.4s"></i></div><div class="cap2" style="--d:4s">一、二、三、四、五……六。</div>`,
+  sound(){[300,650,1000,1350,1700].forEach(t=>setTimeout(()=>audio.click(),t));setTimeout(()=>{audio.tone(233,{type:'triangle',a:1,d:3,g:.03});audio.tone(247,{type:'triangle',a:1,d:3,g:.03})},2600)}}
+};
+function renderCut(st){
+  cineOn();lastSpeaker=null;
+  const c=CUTS[st.id],box=document.createElement('div');box.className='cut';box.tabIndex=0;
+  box.innerHTML=c.html()+'<div class="cont" style="visibility:hidden">點一下繼續 ▸</div>';
+  stage.appendChild(box);box.focus({preventScroll:true});
+  try{c.sound()}catch(e){}
+  let done=false;const fin=()=>{done=true;box.querySelector('.cont').style.visibility='visible'};
+  timers.push(setTimeout(fin,reduce?300:c.dur));
+  const go=()=>{if(!done){clearTimers();try{box.getAnimations({subtree:true}).forEach(a=>a.finish())}catch(e){}fin();return}next()};
+  box.onclick=go;box.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};
+}
+
+/* ================= end & finale ================= */
+function hintsUsed(ids){return ids.reduce((a,id)=>a+(S.hints[id]||0),0)}
+function renderEnd(st){
+  const c=st.ch,nx=CHAP_NEXT[c];
+  const box=document.createElement('div');box.className='box endcard';
+  box.innerHTML=`<div class="who">CHAPTER ${c} CLEAR</div><h2>${CH_LABEL[c]} · ${S.chapName}</h2>
+  <p class="pdesc">已破解 ${S.solved.filter(w=>w<7).length} / 6 個不可思議。</p>
+  <div class="stats"><div><b>${S.ev.length}</b><span>證物</span></div><div><b>${S.solved.filter(w=>w<7).length}/6</b><span>已破解</span></div><div><b>${hintsUsed(CHAP_PUZZLES[c])}</b><span>本章提示</span></div></div>
+  <div class="next"><b style="color:var(--text)">下一章：${nx.name}</b><br>${nx.text}</div>
+  <div class="row" style="margin-top:14px"><button class="btn" id="nx">${nx.btn}</button><button class="btn ghost" id="rs">重新開始</button></div>`;
+  stage.appendChild(box);$('nx').onclick=next;$('rs').onclick=restart;
+}
+function renderFinale(){
+  const used=Object.values(S.hints).reduce((a,b)=>a+(b||0),0);
+  const E=S.ch.last==='keep'?['結局二','我們的秘密','七大不可思議變成了怪談研究社的招牌導覽。只有你們知道，鋼琴聲是誰彈的。']:['結局一','真相大白','芊芊說出了真相，而怪談研究社，第一次有了排隊想入社的人。'];
+  const ace=used===0;
+  if(typeof recordEnding==='function'){recordEnding('wonders',E[1]);if(ace)recordEnding('wonders','怪談社王牌')}
+  const box=document.createElement('div');box.className='box endcard';
+  box.innerHTML=`<div class="who">THE END · ${E[0]}</div><h2>${E[1]}</h2><p class="pdesc">${E[2]}</p>
+  <div class="stats"><div><b>6/6</b><span>已破解</span></div><div><b>${used}</b><span>提示次數</span></div><div><b>${S.wrong||0}</b><span>推理失誤</span></div></div>
+  ${ace?`<div class="paper" style="margin-top:6px"><b>稱號解鎖 · 怪談社王牌</b><br>沒有使用任何提示，就拆穿了六個不可思議。至於第七個……也許你也拆穿不了。</div>`
+   :`<div class="next">不靠提示拆穿全部，可以解鎖「怪談社王牌」稱號。<br><span style="color:var(--muted);font-size:13px">最後的選擇不同，結局也會不一樣。</span></div>`}
+  <div class="row" style="margin-top:14px"><button class="btn" id="rs">重新開始</button><a class="btn ghost home-link" href="../index.html">回到謎匣</a></div>
+  <p class="cap" style="margin-top:14px">謎匣 · 第肆匣《校園七大不可思議》 · 感謝遊玩</p>`;
+  stage.appendChild(box);$('rs').onclick=restart;
+}
+function restart(){audio.unresolve();S=fresh();save();render()}
+
+/* ================= sheets ================= */
+function openSheet(html){$('sheetBody').innerHTML=html;$('sheet').hidden=false}
+const closeBtn=()=>`<div class="row" style="margin-top:14px"><button class="btn ghost" onclick="document.getElementById('sheet').hidden=true">關閉</button></div>`;
+$('sheet').onclick=e=>{if(e.target.id==='sheet')$('sheet').hidden=true};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
+$('btnNote').onclick=()=>openSheet(`<h3>證物</h3><ul>${S.ev.length?S.ev.map(e=>`<li><b>${esc(e.name)}</b><br><span style="color:#cdc8d8">${esc(e.text)}</span></li>`).join(''):'<li class="locked">還沒有任何證物。</li>'}</ul>${closeBtn()}`);
+$('btnTesti').onclick=()=>openSheet(`<h3>七大不可思議</h3><ul>${WONDERS.map((w,i)=>`<li${S.solved.includes(i+1)?'':' class="locked"'}><b>${['一','二','三','四','五','六','七'][i]}、${i===6&&!S.solved.includes(7)?'？？？':i===6?'社辦裡永遠多一張椅子':w}</b>　${S.solved.includes(i+1)?(i===6?'<span style="color:var(--red)">無法解釋</span>':'<span style="color:var(--line-color)">已破解</span>'):'未破解'}</li>`).join('')}</ul>${closeBtn()}`);
+$('btnHint').onclick=()=>{
+  const st=current();if(!st||st.t!=='puzzle')return;const id=st.id,info=PUZZLE_INFO[id];
+  const draw=()=>{const n=S.hints[id]||0;
+    $('sheetBody').innerHTML=`<h3>提示</h3><ul>${info.hints.map((h,k)=>`<li class="${k<n?'':'locked'}">提示 ${k+1}：${k<n?h:'尚未開啟'}</li>`).join('')}</ul>
+    <div class="row" style="margin-top:14px">${n<info.hints.length?'<button class="btn" id="moreHint">開啟下一個提示</button>':''}<button class="btn ghost" id="closeHint">關閉</button></div>`;
+    const m=$('moreHint');if(m)m.onclick=()=>{S.hints[id]=n+1;save();draw()};$('closeHint').onclick=()=>$('sheet').hidden=true};
+  $('sheet').hidden=false;draw();
+};
+
+/* ---------- chapter jump ---------- */
+function chapterList(){const list=[];SCRIPT.forEach((s,i)=>{if(s.t==='chapter')list.push({n:s.n,name:s.name,idx:i})});return list}
+function jumpTo(n){
+  const c=chapterList().find(x=>x.n===n);if(!c)return;
+  S=fresh();
+  for(let k=0;k<c.idx;k++){const st=SCRIPT[k];if(st.if&&S.ch[st.if[0]]!==st.if[1])continue;
+    if(st.t==='chapter'){S.chap=st.n;S.chapName=st.name}if(st.clock)S.clock=st.clock;if(st.scene)S.scene=st.scene;
+    if(st.t==='ev'&&!S.ev.find(e=>e.id===st.id))S.ev.push({id:st.id,name:st.name,text:st.text});
+    if(st.t==='solve'&&!S.solved.includes(st.w))S.solved.push(st.w);
+    if(st.t==='choice'){S.ch[st.key]=st.options[0].v;S.chText[st.key]=st.options[0].text}}
+  S.i=c.idx;save();try{audio.init()}catch(e){}
+  $('title').hidden=true;$('sheet').hidden=true;audio.unresolve();render();
+}
+function chapterSheet(){
+  openSheet(`<h3>選擇章節</h3><p style="color:var(--muted);font-size:14px;margin:0 0 10px">跳到任一章的開頭。前面章節的證物與破解進度，會自動幫你補上。</p>
+  <ul>${chapterList().map(c=>`<li style="padding:0"><button class="chapjump" data-n="${c.n}" style="width:100%;text-align:left;background:transparent;border:0;padding:12px;min-height:48px"><b>${CH_LABEL[c.n]}</b>　${c.name}</button></li>`).join('')}</ul>${closeBtn()}`);
+  document.querySelectorAll('.chapjump').forEach(b=>b.onclick=()=>jumpTo(+b.dataset.n));
+}
+
+/* ================= boot ================= */
+const saved=load();
+if(saved&&saved.i>0&&SCRIPT[saved.i])$('btnResume').hidden=false;
+$('btnStart').onclick=()=>{audio.init();S=fresh();save();$('title').hidden=true;render()};
+$('btnResume').onclick=()=>{audio.init();S=Object.assign(fresh(),saved);$('title').hidden=true;render()};
+$('btnChap').onclick=chapterSheet;
+(function(){const c=$('chap');c.setAttribute('role','button');c.tabIndex=0;c.style.cursor='pointer';c.onclick=chapterSheet;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chapterSheet()}}})();
+setScene('corridor');drawWonders();
+</script>
+
+<script>
+/* ===== 謎匣 UI kit: icons on every button + AI-video style chapter picker ===== */
+(function(){
+const ICONS={
+ play:'<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>',
+ resume:'<path d="M5 5v14"/><path d="M9 5l11 7-11 7z" fill="currentColor" stroke="none"/>',
+ note:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+ bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/>',
+ scroll:'<path d="M8 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8"/><path d="M8 3a2 2 0 0 0-2 2v2h4V5a2 2 0 0 0-2-2zM10 10h6M10 14h6M10 18h3"/>',
+ skull:'<path d="M12 3a8 8 0 0 0-8 8c0 3 1.6 5 3.5 6v3h9v-3c1.9-1 3.5-3 3.5-6a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+ speaker:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+ mute:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/>',
+ box:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 12h18M10 8.5h4M10 15.5h4"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+ rotate:'<path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ wave:'<path d="M3 12h2l2-5 3 10 3-12 3 9 2-2h3"/>',
+ x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ shuffle:'<path d="M4 7h3l10 10h3M4 17h3l3-3M14 10l3-3h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+ door:'<path d="M6 21V4h10v17M4 21h16"/><circle cx="13" cy="12.5" r="1"/>',
+ key:'<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
+ bolt:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',
+ target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>'
+};
+const svgI=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||ICONS.chev}</svg>`;
+const MAP=[['關閉','x'],['開啟下一個提示','bulb'],['提示','bulb'],['看須知','scroll'],['須知','scroll'],['死亡圖鑑','skull'],['圖鑑','skull'],['筆記','note'],['證物','note'],['證詞','chat'],['怪談表','chat'],['靜音','mute'],['音效','speaker'],['謎匣','box'],['選擇章節','film'],['檢查點','rotate'],['重新','rotate'],['從頭','rotate'],['再玩','rotate'],['重排','shuffle'],['繼續','resume'],['回到房間','resume'],['進入','arrow'],['接收','wave'],['再聽','wave'],['播放','wave'],['自己走','door'],['鐵盒','key'],['開鎖','key'],['總開關','bolt'],['就是','target'],['指證','target'],['指出','target'],['開始','play'],['收聽','play'],['入住','play'],['進站','play'],['加入','play'],['刷卡','play'],['出發','arrow'],['送出','check'],['確認','check'],['說出','check'],['提出','check'],['告訴','check'],['寫進','check']];
+const EXC='.keys,.notes,.wheel,.mv,.fine,.pairs,.phone,.seatgrid,.shelf,.wall,.brk,.nodes,.opts,.chips,.pick,.tabs,.cp,.cp-launch';
+const pickIcon=t=>{for(const [k,i] of MAP)if(t.includes(k))return i;return 'chev'};
+function decorate(){
+  document.querySelectorAll('button,a.btn,a.icon-btn').forEach(el=>{
+    if(el.closest(EXC)||el.querySelector('svg,img'))return;
+    let t=el.textContent.trim();if(!t)return;
+    if(t==='匣'){el.textContent='謎匣';return}
+    if(t.length<=1)return;
+    const s=document.createElement('span');s.className='ico';s.innerHTML=svgI(el.classList.contains('choice')?'chev':pickIcon(t));
+    el.prepend(s);el.classList.add('has-ico');
+  });
+}
+let queued=false;const sched=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;decorate()})};
+
+/* ---------- accent & styles ---------- */
+const cs=getComputedStyle(document.documentElement);
+let ACC='#f2ab4c';for(const v of ['--line-color','--redglow','--amber']){const x=cs.getPropertyValue(v).trim();if(x){ACC=x;break}}
+const reduceM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NOISE=`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+const MONO='"IBM Plex Mono",ui-monospace,monospace',SERIF='"Noto Serif TC","Songti TC",serif';
+const CSS=`
+.has-ico{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.ico{display:inline-flex;flex:none}
+.ico svg{width:1.15em;height:1.15em}
+.icon-btn.has-ico{flex-direction:column;gap:1px;font-size:11px;line-height:1.2;padding:4px 6px;min-height:42px}
+.icon-btn.has-ico .ico svg{width:18px;height:18px}
+.choice.has-ico{display:flex;justify-content:flex-start;align-items:flex-start;gap:10px}
+.choice.has-ico .ico{color:${ACC};margin-top:4px}
+.cp{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;gap:14px;padding:calc(16px + env(safe-area-inset-top,0px)) 0 calc(16px + env(safe-area-inset-bottom,0px));background:radial-gradient(ellipse at 50% -10%,rgba(120,90,170,.32),transparent 60%),#07060a;color:#ece8f2;overflow-y:auto;overflow-x:hidden;animation:cpIn .45s ease}
+@keyframes cpIn{from{opacity:0}}
+.cp.closing{animation:cpOut .35s ease forwards}
+@keyframes cpOut{to{opacity:0}}
+.cp.leaving .cp-head,.cp.leaving .cp-rail,.cp.leaving .cp-chips{transition:filter .5s,opacity .5s;filter:blur(8px);opacity:0}
+.cp-grain{position:fixed;inset:-40%;pointer-events:none;background:${NOISE};opacity:.07;animation:cpGrain .6s steps(3) infinite}
+@keyframes cpGrain{33%{transform:translate(-3%,2%)}66%{transform:translate(2%,-3%)}}
+.cp-head{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-inline:16px}
+.cp-k{display:flex;align-items:center;gap:6px;font-family:${MONO};font-size:11px;letter-spacing:.3em;color:${ACC}}
+.cp-k svg{width:14px;height:14px}
+.cp-head h3{margin:4px 0 2px;font-family:${SERIF};font-weight:900;font-size:26px;line-height:1.2}
+.cp-head p{margin:0;font-size:13px;color:#a39cb4}
+.cp-x{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);display:grid;place-items:center;color:#ece8f2;padding:0}
+.cp-x svg{width:20px;height:20px}
+.cp-rail{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,320px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 8px;scrollbar-width:none}
+.cp-rail::-webkit-scrollbar{display:none}
+.cp-card{scroll-snap-align:center;display:flex;flex-direction:column;gap:10px;min-width:0;animation:cpCard .6s calc(var(--i)*.09s) cubic-bezier(.2,.9,.3,1) both}
+@keyframes cpCard{from{opacity:0;transform:translateY(24px) scale(.96)}}
+.cp-thumb{position:relative;display:block;width:100%;aspect-ratio:3/4;max-height:54vh;border:0;padding:0;border-radius:18px;overflow:hidden;background:#000;color:#fff;cursor:pointer;text-align:left;box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+.cp-card.cur .cp-thumb{box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 2px ${ACC}}
+.cp-art{position:absolute;inset:0;animation:cpDenoise 1.3s calc(.25s + var(--i)*.18s) ease-out both}
+@keyframes cpDenoise{from{filter:blur(16px) saturate(.1) brightness(1.6) contrast(1.4)}to{filter:none}}
+.cp-kb{position:absolute;inset:0}
+.cp-kb svg{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 60%;animation:cpKb 16s ease-in-out infinite alternate,cpDream 7s ease-in-out infinite}
+@keyframes cpKb{from{transform:scale(1.06)}to{transform:scale(1.24) translate(-4%,2%)}}
+@keyframes cpDream{50%{filter:blur(.7px) hue-rotate(12deg) saturate(1.3)}}
+.cp-rays{position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,240,220,.16) 48%,transparent 60%);background-size:260% 100%;mix-blend-mode:screen;animation:cpRays 6s ease-in-out infinite}
+@keyframes cpRays{from{background-position:120% 0}to{background-position:-60% 0}}
+.cp-noise{position:absolute;inset:-20%;background:${NOISE};background-size:180px;mix-blend-mode:overlay;opacity:.16;animation:cpNoiseIn 1.3s calc(.25s + var(--i)*.18s) ease-out both,cpGrain .5s steps(3) infinite}
+@keyframes cpNoiseIn{from{opacity:1}}
+.cp-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 28%,transparent 48%,rgba(0,0,0,.88))}
+.cp-hud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;font-family:${MONO};font-size:11px;letter-spacing:.12em}
+.cp-rec{color:#ff4a4a;animation:cpBlink 1.2s steps(1) infinite}
+@keyframes cpBlink{50%{opacity:.25}}
+.cp-gen{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;gap:8px;font-family:${MONO};font-size:12px;transition:opacity .4s}
+.cp-gen i{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:cpSpin .8s linear infinite}
+@keyframes cpSpin{to{transform:rotate(360deg)}}
+.cp-card.done .cp-gen{opacity:0}
+.cp-num{position:absolute;right:10px;bottom:52px;font-family:${SERIF};font-weight:900;font-size:76px;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35)}
+.cp-title{position:absolute;left:14px;right:14px;bottom:14px;display:flex;flex-direction:column}
+.cp-title small{font-size:12px;color:${ACC};letter-spacing:.2em}
+.cp-title b{font-family:${SERIF};font-weight:900;font-size:24px;line-height:1.3;text-shadow:0 2px 12px #000}
+.cp-meta{display:flex;flex-direction:column;gap:6px;padding-inline:2px}
+.cp-sub{font-size:13px;color:#a39cb4}
+.cp-prompt{font-family:${MONO};font-size:11px;color:#8a83a0;line-height:1.5;border-left:2px solid ${ACC};padding-left:8px}
+.cp-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border-radius:12px;border:0;background:${ACC};color:#0b0910;font-weight:700;font-size:15px}
+.cp-go svg{width:16px;height:16px}
+.cp-chips{display:flex;justify-content:center;gap:8px;padding-inline:16px;flex-wrap:wrap}
+.cp-chip{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:transparent;color:#a39cb4;font-family:${MONO};font-size:13px;padding:0}
+.cp-chip.on{background:${ACC};color:#0b0910;border-color:${ACC}}
+.cp-fly{position:fixed;z-index:60;border-radius:18px;overflow:hidden;background:#000;transition:left .75s cubic-bezier(.7,0,.2,1),top .75s cubic-bezier(.7,0,.2,1),width .75s cubic-bezier(.7,0,.2,1),height .75s cubic-bezier(.7,0,.2,1),border-radius .75s}
+.cp-fly.full{left:0!important;top:0!important;width:100vw!important;height:100vh!important;border-radius:0}
+.cp-fly .cp-kb svg{animation:none;transform:scale(1.12)}
+.cp-fly.dive .cp-kb{animation:cpDive 1.2s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes cpDive{to{transform:scale(1.7);filter:blur(5px) brightness(2.3) saturate(1.6)}}
+.cp-scan{position:absolute;left:0;right:0;height:30%;top:-30%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.2),transparent);animation:cpScan 1.1s .2s linear 2}
+@keyframes cpScan{to{top:100%}}
+.cp-fly.out,.cp-launch.out{opacity:0;transition:opacity .55s;pointer-events:none}
+.cp-launch{position:fixed;inset:0;z-index:61;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));cursor:pointer;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.65));color:#fff}
+.cp-type{font-family:${MONO};font-size:13px;color:#e8f4ee;min-height:1.6em}
+.cp-caret{display:inline-block;width:8px;height:14px;margin-left:2px;background:${ACC};vertical-align:middle;animation:cpBlink .6s steps(1) infinite}
+.cp-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.cp-bar i{display:block;height:100%;background:${ACC};transform-origin:left;animation:cpBar 1.5s cubic-bezier(.3,.1,.2,1) both}
+@keyframes cpBar{from{transform:scaleX(0)}}
+.cp-big{position:absolute;left:16px;right:16px;top:38%;text-align:center;opacity:0;transform:scale(1.15);filter:blur(10px);transition:opacity .6s,transform .6s,filter .6s}
+.cp-launch.reveal .cp-big{opacity:1;transform:none;filter:none}
+.cp-big small{display:block;font-family:${MONO};letter-spacing:.5em;color:${ACC};font-size:13px}
+.cp-big b{font-family:${SERIF};font-weight:900;font-size:clamp(40px,12vw,64px);text-shadow:0 0 30px rgba(0,0,0,.8),2px 0 rgba(255,0,60,.55),-2px 0 rgba(0,220,255,.55)}
+.cp-burst{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.cp,.cp *{animation:none!important;transition:none!important}}`;
+const st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
+
+/* ---------- AI-video chapter picker ---------- */
+const pad=n=>String(n).padStart(2,'0');
+function sceneFor(list,i){
+  const c=list[i];
+  try{if(typeof CHAP_SCENE!=='undefined'&&CHAP_SCENE[c.n]&&SCENES[CHAP_SCENE[c.n]])return CHAP_SCENE[c.n]}catch(e){}
+  const end=i+1<list.length?list[i+1].idx:SCRIPT.length;
+  for(let k=c.idx;k<end;k++){const s=SCRIPT[k];if(s&&s.scene&&SCENES[s.scene])return s.scene}
+  return Object.keys(SCENES)[0];
+}
+const subOf=n=>{try{return (typeof CC_SUB!=='undefined'&&CC_SUB[n])||''}catch(e){return ''}};
+let open=null,busy=false;
+function card(c,i,list,cur){
+  const k=sceneFor(list,i),sub=subOf(c.n);
+  const prompt=`${c.name}，${sub.replace(/ · /g,'，')}，深夜，電影感光影，懸疑`;
+  return `<article class="cp-card${c.n===cur?' cur':''}" style="--i:${i}" data-i="${i}">
+   <button class="cp-thumb" data-n="${c.n}" aria-label="從${CH_LABEL[c.n]}「${c.name}」開始">
+    <div class="cp-art"><div class="cp-kb">${SCENES[k]}</div></div><div class="cp-rays"></div><div class="cp-noise"></div><div class="cp-shade"></div>
+    <div class="cp-hud"><span class="cp-rec">● REC</span><span>${c.n===cur?'目前進度':'SCENE '+pad(c.n)}</span></div>
+    <div class="cp-gen"><i></i><span>生成中</span><b>0%</b></div>
+    <div class="cp-num">${pad(c.n)}</div>
+    <div class="cp-title"><small>${CH_LABEL[c.n]}</small><b>${c.name}</b></div>
+   </button>
+   <div class="cp-meta"><div class="cp-sub">${sub}</div><div class="cp-prompt">▸ prompt：${prompt}</div>
+    <button class="cp-go" data-n="${c.n}">${svgI('play')}從這裡開始</button></div>
+  </article>`;
+}
+function cinePick(){
+  if(open)return;
+  const list=chapterList(),title=document.getElementById('title');
+  const cur=title&&title.hidden?S.chap:0;
+  const el=document.createElement('div');el.className='cp';el.setAttribute('role','dialog');el.setAttribute('aria-label','選擇章節');
+  el.innerHTML=`<div class="cp-grain"></div>
+   <div class="cp-head"><div><div class="cp-k">${svgI('film')}SCENE SELECT</div><h3>選擇章節</h3><p>滑動挑一個場景，從那一刻開始。前面的線索會自動補上。</p></div><button class="cp-x" aria-label="關閉">${svgI('x')}</button></div>
+   <div class="cp-rail">${list.map((c,i)=>card(c,i,list,cur)).join('')}</div>
+   <div class="cp-chips">${list.map((c,i)=>`<button class="cp-chip${c.n===(cur||list[0].n)?' on':''}" data-i="${i}" aria-label="${CH_LABEL[c.n]}">${pad(c.n)}</button>`).join('')}</div>`;
+  document.body.appendChild(el);open=el;
+  const rail=el.querySelector('.cp-rail'),cards=[...el.querySelectorAll('.cp-card')],chips=[...el.querySelectorAll('.cp-chip')];
+  const ci=cur?list.findIndex(c=>c.n===cur):0;
+  if(ci>0)rail.scrollLeft=cards[ci].offsetLeft-16;
+  cards.forEach((cd,i)=>{
+    const b=cd.querySelector('.cp-gen b');
+    if(reduceM){cd.classList.add('done');return}
+    const t0=performance.now()+250+i*180;
+    (function tick(t){const p=Math.max(0,Math.min(1,(t-t0)/1300));b.textContent=Math.round(p*100)+'%';if(p<1&&open===el)requestAnimationFrame(tick);else cd.classList.add('done')})(performance.now());
+  });
+  rail.addEventListener('scroll',()=>{const mid=rail.scrollLeft+rail.clientWidth/2;let best=0,d=1e9;cards.forEach((c,i)=>{const m=c.offsetLeft+c.offsetWidth/2;if(Math.abs(m-mid)<d){d=Math.abs(m-mid);best=i}});chips.forEach((c,i)=>c.classList.toggle('on',i===best))},{passive:true});
+  el.addEventListener('click',e=>{
+    if(e.target.closest('.cp-x'))return closePick();
+    const ch=e.target.closest('.cp-chip');if(ch){cards[+ch.dataset.i].scrollIntoView({behavior:reduceM?'auto':'smooth',inline:'center',block:'nearest'});return}
+    const go=e.target.closest('.cp-thumb,.cp-go');if(go)launch(+go.dataset.n,go.closest('.cp-card').querySelector('.cp-thumb'));
+  });
+  el.querySelector('.cp-x').focus({preventScroll:true});
+}
+function closePick(){if(!open)return;const el=open;open=null;el.classList.add('closing');setTimeout(()=>el.remove(),340)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open&&!busy)closePick()});
+function finishJump(n){if(open){open.remove();open=null}busy=false;try{jumpTo(n)}catch(err){console.error(err)}}
+function launch(n,thumb){
+  if(busy)return;busy=true;
+  const c=chapterList().find(x=>x.n===n);
+  try{if(typeof audio!=='undefined'&&audio.init)audio.init()}catch(e){}
+  if(reduceM){finishJump(n);return}
+  const r=thumb.getBoundingClientRect();
+  const fly=document.createElement('div');fly.className='cp-fly';
+  fly.innerHTML=`<div class="cp-kb">${thumb.querySelector('.cp-kb').innerHTML}</div><div class="cp-rays"></div><div class="cp-scan"></div>`;
+  Object.assign(fly.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+  const ov=document.createElement('div');ov.className='cp-launch';
+  ov.innerHTML=`<div class="cp-big"><small>${CH_LABEL[n]}</small><b>${c.name}</b></div><div class="cp-type"></div><div class="cp-bar"><i></i></div><canvas class="cp-burst"></canvas>`;
+  document.body.append(fly,ov);open.classList.add('leaving');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>fly.classList.add('full')));
+  const text=`> 生成場景：${CH_LABEL[n]}「${c.name}」 ${subOf(n)}`,ty=ov.querySelector('.cp-type');let k=0;
+  const tyI=setInterval(()=>{k++;ty.innerHTML=text.slice(0,k).replace(/[&<>]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[s])+'<span class="cp-caret"></span>';if(k>=text.length)clearInterval(tyI)},Math.max(18,1000/text.length));
+  const T=[setTimeout(()=>fly.classList.add('dive'),900),setTimeout(()=>ov.classList.add('reveal'),1050),setTimeout(()=>burst(ov.querySelector('.cp-burst')),1650),setTimeout(done,2150)];
+  let finished=false;
+  function done(){if(finished)return;finished=true;T.forEach(clearTimeout);clearInterval(tyI);finishJump(n);fly.classList.add('out');ov.classList.add('out');setTimeout(()=>{fly.remove();ov.remove()},600)}
+  ov.addEventListener('click',done);
+}
+function burst(cv){
+  const w=cv.width=innerWidth,h=cv.height=innerHeight,x=cv.getContext('2d');if(!x)return;
+  const P=Array.from({length:220},()=>{const a=Math.random()*6.283,s=2+Math.random()*10;return {x:w/2,y:h*.45,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*2.6}});
+  const t0=performance.now();
+  (function f(t){const e=(t-t0)/700;x.clearRect(0,0,w,h);x.globalCompositeOperation='lighter';
+    for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vx*=.95;p.vy*=.95;x.globalAlpha=Math.max(0,1-e);x.fillStyle=Math.random()<.3?'#fff':ACC;x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fill()}
+    if(e<1)requestAnimationFrame(f)})(t0);
+}
+
+/* ---------- bind ---------- */
+window.cinePick=cinePick;
+const b=document.getElementById('btnChap');if(b)b.onclick=cinePick;
+const lab=document.getElementById('chap');if(lab){lab.onclick=cinePick;lab.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cinePick()}}}
+decorate();
+new MutationObserver(sched).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+
+/* ---------- episode deep link (#ch3) + resume audio on first tap ---------- */
+(function(){
+  const m=/^#ch(\d)$/.exec(location.hash||'');
+  if(m&&typeof jumpTo==='function'){setTimeout(()=>{try{jumpTo(+m[1])}catch(e){}try{history.replaceState(null,'',location.pathname)}catch(e){}},60)}
+  const wake=()=>{try{if(typeof audio!=='undefined'){if(!audio.ctx&&audio.init)audio.init();if(audio.ctx&&audio.ctx.state==='suspended')audio.ctx.resume()}}catch(e){}};
+  document.addEventListener('pointerdown',wake,{capture:true});document.addEventListener('keydown',wake,{capture:true});
+})();
+
+</script>
+</body>
+</html>

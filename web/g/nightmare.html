@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}.home-link{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}</style>
+<title>第零節</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: one-screen livestream console — HUD with LIVE badge, viewer count and signal on top, the abandoned park "camera feed" behind the story panel, chat bursts in the panel. Single dark neon look by design. */
+:root{
+  --ink:#0b0d10; --wall:#171a20; --panel:#13161b; --line:#2e3440;
+  --sil:#0e1014; --sil2:#1c2028;
+  --paper:#eee6d6; --paper-ink:#2a2420;
+  --line-color:#ff6b5a; --cyan:#a8c4ff; --amber:#f6c35a; --red:#ff4a5a; --ok:#8fd3a6;
+  --text:#eceae6; --muted:#9a9aa6;
+  --f-display:"Noto Serif TC","Songti TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.7;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--line-color);outline-offset:2px}
+#app{height:100%;max-width:480px;margin:0 auto;padding-inline:16px;padding-block:10px 14px;display:flex;flex-direction:column;gap:10px}
+.bar{display:flex;align-items:center;gap:8px}
+.chap{flex:1;min-width:0;font-size:13px;color:var(--muted);letter-spacing:.08em}
+.chap b{color:var(--text);font-weight:500}
+.clock{font-family:var(--f-mono);font-size:14px;color:var(--amber);padding:2px 8px;border:1px solid var(--line);border-radius:6px}
+.tools{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.icon-btn{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 4px;font-size:13px;color:var(--text);min-height:36px}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.livebar{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:12px;color:var(--muted);min-height:20px}
+.live{display:inline-flex;align-items:center;gap:5px;background:var(--red);color:#fff;font-weight:600;padding:0 7px;border-radius:4px;letter-spacing:.08em}
+.live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:lv 1.2s steps(1) infinite}
+@keyframes lv{50%{opacity:.2}}
+.live.off{background:#3a3550;color:var(--muted)}
+.live.off i{animation:none;background:var(--muted)}
+.viewers{display:inline-flex;align-items:center;gap:4px;color:var(--text)}
+.viewers svg{width:14px;height:14px}
+.sig{display:inline-flex;gap:2px;align-items:flex-end;height:12px;margin-left:auto}
+.sig i{width:3px;background:rgba(255,255,255,.18);border-radius:1px}
+.sig i.on{background:var(--cyan)}
+
+.stage-wrap{flex:1;min-height:0;position:relative;display:flex}
+.stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.scene{position:absolute;inset:0;border-radius:14px;overflow:hidden;pointer-events:none;background:linear-gradient(#181a22,#0b0d10)}
+.scene::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
+.camhud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;color:rgba(255,255,255,.75);z-index:4;letter-spacing:.1em}
+.camhud .rec{color:#ff6070}
+.camhud .rec::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff4a5a;margin-right:5px;animation:lv 1s steps(1) infinite}
+.corner{position:absolute;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);z-index:4}
+.corner.a{left:8px;top:28px;border-right:0;border-bottom:0}.corner.b{right:8px;top:28px;border-left:0;border-bottom:0}
+#sceneArt{position:absolute;inset:0;animation:sceneIn 1.2s ease}
+#sceneArt svg{position:absolute;inset:0;width:100%;height:100%}
+#motes{position:absolute;inset:0;width:100%;height:100%}
+@keyframes sceneIn{from{opacity:0;transform:scale(1.04)}}
+.s1{fill:var(--sil)} .s2{fill:var(--sil2)}
+.blinkN{animation:blinkN 1.4s steps(1) infinite}
+@keyframes blinkN{50%{opacity:.25}}
+.flick{animation:flick 5s infinite}
+@keyframes flick{0%,38%,42%,46%,100%{opacity:.9}40%,44%{opacity:.08}}
+.spinW{transform-origin:200px 150px;animation:spinW 60s linear infinite}
+@keyframes spinW{to{transform:rotate(360deg)}}
+.sway{transform-origin:top center;animation:sway 3s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+.dialog{margin-top:auto;cursor:pointer;min-height:132px;display:flex;flex-direction:column;gap:6px;background:rgba(16,18,24,.94);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.who{font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.who.me{color:var(--ok)} .who.yoru{color:var(--line-color)} .who.xg{color:var(--cyan)} .who.bao{color:var(--amber)} .who.voice{color:var(--red)}
+.line{font-size:17px;min-height:2.6em}
+.line.narr{color:#ccc6dc}
+.cont{align-self:flex-end;font-size:12px;color:var(--muted)}
+.choices{display:grid;gap:8px;margin-top:4px}
+.choice{text-align:left;background:var(--wall);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.choice:hover{border-color:var(--line-color)}
+.timer{height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.timer i{display:block;height:100%;background:var(--red);transform-origin:left;animation:drain linear forwards}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.tag{display:inline-block;background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:2px 10px;font-weight:500;transform:rotate(-1deg);animation:evin .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes evin{from{opacity:0;transform:translateY(-24px) rotate(-12deg) scale(1.2)}}
+
+/* chat burst */
+.chat{margin-top:auto;cursor:pointer;display:flex;flex-direction:column;gap:6px;background:rgba(14,12,28,.92);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.chat-h{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);letter-spacing:.1em}
+.chat-h b{font-family:var(--f-mono);font-weight:500;color:var(--text)}
+.msgs{display:flex;flex-direction:column;gap:5px;min-height:96px}
+.msg{display:flex;gap:8px;align-items:flex-start;font-size:15px;line-height:1.45;animation:msgin .3s ease-out}
+@keyframes msgin{from{opacity:0;transform:translateY(8px)}}
+.msg .av{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#111;margin-top:1px}
+.msg .body{min-width:0}
+.msg .u{font-weight:700;margin-right:6px;font-size:13px}
+.msg .badge{display:inline-block;font-size:10px;padding:0 5px;border-radius:3px;margin-right:4px;vertical-align:1px;font-weight:700}
+.msg.host .u{color:var(--line-color)}
+.msg.xg .u{color:var(--cyan);text-shadow:0 0 8px rgba(63,224,232,.7)}
+.msg.xg .t{color:#d8fbff}
+.msg.me .u{color:var(--ok)}
+.msg.sys{color:var(--muted);font-size:13px;font-style:italic}
+.msg.pin{background:rgba(255,107,90,.12);border:1px solid rgba(255,107,90,.4);border-radius:8px;padding:5px 8px}
+.ts{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:6px}
+
+.ptitle{font-family:var(--f-display);font-weight:900;font-size:20px;margin:0}
+.pdesc{color:#ccc6dc;margin:4px 0 0;font-size:15px}
+.msgx{font-size:14px;color:var(--muted);min-height:1.6em}
+.msgx.good{color:var(--ok)} .msgx.bad{color:var(--red)}
+.btn{background:var(--line-color);color:#24061a;border:0;border-radius:10px;padding:12px 16px;font-weight:700;min-height:44px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:500}
+.btn.danger{background:var(--red);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cap{font-size:12px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+.paper{background:var(--paper);color:var(--paper-ink);border-radius:3px;padding:12px 14px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.opts{display:grid;gap:6px;margin-top:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--wall);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.5}
+.opt i{flex:none;width:18px;height:18px;border-radius:4px;border:2px solid var(--muted);margin-top:2px}
+.opt.on{border-color:var(--line-color);background:#2a1a1a}
+.opt.on i{background:var(--line-color);border-color:var(--line-color)}
+.opt.round i{border-radius:50%}
+.wheels{display:flex;gap:10px;justify-content:center;margin:14px 0 8px}
+.wheel{display:flex;flex-direction:column;align-items:center;background:var(--ink);border:1px solid var(--line);border-radius:10px;width:56px}
+.wheel button{background:transparent;border:0;width:100%;padding:8px 0;color:var(--muted);font-size:14px;min-height:36px}
+.wheel b{font-family:var(--f-mono);font-size:28px;color:var(--amber);font-variant-numeric:tabular-nums;line-height:1.2}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:4px 6px;border-bottom:1px solid rgba(0,0,0,.15);text-align:left;vertical-align:top}
+.tbl th{font-weight:700}
+.tbl .m{font-family:var(--f-mono);white-space:nowrap}
+.scroll-x{overflow-x:auto}
+.arrows{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.arrows button{min-height:52px;border-radius:10px;border:1px solid var(--line);background:var(--wall);font-size:24px}
+.seq{font-family:var(--f-mono);font-size:24px;letter-spacing:.3em;min-height:44px;background:var(--ink);border:1px dashed var(--line);border-radius:8px;padding:6px 12px;margin-top:10px;color:var(--cyan)}
+.mirrorcard{display:flex;justify-content:center;gap:10px;font-size:28px;padding:10px;background:linear-gradient(135deg,#2a3a4a,#1a2430);border:6px solid #6b7b8a;border-radius:6px;color:#e6f6ff;transform:scaleX(1);margin-top:10px}
+
+/* overlays */
+.sheet{position:fixed;inset:0;background:rgba(5,4,10,.75);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+.sheet>div{width:100%;max-width:480px;max-height:85%;overflow:auto;background:var(--panel);border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet h3{font-family:var(--f-display);margin:0 0 10px;font-size:18px}
+.sheet ul{padding-left:0;list-style:none;margin:0;display:grid;gap:8px}
+.sheet li{background:var(--wall);border-radius:8px;padding:10px 12px;font-size:15px}
+.locked{color:var(--muted)}
+.title{position:fixed;inset:0;z-index:5;background:radial-gradient(ellipse at 50% 28%,#2c1c22 0%,var(--ink) 62%);display:flex;align-items:center;justify-content:center;padding-inline:24px}
+.title-inner{max-width:420px;display:grid;gap:14px}
+.title h1{font-family:var(--f-display);font-weight:900;font-size:clamp(44px,13vw,64px);line-height:1.1;margin:0;color:var(--paper)}
+.title h1 em{font-style:normal;display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.26em;letter-spacing:.2em;background:var(--red);color:#fff;padding:2px 8px;border-radius:4px;margin-bottom:8px}
+.title p{color:#ccc6dc;margin:0}
+.title .meta{font-size:12px;letter-spacing:.14em;color:var(--muted)}
+.death{position:fixed;inset:0;z-index:9;background:#06050c;display:flex;align-items:center;justify-content:center;padding-inline:24px;animation:dIn 1s steps(6)}
+@keyframes dIn{0%{background:#1a1a2a}50%{background:#06050c}}
+.death::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);pointer-events:none}
+.death-inner{position:relative;max-width:400px;display:grid;gap:14px;text-align:center}
+.death .d-k{font-family:var(--f-mono);letter-spacing:.4em;color:var(--red);font-size:13px}
+.death h2{font-family:var(--f-display);font-weight:900;font-size:32px;margin:0;color:#f3e6ee;animation:dT 1.4s ease}
+@keyframes dT{from{letter-spacing:.6em;opacity:0;filter:blur(8px)}}
+.death p{margin:0;color:#cbbccc;font-size:16px}
+.death .d-why{font-size:14px;color:var(--paper-ink);background:var(--paper);padding:10px 12px;border-radius:3px}
+.death .row{justify-content:center}
+.chapcard{position:fixed;inset:0;z-index:8;background:var(--ink);display:flex;align-items:center;justify-content:center;padding-inline:24px;text-align:center;cursor:pointer;animation:ccIn 3.2s ease forwards}
+@keyframes ccIn{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.cc-k{font-family:var(--f-mono);font-size:13px;letter-spacing:.4em;color:var(--line-color);animation:ccT 3s ease}
+.cc-n{font-family:var(--f-display);font-weight:900;font-size:clamp(38px,11vw,56px);color:var(--paper);margin:8px 0;animation:ccT 3s ease}
+.cc-s{color:var(--muted);font-size:14px;letter-spacing:.1em}
+@keyframes ccT{from{letter-spacing:.9em;opacity:0;filter:blur(6px)}40%{opacity:1;filter:none}}
+.flash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;background:#e8eef7}
+.flash.flicker{animation:fl 1.1s steps(1)}
+@keyframes fl{0%{opacity:0}8%{opacity:.18}14%{opacity:0}30%{opacity:.12}36%{opacity:0}}
+.flash.static{background:repeating-linear-gradient(0deg,#888 0 2px,#222 2px 4px);animation:st 1s steps(5)}
+@keyframes st{0%{opacity:.85}100%{opacity:0}}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(255,40,90,.4) 100%)}
+.vignette.red{animation:beat .9s ease-out}
+@keyframes beat{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.ping{animation:ping 1.2s ease-out}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,107,90,.8)}100%{box-shadow:0 0 0 14px rgba(255,107,90,0)}}
+#app.quake{animation:quake .5s}
+@keyframes quake{10%,50%,90%{transform:translate(-6px,3px)}30%,70%{transform:translate(6px,-3px)}}
+.endcard h2{font-family:var(--f-display);font-weight:900;font-size:28px;margin:0 0 6px;color:var(--paper)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.stats div{background:var(--wall);border-radius:8px;padding:10px;text-align:center}
+.stats b{display:block;font-family:var(--f-mono);font-size:22px;color:var(--amber)}
+.stats span{font-size:12px;color:var(--muted)}
+.next{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px;color:#ccc6dc;font-size:15px}
+
+/* cutscenes — base state is the END state */
+.cut{position:relative;flex:1;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;padding-block:12px}
+.cut>.cont{position:absolute;bottom:4px;right:4px}
+.cap2{font-family:var(--f-display);font-weight:600;font-size:18px;color:var(--paper);text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.9);animation:fadeUp .9s var(--d,0s) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
+.count{font-family:var(--f-mono);font-size:72px;font-weight:600;color:#fff;text-shadow:0 0 24px var(--line-color)}
+.livebig{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;font-family:var(--f-mono);font-weight:600;font-size:26px;padding:4px 14px;border-radius:6px;letter-spacing:.1em;animation:pop .5s 2.6s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{transform:scale(2.4);opacity:0}}
+.vcount{font-family:var(--f-mono);font-size:16px;color:var(--text);animation:fadeUp .6s 3s both}
+.cars{display:flex;gap:6px}
+.cars i{width:18px;height:18px;border-radius:50%;background:#2a2440;animation:lightup .3s var(--d) steps(1) both}
+@keyframes lightup{from{background:#2a2440;box-shadow:none}to{background:var(--amber);box-shadow:0 0 12px var(--amber)}}
+.cars i{background:var(--amber);box-shadow:0 0 12px var(--amber)}
+.eyes2{display:flex;gap:18px;animation:eyesIn 2s ease both}
+.eyes2 i{width:14px;height:10px;border-radius:50%;background:#e8ff9a;box-shadow:0 0 16px #e8ff9a}
+@keyframes eyesIn{0%,30%{opacity:0}40%{opacity:1}100%{opacity:1}}
+.critter{width:120px;height:70px;animation:run 1.2s 2.2s ease-in both}
+@keyframes run{from{transform:translateX(-160px)}to{transform:translateX(0)}}
+.vod{width:min(320px,100%);background:#0c0a18;border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px}
+.vod .pb{height:4px;background:#2a2440;border-radius:2px;overflow:hidden}
+.vod .pb i{display:block;height:100%;width:100%;background:var(--red);transform-origin:left;animation:pbar 3s linear both}
+@keyframes pbar{from{transform:scaleX(.3)}}
+.vod .late{opacity:1;animation:fadeUp .8s 2.4s both}
+.bang{position:fixed;inset:0;z-index:7;pointer-events:none;background:#000;opacity:0;animation:bang .7s var(--d,2s) ease-out both}
+@keyframes bang{0%{opacity:.95}20%{opacity:.4;background:#fff}35%{opacity:.9;background:#000}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cut *,.flick,.blinkN,.spinW,.sway,.tag,.cc-k,.cc-n,#sceneArt,.msg,#app.quake,.death,.death h2{animation:none!important}.vignette,.flash,.bang{display:none}}
+.frz{display:grid;justify-items:center;gap:10px;width:100%}
+.frz-scr{position:relative;width:min(300px,100%);aspect-ratio:3/2;border:1px solid var(--line);border-radius:8px;overflow:hidden;filter:saturate(.6)}
+.frz-scr svg{display:block;width:100%;height:100%}
+.frz-fig{opacity:1;animation:figIn 3s .4s steps(6) both}
+@keyframes figIn{0%,60%{opacity:0}62%{opacity:.6}66%{opacity:0}75%{opacity:.8}78%{opacity:.1}100%{opacity:1}}
+.frz-noise{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px);mix-blend-mode:screen;opacity:.7;animation:nz .2s steps(2) infinite}
+@keyframes nz{50%{transform:translateY(2px)}}
+.frz-tag{position:absolute;left:8px;top:8px;font-family:var(--f-mono);font-size:11px;color:#fff;background:rgba(0,0,0,.6);padding:1px 6px;border-radius:3px;animation:lv 1s steps(2) infinite}
+.frz-v{font-family:var(--f-mono);font-size:14px;color:var(--red)}
+.jump{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#000;pointer-events:none;opacity:0;animation:jmp 1.4s var(--d,5s) both}
+.jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(120vw,620px);height:auto;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+@keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#3a0008}14%{background:#000}70%{opacity:1}100%{opacity:0}}
+@keyframes jz{0%{transform:scale(.25) rotate(-6deg)}12%{transform:scale(1.15) rotate(3deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.jump{display:none}.frz-fig{opacity:1}}
+
+.mtn .fogb{animation:fogm 6s ease-in-out infinite alternate}
+@keyframes fogm{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+.fall{width:180px;height:180px;border-radius:50%;overflow:hidden;border:2px solid var(--line);animation:fallT 1.6s ease-in both}
+.fall .sky{width:100%;height:100%;background:conic-gradient(#3a5a6a,#9ab8c0,#2a3a2a,#9ab8c0,#3a5a6a);animation:spinW 1.6s linear both}
+@keyframes fallT{0%{transform:rotate(0) scale(1)}70%{transform:rotate(-200deg) scale(1.3)}100%{transform:rotate(-260deg) scale(.6);opacity:.25}}
+.watch{font-family:var(--f-mono);font-size:44px;color:var(--red);text-shadow:0 0 18px rgba(255,90,74,.7);animation:fadeUp .6s var(--d) both,lv 1s var(--d) steps(2) 3}
+.cnt{animation:fadeUp .4s var(--d) both}
+.eye{animation:eyeOn .2s var(--d,1.6s) steps(1) both}
+@keyframes eyeOn{from{opacity:0}to{opacity:1}}
+.win{position:relative;width:min(240px,80%);aspect-ratio:1;border:12px solid #2a2018;background:#0a1214;display:grid;place-items:center}
+.win::before,.win::after{content:"";position:absolute;background:#2a2018}
+.win::before{left:50%;top:0;bottom:0;width:8px;transform:translateX(-50%)}.win::after{top:50%;left:0;right:0;height:8px;transform:translateY(-50%)}
+.win-glass{position:absolute;inset:0;overflow:hidden}
+.win-light{position:absolute;width:60px;height:60px;border-radius:50%;background:radial-gradient(#fff6d0,rgba(255,240,200,0) 70%);left:70%;top:30%;animation:wl 3s .3s ease-in-out both}
+@keyframes wl{from{left:110%;top:60%;opacity:0}to{left:55%;top:35%;opacity:1}}
+.win-hand{position:absolute;left:24%;top:38%;width:46px;height:60px;border-radius:40% 40% 30% 30%;background:radial-gradient(ellipse at 50% 70%,rgba(120,100,70,.55),rgba(120,100,70,0) 70%);animation:fadeUp 1.4s 2.4s both}
+.win-tag{position:absolute;right:6px;bottom:6px;font-family:var(--f-mono);font-size:11px;color:#9fd8c8}
+.sun{width:90px;height:90px;border-radius:50%;background:radial-gradient(#ffe6a0,#f08a4a 60%,rgba(240,138,74,0) 72%);animation:sunUp 2.4s ease-out both}
+@keyframes sunUp{from{transform:translateY(60px);opacity:0}}
+.jump{position:fixed;inset:0;z-index:60;background:#000;pointer-events:none;opacity:0;animation:jmp 1.5s var(--d,5s) both}
+.jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(110vw,520px);height:auto;animation:jz 1.5s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+@keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#1a0a04}14%{background:#000}70%{opacity:1}100%{opacity:0}}
+@keyframes jz{0%{transform:scale(.2)}12%{transform:scale(1.15) rotate(-2deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.3)}}
+.photo{background:#f2ece0;color:#2a2420;padding:10px 10px 14px;border-radius:3px;box-shadow:0 10px 24px rgba(0,0,0,.5);transform:rotate(-2deg);animation:evin .6s ease-out}
+.photo .pimg{height:90px;border-radius:2px;background:linear-gradient(#5a6a68,#2a3a34);display:grid;place-items:center;color:#e8e0c8;font-family:var(--f-mono);font-size:12px;margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){.jump{display:none}}
+
+.stage>.box:not(.dialog):first-child,.stage>.cut:first-child{margin-top:28px}
+.lids{position:relative;width:min(260px,80%);aspect-ratio:2/1;border-radius:50%;overflow:hidden;background:#f0d890}
+.lids i{position:absolute;left:0;right:0;height:50%;background:#050508}
+.lids .lt{top:0;animation:lt 2.4s .4s ease-in both}.lids .lb{bottom:0;animation:lb 2.4s .4s ease-in both}
+@keyframes lt{0%{transform:translateY(-100%)}40%{transform:translateY(-40%)}55%{transform:translateY(-60%)}100%{transform:translateY(0)}}
+@keyframes lb{0%{transform:translateY(100%)}40%{transform:translateY(40%)}55%{transform:translateY(60%)}100%{transform:translateY(0)}}
+.lclock{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:32px;color:#2a2420;z-index:-1}
+.loop{display:grid;gap:6px}
+.lp{width:120px;padding:6px;text-align:center;background:#2a3a5a;border-radius:4px;color:#fff;font-family:var(--f-mono);font-size:22px;animation:fadeUp .4s var(--d) both}
+.mir{width:min(200px,60%)}.mir svg{display:block;width:100%;height:auto}
+.mir-fig{opacity:1;animation:figIn 3s .4s steps(6) both}
+@keyframes figIn{0%,60%{opacity:0}62%{opacity:.6}66%{opacity:0}75%{opacity:.8}78%{opacity:.1}100%{opacity:1}}
+.sunr{width:110px;height:110px;border-radius:50%;background:radial-gradient(#fff3c0,#f0c060 55%,rgba(240,192,96,0) 72%);animation:sunUp 2.4s ease-out both}
+@keyframes sunUp{from{transform:translateY(50px);opacity:0}}
+.dclock{font-family:var(--f-mono);font-size:44px;color:#ff6b5a;background:#141414;padding:2px 16px;border-radius:8px;animation:fadeUp .6s 1.2s both}
+.shat{width:min(200px,60%)}.shat svg{display:block;width:100%;height:auto}
+.crk path{stroke-dasharray:200;stroke-dashoffset:0;animation:crk .8s .6s ease-out both}
+@keyframes crk{from{stroke-dashoffset:200}}
+.whiteout{position:fixed;inset:0;z-index:7;background:#fff;pointer-events:none;opacity:0;animation:wo 1.6s 1.4s ease-out both}
+@keyframes wo{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+.jump{position:fixed;inset:0;z-index:60;background:#000;pointer-events:none;opacity:0;animation:jmp 1.5s var(--d,5s) both}
+.jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(110vw,520px);height:auto;animation:jz 1.5s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+@keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#2a0404}14%{background:#000}70%{opacity:1}100%{opacity:0}}
+@keyframes jz{0%{transform:scale(.2)}12%{transform:scale(1.15) rotate(-2deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.3)}}
+@media (prefers-reduced-motion:reduce){.jump,.whiteout{display:none}}
+
+
+/* ===== cinema kit ===== */
+.dialog.withp{padding-left:104px;min-height:120px}
+.pt{position:absolute;left:14px;top:14px;width:76px;height:76px;border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.pt svg{display:block;width:100%;height:100%}
+.pt.enter{animation:ptin .4s cubic-bezier(.2,1.3,.4,1)}
+@keyframes ptin{from{opacity:0;transform:translateX(-14px) scale(.9)}}
+.pt.sil{animation:ptin .4s, ptgl 2.2s steps(1) infinite}
+@keyframes ptgl{0%,86%,100%{transform:none;filter:none}88%{transform:translateX(-3px);filter:hue-rotate(40deg)}92%{transform:translateX(3px)}}
+.dialog{animation:dlgin .35s ease-out}
+@keyframes dlgin{from{opacity:.4;transform:translateY(8px)}}
+body::before,body::after{content:"";position:fixed;left:0;right:0;height:0;background:#000;z-index:3;transition:height .5s ease;pointer-events:none}
+body::before{top:0} body::after{bottom:0}
+body.cine::before,body.cine::after{height:7vh}
+.scene::before{content:"";position:absolute;inset:0;background:#000;opacity:0;z-index:2;pointer-events:none}
+.scene.dip::before{animation:dip .9s ease}
+@keyframes dip{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+#sceneArt svg{animation:kb 24s ease-in-out infinite alternate;transform-origin:50% 55%}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.08) translate(-1%,1%)}}
+/* shared cutscene props */
+.cs-stage{position:relative;width:min(300px,100%);height:190px;border-radius:10px;overflow:hidden;background:#06080b;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.cs-rain{position:absolute;inset:0;background:repeating-linear-gradient(105deg,rgba(170,190,220,.0) 0 9px,rgba(170,190,220,.22) 9px 10px);background-size:40px 40px;animation:rainmv .5s linear infinite}
+@keyframes rainmv{to{background-position:-12px 40px}}
+.cs-sign{position:absolute;left:50%;top:38px;transform:translateX(-50%);font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.3em;color:#f2d39a;text-shadow:0 0 14px rgba(255,190,120,.7);opacity:.95;animation:signon 2.4s .6s steps(1) both}
+@keyframes signon{0%{opacity:0}12%{opacity:.9}16%{opacity:0}30%{opacity:.9}34%{opacity:.1}55%,100%{opacity:.95}}
+.cs-house{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:190px;height:110px;background:#0d1016;clip-path:polygon(0 35%,50% 0,100% 35%,100% 100%,0 100%)}
+.cs-house i{position:absolute;width:18px;height:16px;background:#1d222c}
+.cs-lights{position:absolute;bottom:14px;left:18px;display:flex;gap:22px;animation:hl 2.6s ease both}
+.cs-lights i{width:16px;height:10px;border-radius:50%;background:#fff3c8;box-shadow:0 0 22px 10px rgba(255,240,200,.45)}
+@keyframes hl{from{opacity:0;transform:translateX(-60px)}}
+.cs-door{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:120px;height:170px;background:linear-gradient(90deg,#3b2a1f,#4a3424);border:4px solid #2a1c12;animation:dshake .3s 1.1s 3}
+.cs-door::after{content:"";position:absolute;right:12px;top:84px;width:8px;height:8px;border-radius:50%;background:#c9b39a}
+@keyframes dshake{50%{transform:translateX(-50%) rotate(.8deg)}}
+.cs-gap{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:120px;height:7px;background:#e8d9a8;box-shadow:0 0 12px rgba(232,217,168,.7)}
+.cs-feet{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:120px;height:7px;display:flex;justify-content:center;gap:16px;animation:feet 1s .4s both}
+.cs-feet i{width:20px;height:7px;background:#06080b}
+@keyframes feet{from{opacity:0;transform:translateX(-30%)}}
+.cs-bed{position:absolute;left:30px;right:30px;bottom:30px;height:70px;border-radius:6px;background:#2a303c}
+.cs-quilt{position:absolute;left:60px;right:120px;bottom:72px;height:22px;border-radius:4px;background:#c9cdd6;box-shadow:0 6px 0 #a9aebb,0 12px 0 #8e93a0}
+.cs-phone{position:absolute;right:62px;bottom:76px;width:22px;height:36px;border-radius:4px;background:#0a0e12;border:2px solid #333}
+.cs-phone::after{content:"";position:absolute;inset:3px;border-radius:2px;background:#9ec3f0;box-shadow:0 0 18px 6px rgba(158,195,240,.45);animation:pglow 1.6s ease-in-out infinite alternate}
+@keyframes pglow{from{opacity:.5}}
+.cs-push{animation:push 4s ease-out both}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.18)}}
+.cs-mirror{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:150px;height:176px;border-radius:70px 70px 8px 8px;border:6px solid #6b7b72;background:linear-gradient(160deg,#24302b,#111814);overflow:hidden}
+.cs-me{position:absolute;left:44px;bottom:0;width:60px;height:110px;background:#0a0d0c;border-radius:30px 30px 0 0}
+.cs-behind{position:absolute;left:66px;bottom:20px;width:54px;height:110px;background:#1a1414;border-radius:27px 27px 0 0;opacity:.9;animation:behind 2.4s .8s ease both}
+.cs-behind::after{content:"";position:absolute;left:-26px;top:58px;width:30px;height:8px;border-radius:4px;background:#1a1414}
+@keyframes behind{from{opacity:0;transform:translateX(10px)}}
+.cs-train{position:absolute;bottom:22px;left:0;width:100%;height:84px;border-radius:10px;background:linear-gradient(180deg,#5a6a72,#3a4a52);animation:arriveL 2s .2s cubic-bezier(.2,.8,.3,1) both}
+.cs-train::before{content:"";position:absolute;left:14px;right:14px;top:14px;height:30px;background:repeating-linear-gradient(90deg,#0c1013 0 36px,transparent 36px 44px)}
+.cs-train::after{content:"";position:absolute;left:0;right:0;bottom:16px;height:5px;background:var(--line-color,#2fb3a3)}
+@keyframes arriveL{from{transform:translateX(110%)}}
+.cs-pfsign{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#2fb3a3;color:#04201c;font-weight:700;padding:3px 12px;border-radius:4px;font-size:14px;white-space:nowrap}
+.cs-led{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:13px;color:#f0b44c;background:#000;padding:2px 10px;border-radius:3px;white-space:nowrap;animation:fadeUp .6s 1.8s both}
+.cs-under{position:absolute;inset:0;background:#030405}
+.cs-beam{position:absolute;inset:0;background:radial-gradient(circle at var(--bx,60%) 60%,rgba(255,240,200,.55),rgba(255,240,200,.15) 22%,transparent 40%);animation:beam 2.6s ease-in-out both}
+@keyframes beam{0%{--bx:10%;opacity:.6}50%{opacity:1}}
+.cs-coat{position:absolute;left:46%;top:52%;width:70px;height:34px;border-radius:6px;background:#e8c43a;box-shadow:0 5px 0 #c9a42a,0 10px 0 #a8871f;transform:translateX(-50%)}
+.cs-note{position:absolute;left:58%;top:46%;width:30px;height:22px;background:#f2ead6;transform:rotate(12deg)}
+.cs-cab{position:absolute;inset:0;background:#06090b}
+.cs-slit{position:absolute;left:50%;top:10px;bottom:10px;width:70px;transform:translateX(-50%);background:linear-gradient(90deg,#0a0f12,#132027)}
+.cs-slit::before{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;background:#fff1c8;box-shadow:0 0 24px 8px rgba(255,241,200,.5);animation:slit 2.6s .4s ease-in-out both}
+@keyframes slit{from{width:1px;opacity:.4}}
+.cs-eyes{position:absolute;right:calc(50% - 30px);top:46%;display:flex;gap:7px;animation:fadeUp .6s 2.2s both}
+.cs-eyes i{width:5px;height:5px;border-radius:50%;background:#f2f2f2;box-shadow:0 0 6px #fff}
+@media (prefers-reduced-motion:reduce){.pt,.dialog,#sceneArt svg,.cs-rain,.scene.dip::before{animation:none!important}body::before,body::after{transition:none}}
+
+</style>
+
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div class="chap" id="chap">第一章 · <b>第零節</b></div>
+    <div class="clock" id="clock">06:36</div>
+  </div>
+  <div class="tools">
+    <button class="icon-btn" id="btnNote">證物</button>
+    <button class="icon-btn" id="btnTesti">夢日記</button>
+    <button class="icon-btn" id="btnHint" disabled>提示</button>
+    <a class="icon-btn home-link" href="../index.html" aria-label="回到謎匣">匣</a>
+    <button class="icon-btn" id="btnSound" aria-label="音效開關">音效</button>
+  </div>
+  <div class="livebar" id="livebar"></div>
+  <div class="stage-wrap">
+    <div class="scene" id="scene" aria-hidden="true"><div id="sceneArt"></div><canvas id="motes"></canvas>
+      <div class="camhud"><span class="rec">DREAM · 宇恩</span><span id="camT">CAM 01</span></div><i class="corner a"></i><i class="corner b"></i></div>
+    <div class="stage" id="stage"></div>
+  </div>
+</div>
+
+<div class="title" id="title">
+  <div class="title-inner">
+    <div class="meta">謎匣 · 第柒匣 · 學生惡夢</div>
+    <h1><em>會考前一晚</em><br>第零節</h1>
+    <p>會考前一晚，你趴在書桌上說：「好想睡著，不要醒來。」再睜開眼，你在一間正在上「第零節」的教室裡。同學都沒有臉，走廊上有一個沒有臉的監考官。</p>
+    <div class="row">
+      <button class="btn" id="btnStart">閉上眼睛</button>
+      <button class="btn ghost" id="btnResume" hidden>回到夢裡</button>
+      <button class="btn ghost" id="btnChap">選擇章節</button>
+      <a class="btn ghost home-link" href="../index.html">回到謎匣</a>
+    </div>
+    <p class="meta">難度 ★★★★ · 會迷失在夢裡 · 有強烈驚嚇 · 約 60 分鐘</p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden><div id="sheetBody"></div></div>
+<div class="death" id="death" hidden><div class="death-inner" id="deathBody"></div></div>
+<div class="vignette" id="vig" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="chapcard" id="chapcard" hidden><div><div class="cc-k" id="ccK"></div><div class="cc-n" id="ccN"></div><div class="cc-s" id="ccS"></div></div></div>
+
+<script>
+window.MIXIA_V='../v/';
+function recordEnding(game,name){try{const k='mixia_endings';const o=JSON.parse(localStorage.getItem(k)||'{}');o[game]=o[game]||[];if(!o[game].includes(name))o[game].push(name);localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
+function recordDeath(game,id){try{const k='mixia_deaths';const o=JSON.parse(localStorage.getItem(k)||'{}');o[game]=o[game]||[];if(!o[game].includes(id))o[game].push(id);localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
+
+/* ================= data ================= */
+const ME='宇恩';
+const USERS={'系統':{k:'sys',c:'#555'}};
+const DEATHS={
+ pen:{t:'寫下名字',why:'在夢裡寫下自己的名字，就等於答應留下來。',text:'你寫下最後一筆的瞬間，名字從考卷上消失了。教室裡，又多了一個沒有臉的同學。'},
+ stairs:{t:'往下掉',why:'在夢裡往下掉，只會掉進更深的夢。',text:'你一直往下掉。樓層牌從 3F、2F、1F，變成 B1、B2……B99。'},
+ sleep:{t:'睡著',why:'你已經在夢裡了。在夢裡睡著，只會越睡越深。',text:'你閉上眼睛。耳邊的鐘聲越來越遠、越來越遠，最後什麼都聽不見了。'},
+ door:{t:'早安',why:'這裡還是夢。夢裡的「早安」，是讓你繼續睡下去的咒語。',text:'樓梯一直往下延伸，沒有盡頭。樓下的餐桌旁坐滿了沒有臉的同學，每個人面前都放著一張考卷。'},
+ stay:{t:'留下來',why:'鬧鐘的下一次鐘聲是 07:21，你最晚 07:20 就要醒來。留下來，就趕不上會考了。',text:'噹——07:21，最後一次鐘聲響起。小鏡笑著說：「沒關係，明年再考就好了。」'}
+};
+const PHOTOS={
+ b1:{time:'06:36',name:'第一次鐘聲',cap:'我在教室裡醒來。黑板上寫著：第零節。'},
+ b2:{time:'06:45',name:'第二次鐘聲',cap:'下課鐘。時鐘停住了。'},
+ b3:{time:'06:54',name:'第三次鐘聲',cap:'在樓梯間。樓層牌一直是 4F。'},
+ b4:{time:'07:03',name:'第四次鐘聲',cap:'保健室。好想睡。'},
+ b5:{time:'07:12',name:'第五次鐘聲',cap:'地上那個粉紅色的鬧鐘在響。'}
+};
+const STAIRS=[
+ ['海報：「考試加油！」','滅火器：在左邊','樓梯：12 階','窗外：操場','樓層牌：4F'],
+ ['海報：「考試加油！」','滅火器：在左邊','樓梯：13 階','窗外：操場','樓層牌：4F'],
+ ['海報：「考試加由！」','滅火器：在左邊','樓梯：12 階','窗外：操場','樓層牌：4F'],
+ ['樓層牌：4F','窗外：操場','樓梯：12 階','滅火器：在左邊','海報：「考試加油！」'],
+ ['海報：「考試加油！」','滅火器：在右邊','樓梯：12 階','窗外：操場','樓層牌：4F']];
+const STAIRS_A=[0,1,1,0,1];
+const REALITY=[
+ {t:'電燈開關按了好幾次，燈都沒有反應',ok:true},
+ {t:'准考證上的考場名稱，每看一次就不一樣',ok:true},
+ {t:'媽媽在樓下喊你吃早餐'},
+ {t:'書桌上的電子鐘寫 07:15，再看一次變成 07:91',ok:true},
+ {t:'窗外有麻雀在叫'},
+ {t:'你數了數手指：左手有六根',ok:true},
+ {t:'書包裡的鉛筆盒，跟昨天放的一樣'}];
+const CARD_MIRROR=[[1,0,0,0],[1,1,0,1],[0,1,0,0],[0,1,1,0]];
+const TRUTHQ=[
+ {q:'沒有臉的監考官，是誰？',o:['夢裡的怪物','學校的老師','一直在叫你起床的媽媽'],a:2},
+ {q:'小鏡是誰？',o:['轉學生','鏡子裡的你','監考官的女兒'],a:1},
+ {q:'你為什麼會被困在夢裡？',o:['被詛咒了','你自己說「不想醒來、不想考試」','吃錯了感冒藥'],a:1},
+ {q:'你最晚幾點一定要醒來？',o:['07:00','07:20','07:40','08:20'],a:1}];
+
+const SCRIPT=[
+ {t:'chapter',n:1,name:'第零節'},
+ {t:'say',who:'narr',clock:'23:59',scene:'desk',viewers:0,live:true,text:'會考前一天晚上，23:59。你趴在書桌上，眼前的數學講義越來越模糊。'},
+ {t:'ev',id:'route',name:'書桌上的便條（媽媽寫的）',text:'「捷運到考場要 40 分鐘，出門前要準備 20 分鐘喔！早點睡，加油！」'},
+ {t:'say',who:'me',text:'好想睡著……一直不要醒來，就不用考試了。'},
+ {t:'cut',id:'sleep'},
+ {t:'say',who:'narr',clock:'06:36',scene:'classroom',viewers:1,live:false,fx:'bell',text:'噹——噹——鐘聲響起。你抬起頭。你在教室裡，可是窗外一片灰白，看不到天空。'},
+ {t:'photo',id:'b1'},
+ {t:'say',who:'narr',text:'教室裡坐滿了同學，每一個人的臉都糊糊的，像被橡皮擦擦過。只有坐你旁邊的女生，臉是清楚的。'},
+ {t:'say',who:'xj',f:'h',text:'你也醒著啊？我是小鏡，12 號。坐你旁邊很久了，你都沒注意到吧？'},
+ {t:'say',who:'me',text:'我是 21 號……可是我們班，有 12 號這個人嗎？'},
+ {t:'say',who:'xj',text:'噓。在這裡，只要不被「監考官」抓到，就永遠不用考試。'},
+ {t:'ev',id:'note1',name:'小鏡傳來的紙條',text:'紙條上的字全部左右顛倒，你一時看不懂。小鏡說：「等你看得懂的時候，再看。」'},
+ {t:'ev',id:'board',name:'黑板上的字',text:'第零節　期末考｜考卷發下後，請先寫上姓名。｜下課鐘響的時間，就是教室門的密碼。'},
+ {t:'say',who:'narr',text:'考卷發下來了。每一題都是你沒讀過的東西。全班沒有臉的同學，同時拿起了筆。'},
+ {t:'cp'},
+ {t:'choice',key:'pen',options:[
+   {v:'pen',text:'照黑板說的，在考卷上寫下名字',die:'pen'},
+   {v:'no',text:'把筆放下：「先不要寫。」'}]},
+ {t:'say',who:'narr',clock:'06:45',viewers:2,fx:'bell',text:'噹——下課鐘響了。時鐘停住。前面牆上的時鐘被一張考卷蓋住，只能從後面的大鏡子裡看到。'},
+ {t:'photo',id:'b2'},
+ {t:'ev',id:'clock',name:'鏡子裡的時鐘',text:'時鐘上沒有數字，只有最上面一個刻度。你看到的，是鏡子裡的樣子。'},
+ {t:'say',who:'narr',text:'教室門鎖著，門上有一個四位數的密碼鎖。走廊上傳來拖鞋的聲音：啪、啪、啪……'},
+ {t:'puzzle',id:'clock'},
+ {t:'say',who:'narr',text:'門開了。你和小鏡衝出教室。走廊盡頭，一個穿著灰色毛衣、沒有臉的人，慢慢轉過頭來。'},
+ {t:'say',who:'xj',f:'shock',text:'監考官！快跑！'},
+ {t:'end',ch:1},
+
+ {t:'chapter',n:2,name:'無盡樓梯'},
+ {t:'say',who:'narr',clock:'06:54',scene:'stairs',viewers:3,live:false,fx:'bell',text:'噹——又是鐘聲。你們跑進樓梯間，往下跑了一層，牆上的樓層牌還是 4F。'},
+ {t:'photo',id:'b3'},
+ {t:'cut',id:'loop'},
+ {t:'say',who:'xj',text:'這是無盡樓梯。看到不對勁的地方，就往回走；沒有，就往前走。連續走對五次，才出得去。'},
+ {t:'ev',id:'stair0',name:'4 樓樓梯間（正常的樣子）',text:'海報：「考試加油！」｜滅火器：在左邊｜樓梯：12 階｜窗外：操場｜樓層牌：4F'},
+ {t:'say',who:'narr',text:'拖鞋聲在樓上響著。啪、啪、啪。那個聲音，好像每天都聽得到。'},
+ {t:'say',who:'voice',label:'監考官（很遠的聲音）',text:'……來醒……來醒……恩宇……來醒……'},
+ {t:'puzzle',id:'stairs'},
+ {t:'say',who:'narr',text:'第五次，樓層牌終於變成了 3F。可是監考官就站在下一層的轉角，慢慢抬起那張沒有臉的頭。'},
+ {t:'say',who:'xj',f:'shock',text:'跳下去！樓梯中間的空隙，直接通到一樓！'},
+ {t:'cp'},
+ {t:'choice',key:'jump',timer:7,timeoutDie:'stairs',options:[
+   {v:'jump',text:'跳進樓梯中間的空隙',die:'stairs'},
+   {v:'room',text:'衝進旁邊的保健室，鎖上門'}]},
+ {t:'say',who:'narr',text:'你把門鎖上。拖鞋聲停在門外。過了很久很久，才慢慢走遠。'},
+ {t:'end',ch:2},
+
+ {t:'chapter',n:3,name:'保健室'},
+ {t:'say',who:'narr',clock:'07:03',scene:'nurse',viewers:4,live:false,fx:'bell',text:'噹——第四次鐘聲。保健室裡有兩張病床，牆上掛著一面很大的鏡子。'},
+ {t:'photo',id:'b4'},
+ {t:'say',who:'xj',f:'h',text:'好累喔……我們躺一下好不好？睡著了，監考官就找不到我們了。'},
+ {t:'cp'},
+ {t:'choice',key:'sleep',options:[
+   {v:'sleep',text:'躺到病床上，閉上眼睛',die:'sleep'},
+   {v:'no',text:'「不行，我不能睡。」'}]},
+ {t:'say',who:'narr',text:'你走到鏡子前面。鏡子裡的你，頭髮亂糟糟的，眼睛下面有黑眼圈。小鏡就站在你左邊——'},
+ {t:'say',who:'narr',text:'等一下。鏡子裡，你的左邊……是空的。'},
+ {t:'cut',id:'mirror'},
+ {t:'say',who:'narr',text:'你尖叫著轉身。背後什麼都沒有。小鏡站在床邊，歪著頭看你。'},
+ {t:'say',who:'narr',clock:'07:12',viewers:5,text:'地上多了一個東西：一個粉紅色的鬧鐘。是你房間裡的那一個。它正在響。'},
+ {t:'photo',id:'b5'},
+ {t:'ev',id:'alarm',name:'粉紅色的鬧鐘',text:'你房間裡的鬧鐘，背面貼著你國小貼的貼紙。「貪睡」按鈕，被按到褪色了。'},
+ {t:'ev',id:'bracelet',name:'地上的玉手環',text:'一個淡綠色的玉手環，裂了一條細細的縫。好眼熟。'},
+ {t:'ev',id:'ticket',name:'口袋裡的准考證',text:'國中教育會考　准考證　21 號｜考場：08:20 前入場'},
+ {t:'say',who:'xj',f:'a',text:'那是監考官掉的。它想用這些東西騙你出去。別相信它。'},
+ {t:'puzzle',id:'snooze'},
+ {t:'say',who:'xj',f:'sly',text:'……你算這個做什麼？留在這裡，不好嗎？'},
+ {t:'end',ch:3},
+
+ {t:'chapter',n:4,name:'早安'},
+ {t:'cut',id:'home'},
+ {t:'say',who:'narr',clock:'07:15',scene:'bedroom',viewers:5,live:true,text:'你睜開眼睛。是你的房間。陽光從窗簾縫照進來，數學講義還攤在書桌上。'},
+ {t:'say',who:'me',text:'醒了……我醒了！07:15，還來得及！'},
+ {t:'say',who:'voice',label:'樓下（媽媽的聲音）',text:'宇恩——起床囉——早餐好了——'},
+ {t:'say',who:'narr',text:'你鬆了一口氣，開始換衣服。可是，總覺得哪裡怪怪的。'},
+ {t:'ev',id:'room',name:'房間裡看到的東西',text:'電燈開關｜准考證｜樓下的媽媽｜電子鐘｜窗外的麻雀｜你的手｜鉛筆盒'},
+ {t:'puzzle',id:'reality'},
+ {t:'say',who:'me',text:'這裡……還是夢。'},
+ {t:'say',who:'narr',live:false,text:'房門被輕輕推開。穿著媽媽圍裙的人，站在門口對你笑。是小鏡。'},
+ {t:'say',who:'xj',f:'h',text:'早安。早餐好了，我們下樓吧。今天不用考試喔。'},
+ {t:'cp'},
+ {t:'choice',key:'door',timer:8,timeoutDie:'door',options:[
+   {v:'door',text:'跟著她下樓吃早餐',die:'door'},
+   {v:'mirror',text:'不動。看向衣櫃門上的穿衣鏡'}]},
+ {t:'say',who:'narr',text:'穿衣鏡裡，只有你一個人。小鏡就站在你旁邊，可是鏡子裡，沒有她。'},
+ {t:'say',who:'xj',f:'t',text:'……你發現了啊。'},
+ {t:'say',who:'xj',f:'n',text:'我是鏡子裡的你。12 號，就是 21 號反過來。你昨天晚上說，好想睡著、不要醒來、不要考試。所以，我把你留下來了。'},
+ {t:'say',who:'xj',f:'s',text:'那個沒有臉的監考官？……是你媽媽。她已經在床邊叫你，叫了好久好久。'},
+ {t:'say',who:'narr',text:'啪、啪、啪。原來那是媽媽每天早上，穿著拖鞋上樓叫你的聲音。「來醒，恩宇」倒過來，是「宇恩，醒來」。'},
+ {t:'end',ch:4},
+
+ {t:'chapter',n:5,name:'醒來'},
+ {t:'say',who:'narr',clock:'07:16',scene:'mirror',viewers:5,live:false,text:'房間開始崩塌，像一張被撕碎的考卷。只剩下那面穿衣鏡，還立在原地。'},
+ {t:'say',who:'voice',label:'鏡子另一邊（媽媽的聲音）',text:'宇恩！宇恩！醒醒！'},
+ {t:'say',who:'xj',f:'t',text:'醒來，就要面對考試、面對分數、面對大家的期待。留在這裡，不是比較輕鬆嗎？'},
+ {t:'say',who:'narr',text:'鏡子下面，浮出一張答案卡。只有填對，鏡子才會打開。'},
+ {t:'puzzle',id:'card'},
+ {t:'say',who:'narr',text:'答案卡填好的那一刻，你口袋裡那張紙條的字，在鏡子裡終於變成正的了。'},
+ {t:'say',who:'xj',label:'紙條',text:'「我就是你。快醒來。考完，我們一起睡個好覺。」'},
+ {t:'say',who:'me',text:'原來……寫這張紙條的，也是你。'},
+ {t:'say',who:'xj',f:'h',text:'嗯。我是想逃走的你，也是想醒來的你。'},
+ {t:'puzzle',id:'truth'},
+ {t:'say',who:'narr',text:'鏡面像水一樣晃動。另一邊，伸過來一隻手，手腕上戴著一個裂了縫的玉手環。小鏡也朝你伸出手。'},
+ {t:'cp'},
+ {t:'choice',key:'hand',timer:7,timeoutDie:'stay',options:[
+   {v:'stay',text:'握住小鏡的手，留下來',die:'stay'},
+   {v:'wake',text:'把手伸進鏡子，握住那隻戴著玉手環的手'}]},
+ {t:'cut',id:'wake'},
+ {t:'say',who:'mom',f:'shock',clock:'07:19',scene:'bedroom',live:true,text:'宇恩！你終於醒了！鬧鐘響了五次你都沒反應，嚇死媽媽了！'},
+ {t:'say',who:'narr',text:'媽媽穿著灰色的毛衣，手腕上戴著那個裂了一條縫的玉手環。她的臉，好清楚。'},
+ {t:'say',who:'me',text:'媽……現在 07:19，我還來得及！'},
+ {t:'say',who:'narr',clock:'08:19',scene:'classroom',text:'08:19，你衝進考場，比入場時間早了一分鐘。坐下的時候，你看見窗戶玻璃上自己的倒影。倒影對你眨了一下眼睛。'},
+ {t:'choice',key:'last',options:[
+   {v:'smile',text:'對倒影笑一下：「我們一起考完吧。」'},
+   {v:'ignore',text:'別過頭，假裝沒看到'}]},
+ {t:'say',who:'narr',if:['last','smile'],text:'考完最後一科，你回家睡了十二個小時。這一次，一個夢都沒有做。'},
+ {t:'say',who:'narr',if:['last','ignore'],text:'考卷發下來了。你翻到背面，最下面有一行很小的字，左右顛倒：「今晚見。」'},
+ {t:'finale'}
+];
+const PORTRAITS={
+ xj:{style:'short',hair:'#1a1416',cloth:'#e6e2d8',collar:'#2a3550',bg:'#1a1828'},
+ mom:{style:'bun',hair:'#2a2220',cloth:'#7a7a80',skin:'#ecc8a8',bg:'#2a2420'},
+ voice:{sil:true}
+};
+const PUZZLE_INFO={
+ clock:{hints:['你看到的是鏡子裡的時鐘，左右是反的。先讀出鏡子裡看起來是幾點。','鏡子裡看起來是 5:15。鏡中時間和真正的時間加起來，剛好是 12:00。','12:00 − 5:15 = 6:45，密碼 0645。']},
+ stairs:{hints:['一項一項跟「正常的樣子」比。順序不一樣，不算異常。','注意階數、錯字、左右。','往前、回頭、回頭、往前、回頭。']},
+ snooze:{hints:['翻開夢日記：每一次鐘聲，隔了幾分鐘？9 分鐘，是哪種鬧鐘功能？','08:20 入場，捷運 40 分鐘，出門前準備 20 分鐘。往回推。','間隔 9 分鐘／鬧鐘的貪睡／07:20／下一次是 07:21，所以一次都不剩。']},
+ reality:{hints:['在夢裡，燈打不開、字和數字會一直變、身體會怪怪的。','正常的東西不算：聲音、鉛筆盒。','電燈、准考證、電子鐘、手指；還在夢裡。']},
+ card:{hints:['鏡子裡的答案卡是左右顛倒的。真正的答案卡，要把每一列左右翻過來。','第一列「●○○○」翻過來是「○○○●」。','真正的答案：○○○●／●○●●／○○●○／○●●○。']},
+ truth:{hints:['回想拖鞋聲、玉手環、「來醒，恩宇」。','小鏡的座號是 12；你昨晚說了什麼？','媽媽／鏡子裡的你／你自己不想醒來／07:20。']}
+};
+const CHAP_PUZZLES={1:['clock'],2:['stairs'],3:['snooze'],4:['reality'],5:['card','truth']};
+const CHAP_NEXT={1:{name:'無盡樓梯',text:'沒有臉的監考官，轉過頭來了。',btn:'進入第二章'},
+ 2:{name:'保健室',text:'拖鞋聲停在門外。',btn:'進入第三章'},
+ 3:{name:'早安',text:'下一次鐘聲之前，一定要醒來。',btn:'進入第四章'},
+ 4:{name:'醒來',text:'鏡子裡，沒有她。',btn:'進入最終章'}};
+const CH_LABEL=['','第一章','第二章','第三章','第四章','最終章'];
+const CC_SUB={1:'06:36 · 夢裡的教室',2:'06:54 · 樓梯間',3:'07:03 · 保健室',4:'07:15 · 你的房間',5:'07:16 · 鏡子前面'};
+const CHAP_SCENE={1:'desk',2:'stairs',3:'nurse',4:'bedroom',5:'mirror'};
+const WHO={narr:'',me:'你（宇恩）',xj:'小鏡',mom:'媽媽',voice:'？？？'};
+/* ================= state ================= */
+const $=id=>document.getElementById(id);
+const stage=$('stage');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fresh(){return {i:0,ev:[],log:[],photos:[],ch:{},chText:{},hints:{},wrong:0,deaths:0,clock:'23:59',chap:1,chapName:'第零節',scene:'desk',viewers:0,live:true,snap:null}}
+let S=fresh();
+function save(){try{localStorage.setItem('nightmare',JSON.stringify(S))}catch(e){}}
+function load(){try{const r=localStorage.getItem('nightmare');return r?JSON.parse(r):null}catch(e){return null}}
+
+/* ================= audio ================= */
+const audio={ctx:null,on:true,mg:null,n:0,resolved:false,
+  init(){
+    if(this.ctx)return;
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;const c=this.ctx=new C();
+      this.mg=c.createGain();this.mg.gain.value=0;this.mg.connect(c.destination);
+      const len=c.sampleRate*2,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;this.noiseBuf=buf;
+      const src=c.createBufferSource();src.buffer=buf;src.loop=true;const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=420;bp.Q.value=.7;
+      const lfo=c.createOscillator();lfo.frequency.value=.06;const lg=c.createGain();lg.gain.value=260;lfo.connect(lg).connect(bp.frequency);lfo.start();
+      this.wind=c.createGain();this.wind.gain.value=0;src.connect(bp).connect(this.wind).connect(c.destination);src.start();
+      this.wet=c.createDelay(1);this.wet.delayTime.value=.36;const fb=c.createGain();fb.gain.value=.45;const wl=c.createBiquadFilter();wl.type='lowpass';wl.frequency.value=1600;
+      this.wet.connect(wl).connect(fb).connect(this.wet);wl.connect(this.mg);
+      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=200;f.Q.value=5;
+      [[49,'sawtooth',.045],[49.4,'sawtooth',.045],[73.4,'sine',.03]].forEach(([hz,ty,g])=>{const o=c.createOscillator();o.type=ty;o.frequency.value=hz;const gn=c.createGain();gn.gain.value=g;o.connect(gn).connect(f);o.start()});
+      this.drone=c.createGain();this.drone.gain.value=1;f.connect(this.drone).connect(this.mg);
+      setInterval(()=>this.tick(),1000);this.apply();
+    }catch(e){this.ctx=null}
+  },
+  apply(){if(!this.mg)return;const t=this.ctx.currentTime;this.mg.gain.setTargetAtTime(this.on?.55:0,t,1);this.wind.gain.setTargetAtTime(this.on&&S.scene!=='room'?.09:0,t,1)},
+  tone(hz,o={}){if(!this.mg)return;const {type='sine',a=2,d=4,g=.02,glide=0,wet=true}=o;const c=this.ctx,t=c.currentTime,osc=c.createOscillator(),e=c.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(hz,t);if(glide)osc.frequency.linearRampToValueAtTime(hz*glide,t+a+d);
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+a);e.gain.linearRampToValueAtTime(0,t+a+d);
+    osc.connect(e);e.connect(this.mg);if(wet)e.connect(this.wet);osc.start(t);osc.stop(t+a+d+.1)},
+  pop(){if(this.on)this.tone(1250+Math.random()*300,{type:'sine',a:.003,d:.07,g:.035,wet:false})},
+  click(){if(this.on)this.tone(1700,{a:.003,d:.05,g:.05,wet:false})},
+  tk(){if(this.on&&this.mg)this.tone(2300,{a:.002,d:.022,g:.007,wet:false})},
+  musicbox(){if(!this.on)return;[659.25,783.99,739.99,493.88,587.33,659.25].forEach((hz,i)=>setTimeout(()=>this.tone(hz*1.5,{type:'triangle',a:.005,d:1.1,g:.035}),i*380))},
+  thud(at=0){if(!this.mg||!this.on)return;const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),e=c.createGain();o.frequency.setValueAtTime(90,t);o.frequency.exponentialRampToValueAtTime(30,t+.4);e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(.8,t+.01);e.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(e).connect(c.destination);o.start(t);o.stop(t+.55)},
+  heart(){if(!this.mg||!this.on)return;[0,.22].forEach(at=>{const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),e=c.createGain();o.frequency.setValueAtTime(65,t);o.frequency.exponentialRampToValueAtTime(35,t+.16);e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(.35,t+.01);e.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(e).connect(this.mg);o.start(t);o.stop(t+.25)});fxRestart($('vig'),'red')},
+  staticBurst(){if(!this.mg||!this.on)return;const c=this.ctx,t=c.currentTime,s=c.createBufferSource();s.buffer=this.noiseBuf;const e=c.createGain();e.gain.setValueAtTime(.5,t);e.gain.exponentialRampToValueAtTime(.001,t+.9);s.connect(e).connect(c.destination);s.start(t,.2);s.stop(t+1)},
+  scare(){if(!this.mg||!this.on)return;const c=this.ctx,t=c.currentTime;this.staticBurst();
+    [61.7,65.4,92.5,98,138.6].forEach(hz=>{const o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.value=hz;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.055,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+1.6);o.connect(g).connect(c.destination);o.start(t);o.stop(t+1.7)})},
+  sting(kind){if(!this.on)return;
+    if(kind==='wrong')[98,103.8].forEach(hz=>this.tone(hz,{type:'triangle',a:.02,d:.9,g:.05,wet:false}));
+    if(kind==='ev')this.tone(1046.5,{a:.01,d:1.6,g:.02});
+    if(kind==='solve')[523.25,659.25,783.99,1046.5].forEach((hz,i)=>setTimeout(()=>this.tone(hz,{a:.01,d:1.2,g:.03}),i*110));
+    if(kind==='death'){this.staticBurst();[46.2,49,69.3].forEach(hz=>this.tone(hz,{type:'sawtooth',a:.01,d:2.4,g:.06}))}},
+  tick(){if(!this.on||!this.mg||this.resolved)return;this.n++;
+    if(this.n%10===0)[[220,261.63],[196,233.08],[174.6,207.65]][this.n%3].forEach(hz=>this.tone(hz,{type:'triangle',a:3,d:5,g:.009}));
+    if(S.chap>=2&&Math.random()<.03)this.tone(1900,{type:'sine',a:.4,d:1.2,g:.006,glide:.7})},
+  resolve(){if(!this.mg||this.resolved)return;this.resolved=true;this.drone.gain.setTargetAtTime(0,this.ctx.currentTime,2);
+    if(this.on)[293.66,369.99,440,587.33].forEach((hz,i)=>setTimeout(()=>this.tone(hz,{a:2,d:6,g:.02}),i*700))},
+  bell(){if(!this.mg||!this.on)return;[0,1.1].forEach(at=>setTimeout(()=>{this.tone(659.25,{type:'sine',a:.01,d:2.2,g:.05});this.tone(523.25,{type:'sine',a:.01,d:2.6,g:.035})},at*1000))},
+  knock(){if(!this.mg||!this.on)return;[0,.28,.56].forEach(at=>this.thud(at))},
+  whistle(){if(!this.mg||!this.on)return;[0,.45,.9].forEach(at=>setTimeout(()=>this.tone(2600,{type:'sine',a:.02,d:.3,g:.02,glide:1.02}),at*1000))},
+  unresolve(){if(!this.mg||!this.resolved)return;this.resolved=false;this.drone.gain.setTargetAtTime(1,this.ctx.currentTime,1)}
+};
+$('btnSound').onclick=()=>{audio.init();audio.on=!audio.on;$('btnSound').textContent=audio.on?'音效':'靜音';audio.apply()};
+
+/* ================= scenes ================= */
+const svgWrap=b=>`<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">${b}</svg>`;
+function rep(n,f){let s='';for(let i=0;i<n;i++)s+=f(i);return s}
+const stars=rep(18,i=>`<circle cx="${(i*67)%400}" cy="${(i*29)%110}" r="${i%3?0.8:1.3}" fill="#f2ead8" opacity="${.3+(i%4)*.15}"/>`);
+const wheelSVG=(cx,cy,r,lit)=>`<g class="spinW" style="transform-origin:${cx}px ${cy}px">${rep(12,i=>{const a=i*Math.PI/6;return `<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="#2c2440" stroke-width="2"/>`})}<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2c2440" stroke-width="4"/>${rep(12,i=>{const a=i*Math.PI/6;return `<circle cx="${cx+r*Math.cos(a)}" cy="${cy+r*Math.sin(a)}" r="7" fill="${lit?(i===4?'#ff4a5a':'#f6c35a'):'#1c1830'}" opacity="${lit?.9:1}"/>`})}</g><polygon points="${cx-6},${cy} ${cx+6},${cy} ${cx+40},300 ${cx-40},300" fill="#1a1530"/>`;
+const SCENES={
+ desk:svgWrap(`<rect width="400" height="300" fill="#0e0d14"/><rect x="0" y="200" width="400" height="100" fill="#2a2018"/><path d="M290 60 l30 0 -10 60 -10 0z" fill="#3a3430"/><polygon points="260,120 350,120 380,210 230,210" fill="#f0d890" opacity=".14"/><rect x="120" y="180" width="140" height="24" fill="#e8e2d6" transform="rotate(-4 190 192)"/>${rep(5,i=>`<rect x="134" y="${184+i*3.5}" width="${80+(i%2)*30}" height="1.5" fill="#6a6460" transform="rotate(-4 190 192)"/>`)}<rect x="60" y="150" width="34" height="34" rx="6" fill="#e8a0b0"/><text x="77" y="172" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a2420">23:59</text>`),
+ classroom:svgWrap(`<rect width="400" height="300" fill="#1a1c22"/><rect x="60" y="40" width="280" height="110" fill="#1f3128" stroke="#4a3a2a" stroke-width="6"/><text x="200" y="104" text-anchor="middle" font-family="serif" font-size="26" fill="#e8e2d6" opacity=".85">第零節　期末考</text><rect x="0" y="40" width="40" height="160" fill="#d8dcd8" opacity=".2"/>${rep(3,r=>rep(5,c=>`<rect x="${50+c*64}" y="${190+r*34}" width="44" height="20" fill="#3a3024"/><circle cx="${72+c*64}" cy="${180+r*34}" r="9" fill="#4a4c54" opacity=".8"/>`)).replace(/undefined/g,'')}`),
+ stairs:svgWrap(`<rect width="400" height="300" fill="#16181c"/>${rep(8,i=>`<rect x="${60+i*24}" y="${260-i*24}" width="${280-i*24}" height="24" fill="${i%2?'#2a2c32':'#24262c'}"/>`)}<rect x="40" y="60" width="60" height="40" fill="#e8e2d6" opacity=".7"/><text x="70" y="86" text-anchor="middle" font-size="9" fill="#c83a2a">考試加油！</text><rect x="320" y="40" width="44" height="30" fill="#2a3a5a"/><text x="342" y="62" text-anchor="middle" font-family="monospace" font-size="16" fill="#fff">4F</text><rect x="40" y="200" width="12" height="30" rx="4" fill="#c83a2a"/>`),
+ nurse:svgWrap(`<rect width="400" height="300" fill="#1a2024"/><rect x="40" y="200" width="120" height="40" fill="#e8ecee" opacity=".7"/><rect x="40" y="190" width="30" height="16" rx="5" fill="#fff" opacity=".8"/><rect x="240" y="40" width="110" height="170" rx="6" fill="#2a3a44" stroke="#8a9aa2" stroke-width="6"/><ellipse cx="295" cy="110" rx="20" ry="24" fill="#e8e2d6" opacity=".25"/><path d="M60 40 h80 v120 h-80z" fill="#e8ecee" opacity=".08"/><text x="100" y="30" text-anchor="middle" font-size="12" fill="#c83a2a" opacity=".7">保健室</text>`),
+ bedroom:svgWrap(`<rect width="400" height="300" fill="#2a2420"/><rect x="230" y="30" width="120" height="120" fill="#f0d890" opacity=".35"/><path d="M230 30 h56 v120 h-56z" fill="#5a4a6a" opacity=".7"/><polygon points="230,150 350,150 300,300 160,300" fill="#f0d890" opacity=".08"/><rect x="20" y="190" width="200" height="60" rx="8" fill="#6a5a7a"/><rect x="20" y="176" width="60" height="24" rx="8" fill="#e8e2d6"/><rect x="30" y="40" width="50" height="130" fill="#3a3028" stroke="#8a9aa2" stroke-width="3"/><rect x="250" y="200" width="40" height="22" rx="3" fill="#1a1a1a"/><text x="270" y="215" text-anchor="middle" font-family="monospace" font-size="10" fill="#ff6b5a">07:15</text>`),
+ mirror:svgWrap(`<rect width="400" height="300" fill="#08080c"/>${rep(14,i=>`<polygon points="${(i*53)%400},${(i*37)%300} ${(i*53)%400+30},${(i*37)%300+10} ${(i*53)%400+12},${(i*37)%300+34}" fill="#e8e2d6" opacity="${.05+(i%4)*.03}"/>`)}<rect x="140" y="40" width="120" height="220" rx="8" fill="#1a2a34" stroke="#8a9aa2" stroke-width="6"/><ellipse cx="200" cy="130" rx="22" ry="28" fill="#e8e2d6" opacity=".35"/>`)
+};
+let curScene=null;
+function setScene(k){
+  if(k===curScene)return;if(curScene&&typeof sceneDip==='function')sceneDip();curScene=k;$('scene').dataset.k=k;
+  const art=$('sceneArt');art.style.animation='none';void art.offsetWidth;art.style.animation='';art.innerHTML=SCENES[k]||'';
+  $('camT').textContent=({desk:'你的房間',classroom:'夢 · 教室',stairs:'夢 · 樓梯間',nurse:'夢 · 保健室',bedroom:'你的房間',mirror:'鏡子前面'}[k]||'');
+  audio.apply();
+}
+const motes=Array.from({length:24},()=>({x:Math.random(),y:Math.random(),r:.5+Math.random()*1.2,vx:(Math.random()-.5)*.0002,vy:-.0002-Math.random()*.0002,p:Math.random()*6.28}));
+const mc=$('motes'),mx=mc.getContext('2d');
+function drawMotes(t){
+  const dpr=Math.min(2,devicePixelRatio||1),w=mc.clientWidth,h=mc.clientHeight;if(!w||!h||!mx)return;
+  if(mc.width!==Math.round(w*dpr)){mc.width=Math.round(w*dpr);mc.height=Math.round(h*dpr)}
+  mx.setTransform(dpr,0,0,dpr,0,0);mx.clearRect(0,0,w,h);
+  for(const m of motes){if(!reduce){m.x+=m.vx;m.y+=m.vy;if(m.y<-.05)m.y=1.05;if(m.x<0)m.x=1;if(m.x>1)m.x=0}
+    mx.fillStyle=`rgba(255,120,200,${.1+.08*Math.sin(t*.001+m.p)})`;mx.beginPath();mx.arc(m.x*w,m.y*h,m.r,0,6.28);mx.fill()}
+}
+if(!reduce)(function loop(t){drawMotes(t);requestAnimationFrame(loop)})(0);
+
+/* ================= HUD & fx ================= */
+const EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+function drawLive(){
+  $('livebar').innerHTML=`<span class="live${S.live?'':' off'}"><i></i>${S.live?'現實':'夢中'}</span><span class="viewers">${EYE}鐘聲 ${S.viewers} 次</span><span style="color:var(--muted)">會考 08:20 入場</span>`;
+}
+
+function fxRestart(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+function shake(el){audio.sting('wrong');fxRestart($('vig'),'red');S.wrong=(S.wrong||0)+1;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
+function quake(){const a=$('app');a.classList.remove('quake');void a.offsetWidth;a.classList.add('quake')}
+function solved(){audio.sting('solve')}
+function showChapterCard(n,name){
+  const c=$('chapcard');$('ccK').textContent=n===5?'FINAL CHAPTER':'CHAPTER '+n;$('ccN').textContent=name;$('ccS').textContent=CC_SUB[n]||'';
+  c.hidden=false;c.style.animation='none';void c.offsetWidth;c.style.animation='';
+  clearTimeout(c._t);c._t=setTimeout(()=>c.hidden=true,3200);c.onclick=()=>{clearTimeout(c._t);c.hidden=true};
+}
+
+/* ================= cinema kit: portraits, letterbox, scene dips, type ticks ================= */
+const FACES={
+ n:`<circle cx="33" cy="38" r="1.9" fill="#1a1410"/><circle cx="47" cy="38" r="1.9" fill="#1a1410"/><path d="M29 32.5h7M44 32.5h7" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M36 47q4 1.6 8 0" stroke="#7a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+ h:`<path d="M30.5 39q2.5-3 5 0M44.5 39q2.5-3 5 0" stroke="#1a1410" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M29 31h7M44 31h7" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M34.5 45.5q5.5 5 11 0" stroke="#7a4a3a" stroke-width="1.8" fill="#b65a4a" stroke-linecap="round"/>`,
+ s:`<circle cx="33" cy="38" r="3.3" fill="#fff"/><circle cx="47" cy="38" r="3.3" fill="#fff"/><circle cx="33" cy="38.3" r="1.4" fill="#1a1410"/><circle cx="47" cy="38.3" r="1.4" fill="#1a1410"/><path d="M29 31.5l7-2.2M44 29.3l7 2.2" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="40" cy="48" rx="2.3" ry="2.9" fill="#5a2a22"/>`,
+ a:`<circle cx="33" cy="38.5" r="1.9" fill="#1a1410"/><circle cx="47" cy="38.5" r="1.9" fill="#1a1410"/><path d="M29 30.5l7 2.6M51 30.5l-7 2.6" stroke="#2a201a" stroke-width="1.8" stroke-linecap="round"/><path d="M35.5 48h9" stroke="#7a4a3a" stroke-width="1.8" stroke-linecap="round"/>`,
+ t:`<path d="M30.5 38.5h5M44.5 38.5h5" stroke="#1a1410" stroke-width="1.8" stroke-linecap="round"/><path d="M29 33l7-2M44 31l7 2" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M36 49q4-2.6 8 0" stroke="#7a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+ sly:`<circle cx="33" cy="38.5" r="1.9" fill="#1a1410"/><path d="M44.5 38.5q2.5-1.6 5 0" stroke="#1a1410" stroke-width="1.8" fill="none"/><path d="M29 32.5h7M44 30l7 1.5" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M35 47.5q6 1.6 10-2" stroke="#7a4a3a" stroke-width="1.7" fill="none" stroke-linecap="round"/>`,
+ shock:`<circle cx="33" cy="37.5" r="3.7" fill="#fff"/><circle cx="47" cy="37.5" r="3.7" fill="#fff"/><circle cx="33" cy="37.5" r="1.2" fill="#1a1410"/><circle cx="47" cy="37.5" r="1.2" fill="#1a1410"/><path d="M29 29.5l7-1.4M44 28.1l7 1.4" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="40" cy="49" rx="3.4" ry="4.4" fill="#5a2a22"/>`
+};
+function portraitSVG(p,f){
+  if(p.sil)return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="#0a0506"/><path d="M8 80q4-24 32-24t32 24z" fill="#020202"/><ellipse cx="40" cy="38" rx="17" ry="20" fill="#020202"/><circle cx="33" cy="38" r="2.4" fill="#ff3b30"/><circle cx="47" cy="38" r="2.4" fill="#ff3b30"/><circle cx="33" cy="38" r="6" fill="#ff3b30" opacity=".18"/><circle cx="47" cy="38" r="6" fill="#ff3b30" opacity=".18"/></svg>`;
+  const sk=p.skin||'#f0d0b2',hc=p.hair||'#221a16';
+  let back='',hair='',acc='',cloth='';
+  if(p.style==='long')back=`<path d="M21 36q0-21 19-21t19 21l2 30H19z" fill="${hc}"/>`;
+  if(p.style==='pony')back=`<ellipse cx="59" cy="32" rx="5" ry="10" fill="${hc}"/>`;
+  const top={short:`<path d="M23 37q1-20 17-20t17 20q-5-10-17-10t-17 10z" fill="${hc}"/>`,
+    messy:`<path d="M23 35l2-12 5 4 3-9 5 7 5-8 3 8 6-5 1 9 4 6q-7-8-17-8t-17 8z" fill="${hc}"/>`,
+    pony:`<path d="M23 37q1-20 17-20t17 20q-6-11-17-11t-17 11z" fill="${hc}"/>`,
+    long:`<path d="M23 36q4-14 17-14t17 14q-8-7-17-7t-17 7z" fill="${hc}"/>`,
+    bun:`<circle cx="40" cy="17" r="6" fill="${hc}"/><path d="M23 37q1-19 17-19t17 19q-6-10-17-10t-17 10z" fill="${hc}"/>`,
+    none:''}[p.style||'short'];
+  hair=top;
+  cloth=`<path d="M8 80q3-21 32-23t32 23z" fill="${p.cloth||'#445'}"/>`;
+  if(p.collar)cloth+=`<path d="M33 57l7 9 7-9" fill="${p.collar}"/>`;
+  if(p.tie)cloth+=`<path d="M38.5 60h3l1.5 14-3 3-3-3z" fill="${p.tie}"/>`;
+  if(p.vest)cloth+=`<path d="M14 72h52M18 66h44" stroke="#f4f4ec" stroke-width="2.4" opacity=".8"/>`;
+  if(p.glasses)acc+=`<g fill="none" stroke="#2a2a2a" stroke-width="1.4"><circle cx="33" cy="38" r="5"/><circle cx="47" cy="38" r="5"/><path d="M38 38h4"/></g>`;
+  if(p.mask)acc+=`<path d="M26 42q14-3 28 0l-1 9q-13 7-26 0z" fill="${p.mask}"/>`;
+  if(p.cap)acc+=`<path d="M22 31q2-15 18-15t18 15z" fill="${p.cap}"/><rect x="20" y="29" width="40" height="5" rx="2.5" fill="${p.cap}" opacity=".85"/>${p.badge?`<circle cx="40" cy="23" r="2.6" fill="${p.badge}"/>`:''}`;
+  if(p.phones)acc+=`<path d="M22 36q0-22 18-22t18 22" stroke="#1a1a1a" stroke-width="3.4" fill="none"/><rect x="18" y="32" width="7" height="12" rx="3" fill="#1a1a1a"/><rect x="55" y="32" width="7" height="12" rx="3" fill="#1a1a1a"/>`;
+  if(p.lamp)acc+=`<path d="M23 27h34" stroke="#2a2a2a" stroke-width="4"/><circle cx="40" cy="26" r="4" fill="#fff6c8"/><circle cx="40" cy="26" r="10" fill="#fff6c8" opacity=".25"/>`;
+  if(p.hood)acc+=`<path d="M17 52q-2-38 23-39 25 1 23 39h-6q2-28-17-29-19 1-17 29z" fill="${p.hood}"/>`;
+  return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="${p.bg||'#1d2430'}"/>${back}${cloth}<rect x="35" y="50" width="10" height="9" fill="${sk}"/><ellipse cx="40" cy="38" rx="16.5" ry="18.5" fill="${sk}"/><circle cx="29" cy="44" r="2.6" fill="#e89a8a" opacity="${f==='h'?.5:.18}"/><circle cx="51" cy="44" r="2.6" fill="#e89a8a" opacity="${f==='h'?.5:.18}"/>${FACES[f]||FACES.n}${hair}${acc}</svg>`;
+}
+let lastSpeaker=null;
+function addPortrait(box,st){
+  const key=st.who==='voice'?'voice':st.who;const p=PORTRAITS[key];
+  if(!p){lastSpeaker=null;return}
+  const f=st.f||p.f||'n';
+  const d=document.createElement('div');d.className='pt'+(key==='voice'?' sil':'')+(lastSpeaker===key?'':' enter');
+  d.innerHTML=portraitSVG(p,f);box.classList.add('withp');box.prepend(d);lastSpeaker=key;
+}
+function cineOn(){document.body.classList.add('cine')}
+function cineOff(){document.body.classList.remove('cine')}
+function sceneDip(){const s=$('scene');if(!s)return;s.classList.remove('dip');void s.offsetWidth;s.classList.add('dip')}
+
+
+/* ================= engine ================= */
+let typing=null,timers=[];
+function clearTimers(){timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[]}
+function current(){return SCRIPT[S.i]}
+function next(){clearTimers();cineOff();S.i++;save();render()}
+function passes(st){return !st.if||S.ch[st.if[0]]===st.if[1]}
+function applyStep(st){if(st.scene)S.scene=st.scene;if(st.clock)S.clock=st.clock;if(st.viewers!=null)S.viewers=st.viewers;if(st.live!=null)S.live=st.live}
+function render(){
+  clearTimers();
+  let st=current(),newChap=false;
+  while(st&&(!passes(st)||st.t==='chapter'||st.t==='cp')){
+    if(passes(st)){
+      if(st.t==='chapter'){S.chap=st.n;S.chapName=st.name;S.scene=CHAP_SCENE[st.n];newChap=true}
+      if(st.t==='cp'){S.i++;S.snap=null;S.snap=JSON.stringify(S);save();st=current();continue}
+    }
+    S.i++;st=current();
+  }
+  if(newChap)showChapterCard(S.chap,S.chapName);
+  if(st)applyStep(st);
+  setScene(S.scene);drawLive();
+  if($('clock').textContent!==S.clock){$('clock').textContent=S.clock;fxRestart($('clock'),'ping')}
+  $('chap').innerHTML=CH_LABEL[S.chap]+' · <b>'+S.chapName+'</b>';
+  $('btnHint').disabled=!(st&&st.t==='puzzle');
+  if(st&&st.t==='finale')audio.resolve();else audio.unresolve();
+  stage.innerHTML='';
+  if(!st)return;
+  ({say:renderSay,photo:renderPhoto,ev:renderEv,chat:renderChat,choice:renderChoice,puzzle:st=>PUZZLES[st.id](),cut:renderCut,end:renderEnd,finale:renderFinale})[st.t](st);
+}
+function dialogShell(who,label){
+  const box=document.createElement('div');box.className='box dialog';box.tabIndex=0;box.setAttribute('role','button');
+  const name=label||WHO[who];
+  if(name){const w=document.createElement('div');w.className='who '+who;w.textContent=name;box.appendChild(w)}
+  stage.appendChild(box);return box;
+}
+function typeInto(el,text,done){
+  if(reduce){if(typing&&typing.cancel)typing.cancel();typing=null;el.textContent=text;done&&done();return}
+  let k=0;el.textContent='';
+  if(typing&&typing.cancel)typing.cancel();const me={cancel(){clearInterval(id)},finish(){clearInterval(id);el.textContent=text;if(typing===me)typing=null;done&&done()}};typing=me;
+  const id=setInterval(()=>{k++;el.textContent=text.slice(0,k);if(k%2)audio.tk();if(k>=text.length)me.finish()},30);
+}
+function bindGo(box,go){box.onclick=go;box.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};box.focus({preventScroll:true})}
+function renderSay(st){
+  const box=dialogShell(st.who,st.label);if(typeof addPortrait==='function')addPortrait(box,st);
+  const line=document.createElement('div');line.className='line '+st.who;box.appendChild(line);
+  const cont=document.createElement('div');cont.className='cont';cont.textContent='點一下繼續 ▸';cont.style.visibility='hidden';box.appendChild(cont);
+  if(st.fx==='flicker')fxRestart($('flash'),'flicker');
+  if(st.fx==='thud'){audio.thud();quake();fxRestart($('vig'),'red')}
+  if(st.fx==='whistle')audio.whistle();
+  if(st.fx==='bell')audio.bell();
+  if(st.fx==='knock')audio.knock();
+  typeInto(line,st.text,()=>cont.style.visibility='visible');
+  bindGo(box,()=>{if(typing){typing.finish();return}next()});
+}
+function renderPhoto(st){
+  const p=PHOTOS[st.id];if(!S.photos.includes(st.id))S.photos.push(st.id);save();
+  audio.click();fxRestart($('btnTesti'),'ping');
+  const box=dialogShell('narr');box.insertAdjacentHTML('afterbegin','<div class="who">已寫進夢日記</div>');
+  box.insertAdjacentHTML('beforeend',`<div class="photo"><div class="pimg">${p.time}　${p.name}</div><div style="font-size:14px">${p.cap}</div></div><div class="cont">點一下繼續 ▸</div>`);
+  bindGo(box,next);
+}
+function renderEv(st){
+  if(!S.ev.find(e=>e.id===st.id))S.ev.push({id:st.id,name:st.name,text:st.text});save();
+  audio.sting('ev');fxRestart($('btnNote'),'ping');
+  const box=dialogShell('narr');box.insertAdjacentHTML('afterbegin','<div class="who">已加入證物</div>');
+  const line=document.createElement('div');line.className='line';line.style.fontSize='15px';
+  line.innerHTML='<span class="tag"></span><div style="margin-top:8px"></div>';line.querySelector('.tag').textContent=st.name;line.lastChild.textContent=st.text;
+  box.appendChild(line);box.insertAdjacentHTML('beforeend','<div class="cont">點一下繼續 ▸</div>');bindGo(box,next);
+}
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
+function msgHTML(u,m,pin){
+  const info=USERS[u]||{k:'n',c:'#9a92b4'};
+  if(info.k==='sys')return `<div class="msg sys">${esc(m)}</div>`;
+  return `<div class="msg ${info.k}${pin?' pin':''}"><span class="av" style="background:${info.c}">${esc(u[0])}</span><div class="body">${info.b?`<span class="badge" style="background:${info.c};color:#111">${info.b}</span>`:''}<span class="u">${esc(u)}</span><span class="t">${esc(m)}</span></div></div>`;
+}
+function renderChat(st){
+  const box=document.createElement('div');box.className='box chat';box.tabIndex=0;box.setAttribute('role','button');box.setAttribute('aria-label','聊天室訊息，點一下繼續');
+  box.innerHTML=`<div class="chat-h"><span>聊天室</span><b>${S.viewers.toLocaleString('en-US')} 人在看</b></div><div class="msgs" aria-live="polite"></div><div class="cont" style="visibility:hidden">點一下繼續 ▸</div>`;
+  stage.appendChild(box);
+  st.msgs.forEach(([u,m])=>{if(USERS[u]&&['xg','fake','host','bao'].includes(USERS[u].k)&&!S.log.find(l=>l.u===u&&l.m===m))S.log.push({u,m,t:S.clock})});save();
+  const list=box.querySelector('.msgs');let k=0,done=false;
+  const add=()=>{if(k>=st.msgs.length)return;const [u,m,pin]=st.msgs[k++];list.insertAdjacentHTML('beforeend',msgHTML(u,m,pin));audio.pop();
+    if(USERS[u]&&USERS[u].k==='xg'){fxRestart($('flash'),'flicker');audio.heart()}
+    if(k>=st.msgs.length){done=true;box.querySelector('.cont').style.visibility='visible'}};
+  if(reduce){while(k<st.msgs.length)add()}else{add();timers.push(setInterval(add,650))}
+  bindGo(box,()=>{if(!done){clearTimers();while(k<st.msgs.length)add();return}next()});
+}
+function renderChoice(st){
+  const box=document.createElement('div');box.className='box dialog';box.style.cursor='default';
+  box.innerHTML=`<div class="who me">${st.timer?'快！你是管理員，你要怎麼做？':'你要怎麼做？'}</div>${st.timer?`<div class="timer"><i style="animation-duration:${st.timer}s"></i></div>`:''}<div class="choices"></div>`;
+  const c=box.querySelector('.choices');let done=false;
+  const pick=o=>{if(done)return;done=true;clearTimers();S.ch[st.key]=o.v;S.chText[st.key]=o.text;if(o.die)return die(o.die);next()};
+  st.options.forEach(o=>{const b=document.createElement('button');b.className='choice';b.textContent=o.text;b.onclick=()=>pick(o);c.appendChild(b)});
+  stage.appendChild(box);
+  if(st.timer){
+    timers.push(setInterval(()=>audio.heart(),900));
+    timers.push(setTimeout(()=>{if(done)return;done=true;clearTimers();die(st.timeoutDie)},st.timer*1000));
+  }
+}
+
+/* ================= stream lost ================= */
+function die(id){
+  clearTimers();if(typeof cineOff==='function')cineOff();
+  const d=DEATHS[id];S.deaths=(S.deaths||0)+1;recordDeath('nightmare',id);
+  audio.sting('death');fxRestart($('flash'),'static');
+  $('deathBody').innerHTML=`<div class="d-k">STILL DREAMING</div><h2>你沒有醒來</h2><p></p><div class="d-why"></div>
+    <div class="row"><button class="btn danger" id="retry">回到存檔點</button></div>`;
+  $('deathBody').querySelector('p').textContent=d.text;$('deathBody').querySelector('.d-why').textContent='原因：'+d.why;
+  const dv=$('death');dv.hidden=false;dv.style.animation='none';void dv.offsetWidth;dv.style.animation='';
+  $('retry').onclick=()=>{const deaths=S.deaths,snap=S.snap;if(snap){S=JSON.parse(snap);S.snap=snap}S.deaths=deaths;save();$('death').hidden=true;render()};
+  $('retry').focus();
+}
+
+/* ================= puzzles ================= */
+function pbox(title,desc){const box=document.createElement('div');box.className='box';box.innerHTML=`<h2 class="ptitle">${title}</h2><p class="pdesc">${desc}</p>`;stage.appendChild(box);return box}
+function multiOpts(box,list,round){
+  const wrap=document.createElement('div');wrap.className='opts';const sel=new Set();
+  list.forEach((o,i)=>{const b=document.createElement('button');b.className='opt'+(round?' round':'');b.innerHTML='<i></i><span></span>';b.querySelector('span').textContent=o.t||o;
+    b.onclick=()=>{if(round){sel.clear();wrap.querySelectorAll('.opt').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')})}
+      sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle('on',sel.has(i));b.setAttribute('aria-pressed',sel.has(i));wrap.dispatchEvent(new Event('change'))};wrap.appendChild(b)});
+  box.appendChild(wrap);return {wrap,sel};
+}
+function goRow(box,label){box.insertAdjacentHTML('beforeend',`<div class="row" style="margin-top:12px"><button class="btn" id="go">${label}</button><span class="msgx" id="m"></span></div>`)}
+function ok(text,ms=1300){solved();$('m').className='msgx good';$('m').textContent=text;$('go').disabled=true;setTimeout(next,ms)}
+function bad(box,text){$('m').className='msgx bad';$('m').textContent=text;shake(box)}
+const PUZZLES={
+ clock(){
+  const box=pbox('謎題一 · 鏡子裡的時鐘','黑板寫著：下課鐘響的時間，就是門的密碼。你只能從鏡子裡看到時鐘。');
+  const h=(5*30+15*.5)*Math.PI/180,m=90*Math.PI/180;
+  box.insertAdjacentHTML('beforeend',`<div class="paper" style="margin-top:12px;display:grid;place-items:center;background:linear-gradient(135deg,#d8e0e4,#b8c4cc)"><svg viewBox="0 0 200 200" width="180" height="180" aria-label="鏡子裡的時鐘，時針在 5 和 6 之間，分針指向 3 的位置"><circle cx="100" cy="100" r="88" fill="#f4f0e6" stroke="#2a2420" stroke-width="6"/>${rep(12,i=>{const a=i*Math.PI/6;return `<line x1="${100+74*Math.sin(a)}" y1="${100-74*Math.cos(a)}" x2="${100+(i?82:66)*Math.sin(a)}" y2="${100-(i?82:66)*Math.cos(a)}" stroke="#2a2420" stroke-width="${i?3:7}"/>`})}<line x1="100" y1="100" x2="${100+44*Math.sin(h)}" y2="${100-44*Math.cos(h)}" stroke="#2a2420" stroke-width="7" stroke-linecap="round"/><line x1="100" y1="100" x2="${100+66*Math.sin(m)}" y2="${100-66*Math.cos(m)}" stroke="#2a2420" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="100" r="5" fill="#c83a2a"/></svg><div style="font-size:12px;color:#4a5a62">（鏡子裡的樣子）</div></div><div class="wheels" id="wh"></div>`);
+  const dg=[0,0,0,0];
+  dg.forEach((_,k)=>{const col=document.createElement('div');col.className='wheel';col.innerHTML=`<button aria-label="第${k+1}位加一">▲</button><b id="dg${k}">0</b><button aria-label="第${k+1}位減一">▼</button>`;
+    const [u,,d]=col.children;u.onclick=()=>{dg[k]=(dg[k]+1)%10;$('dg'+k).textContent=dg[k];audio.click()};d.onclick=()=>{dg[k]=(dg[k]+9)%10;$('dg'+k).textContent=dg[k];audio.click()};$('wh').appendChild(col)});
+  goRow(box,'輸入密碼');
+  $('go').onclick=()=>{const v=dg.join('');
+    if(v==='0645')return ok('喀。門開了。');
+    if(v==='0515'||v==='1715')return bad(box,'這是鏡子裡看起來的時間。真正的時鐘，左右是反的。');
+    if(v==='0315'||v==='0325')return bad(box,'先分清楚哪一根是時針、哪一根是分針。');
+    bad(box,'鎖動也不動。拖鞋聲越來越近。')};
+ },
+ stairs(){
+  const box=pbox('謎題二 · 無盡樓梯','每一層都跟「正常的樣子」比較。有異常就回頭，沒有就往前。五次都要對。');
+  box.insertAdjacentHTML('beforeend',`<div class="paper" style="margin-top:12px;font-size:13px;line-height:1.7"><b>正常的樣子</b><br>${STAIRS[0].join('｜')}</div>`);
+  const picks=STAIRS.map(()=>-1);
+  STAIRS.forEach((r,j)=>{box.insertAdjacentHTML('beforeend',`<div class="cap" style="margin-top:12px">第 ${j+1} 次的樓梯間</div><div class="paper" style="font-size:13px;line-height:1.7;background:#e8e4da">${r.join('｜')}</div>`);
+    const o=multiOpts(box,[{t:'往前走'},{t:'回頭'}],true);o.wrap.style.gridTemplateColumns='1fr 1fr';o.wrap.addEventListener('change',()=>{picks[j]=o.sel.size?[...o.sel][0]:-1})});
+  goRow(box,'走！');
+  $('go').onclick=()=>{if(picks.includes(-1))return bad(box,'五次都要選。');
+    const w=picks.findIndex((p,j)=>p!==STAIRS_A[j]);
+    if(w<0)return ok('樓層牌，變成了 3F。',1500);
+    bad(box,`第 ${w+1} 次走錯了。你又回到 4 樓。`)};
+ },
+ snooze(){
+  const box=pbox('謎題三 · 鐘聲','翻開夢日記，對照准考證和媽媽的便條。');
+  box.insertAdjacentHTML('beforeend',`<div class="paper" style="margin-top:12px;font-size:14px;line-height:1.8"><b>夢日記：鐘聲</b><br>${Object.values(PHOTOS).map(p=>p.time+'　'+p.name).join('<br>')}</div>`);
+  const qs=[['1. 鐘聲每隔幾分鐘響一次？',['5 分鐘','9 分鐘','10 分鐘','15 分鐘']],['2. 那個鐘聲，其實是什麼？',['學校的下課鐘','你房間鬧鐘的「貪睡」','監考官的哨子']],['3. 你最晚幾點一定要醒來？',['07:00','07:20','07:40','08:20']],['4. 07:12 之後，還剩幾次鐘聲的機會？',['0 次','1 次','2 次','3 次']]];
+  const ans=[1,1,1,0],picks=qs.map(()=>-1);
+  qs.forEach(([q,o],qi)=>{box.insertAdjacentHTML('beforeend',`<div class="cap" style="margin-top:12px">${q}</div>`);const w=multiOpts(box,o.map(t=>({t})),true);w.wrap.style.marginTop='0';w.wrap.addEventListener('change',()=>{picks[qi]=w.sel.size?[...w.sel][0]:-1})});
+  goRow(box,'算出來了');
+  $('go').onclick=()=>{if(picks.includes(-1))return bad(box,'四題都要回答。');
+    const r=picks.filter((p,i)=>p===ans[i]).length;
+    if(r===4)return ok('下一次鐘聲是 07:21。在那之前，一定要醒來。',1900);
+    bad(box,`還有 ${4-r} 題不對。`)};
+ },
+ reality(){
+  const box=pbox('謎題四 · 這裡是現實嗎？','勾出所有「只有在夢裡才會發生」的事，再下判斷。');
+  const a=multiOpts(box,REALITY);
+  box.insertAdjacentHTML('beforeend','<div class="cap" style="margin-top:12px">所以，這裡是？</div>');
+  const b=multiOpts(box,[{t:'現實，我真的醒了'},{t:'還在夢裡'}],true);b.wrap.style.marginTop='0';
+  goRow(box,'下判斷');
+  $('go').onclick=()=>{const y=[...b.sel][0];
+    if(!a.sel.size||y==null)return bad(box,'兩題都要回答。');
+    if([...a.sel].some(i=>!REALITY[i].ok))return bad(box,'有一件事，在現實裡也很正常。');
+    if(!REALITY.every((e,i)=>!e.ok||a.sel.has(i)))return bad(box,'還有不對勁的地方，你沒注意到。');
+    if(y!==1)return bad(box,'這麼多怪事，你確定醒了嗎？');
+    ok('燈打不開，字一直在變，手有六根手指。這裡，還是夢。',1900)};
+ },
+ card(){
+  const box=pbox('謎題五 · 鏡子裡的答案卡','鏡子裡的答案卡是左右顛倒的。在真正的答案卡上，塗出它原本的樣子。');
+  const cell=(on)=>`<i style="display:block;width:26px;height:26px;border-radius:50%;border:2px solid #2a2420;background:${on?'#2a2420':'transparent'}"></i>`;
+  box.insertAdjacentHTML('beforeend',`<div class="row" style="margin-top:12px;justify-content:center;gap:16px;align-items:flex-start">
+   <div><div class="cap">鏡子裡</div><div class="paper" style="display:grid;grid-template-columns:repeat(4,26px);gap:8px;background:linear-gradient(135deg,#d8e0e4,#b8c4cc)">${CARD_MIRROR.flat().map(cell).join('')}</div></div>
+   <div><div class="cap">真正的答案卡（點一下塗黑）</div><div class="paper" id="cg" style="display:grid;grid-template-columns:repeat(4,26px);gap:8px"></div></div></div>`);
+  const g=CARD_MIRROR.map(r=>r.map(()=>0));
+  const draw=()=>{$('cg').innerHTML='';g.forEach((r,y)=>r.forEach((v,x)=>{const b=document.createElement('button');b.style.cssText='padding:0;border:0;background:transparent;width:26px;height:26px';b.setAttribute('aria-label',`第${y+1}列第${x+1}格${v?'已塗':'未塗'}`);b.innerHTML=cell(v);b.onclick=()=>{g[y][x]^=1;audio.click();draw()};$('cg').appendChild(b)}))};
+  draw();goRow(box,'交卷');
+  $('go').onclick=()=>{const want=CARD_MIRROR.map(r=>[...r].reverse());
+    if(g.every((r,y)=>r.every((v,x)=>v===want[y][x])))return ok('鏡面，像水一樣晃了一下。',1600);
+    if(g.every((r,y)=>r.every((v,x)=>v===CARD_MIRROR[y][x])))return bad(box,'這跟鏡子裡一模一樣。要左右翻過來。');
+    bad(box,'鏡子沒有反應。再對照一次。')};
+ },
+ truth(){
+  const box=pbox('最後一題 · 夢的答案','四題全部答對，你才能醒來。');
+  const picks=TRUTHQ.map(()=>-1);
+  TRUTHQ.forEach((q,qi)=>{box.insertAdjacentHTML('beforeend',`<div class="cap" style="margin-top:12px">${qi+1}. ${q.q}</div>`);
+    const o=multiOpts(box,q.o.map(t=>({t})),true);o.wrap.style.marginTop='0';o.wrap.addEventListener('change',()=>{picks[qi]=o.sel.size?[...o.sel][0]:-1})});
+  goRow(box,'交卷');
+  $('go').onclick=()=>{if(picks.includes(-1))return bad(box,'四題都要回答。');
+    const r=picks.filter((p,i)=>p===TRUTHQ[i].a).length;
+    if(r===4)ok('滿分。',1500);else bad(box,`還有 ${4-r} 題不對。`)};
+ }
+};
+/* ================= cutscenes ================= */
+const FACE=`<svg viewBox="0 0 200 240" aria-hidden="true"><path d="M20 240 Q30 170 100 168 Q170 170 180 240Z" fill="#6a6a70"/><path d="M70 172 L100 206 L130 172" fill="#4a4a50"/><circle cx="100" cy="34" r="22" fill="#2a2220"/><ellipse cx="100" cy="98" rx="60" ry="76" fill="#ddd8d0"/><path d="M42 80 Q50 30 100 26 Q150 30 158 80 Q140 50 100 50 Q60 50 42 80Z" fill="#2a2220"/><ellipse cx="100" cy="112" rx="52" ry="54" fill="#cfc8bc" opacity=".35"/><text x="100" y="128" text-anchor="middle" font-family="serif" font-size="72" font-weight="900" fill="#c8281e" opacity=".9" transform="rotate(-8 100 110)">0</text><path d="M76 150 h48" stroke="#8a8478" stroke-width="2"/>${rep(7,i=>`<path d="M${80+i*6.5} 146 v8" stroke="#8a8478" stroke-width="1.6"/>`)}</svg>`;
+const CUTS={
+ sleep:{dur:4400,html:()=>`<div class="lids"><i class="lt"></i><i class="lb"></i><div class="lclock">23:59</div></div><div class="cap2" style="--d:2.6s">……</div><div class="cap2" style="--d:3.2s">噹——</div>`,
+  sound(){setTimeout(()=>audio.tone(220,{a:1,d:2.5,g:.02,glide:.5}),300);setTimeout(()=>audio.bell(),3200)}},
+ loop:{dur:3600,html:()=>`<div class="loop">${rep(5,i=>`<div class="lp" style="--d:${.2+i*.5}s"><b>4F</b></div>`)}</div><div class="cap2" style="--d:2.8s">往下一層，還是 4 樓。</div>`,
+  sound(){for(let i=0;i<5;i++)setTimeout(()=>audio.click(),200+i*500)}},
+ mirror:{dur:6600,html:()=>`<div class="mir"><svg viewBox="0 0 200 260" aria-hidden="true"><rect x="10" y="10" width="180" height="240" rx="8" fill="#1a2228" stroke="#8a9aa2" stroke-width="8"/><ellipse cx="100" cy="110" rx="26" ry="32" fill="#e8e2d6" opacity=".4"/><path d="M58 250 q42-80 84 0" fill="#e8e2d6" opacity=".3"/><g class="mir-fig"><ellipse cx="146" cy="96" rx="22" ry="28" fill="#cfc8bc"/><circle cx="146" cy="60" r="10" fill="#2a2220"/><path d="M112 250 q34-90 68 0" fill="#5a5a60"/></g></svg></div><div class="cap2" style="--d:2.6s">鏡子裡，你的右後方，站著一個沒有臉的人。</div><div class="jump" style="--d:4.8s">${FACE}</div>`,
+  sound(){const j=document.querySelector('.cut .jump');if(j){document.body.appendChild(j);setTimeout(()=>j.remove(),7000)}
+   [500,1300,2100,2800,3400,3900,4300].forEach(t=>setTimeout(()=>audio.heart(),t));setTimeout(()=>audio.staticBurst(),2600);
+   setTimeout(()=>{audio.scare();audio.scare();quake();fxRestart($('vig'),'red');fxRestart($('flash'),'static')},4800)}},
+ home:{dur:3800,html:()=>`<div class="sunr"></div><div class="dclock">07:15</div><div class="cap2" style="--d:2s">……醒了？</div>`,
+  sound(){setTimeout(()=>[523.25,659.25,783.99].forEach((hz,i)=>setTimeout(()=>audio.tone(hz,{a:.6,d:2,g:.02}),i*300)),400)}},
+ wake:{dur:3600,html:()=>`<div class="shat"><svg viewBox="0 0 200 260" aria-hidden="true"><rect x="10" y="10" width="180" height="240" rx="8" fill="#2a3a44" stroke="#8a9aa2" stroke-width="8"/><g class="crk" stroke="#f4f8fa" stroke-width="2" fill="none"><path d="M100 120 L40 40 M100 120 L170 60 M100 120 L180 190 M100 120 L60 240 M100 120 L20 150 M100 120 L130 250"/></g></svg></div><div class="whiteout"></div>`,
+  sound(){setTimeout(()=>{audio.staticBurst();audio.tone(1400,{a:.01,d:1.6,g:.03,glide:.4})},1200);setTimeout(()=>audio.bell(),2400)}}
+};
+function renderCut(st){
+  if(typeof cineOn==='function'){cineOn();lastSpeaker=null}
+  const c=CUTS[st.id],box=document.createElement('div');box.className='cut';box.tabIndex=0;
+  box.innerHTML=c.html()+'<div class="cont" style="visibility:hidden">點一下繼續 ▸</div>';
+  stage.appendChild(box);box.focus({preventScroll:true});
+  try{c.sound()}catch(e){}
+  let done=false;const fin=()=>{done=true;box.querySelector('.cont').style.visibility='visible'};
+  timers.push(setTimeout(fin,reduce?300:c.dur));
+  const go=()=>{if(!done){clearTimers();try{box.getAnimations({subtree:true}).forEach(a=>a.finish())}catch(e){}fin();return}next()};
+  box.onclick=go;box.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};
+}
+
+/* ================= end & finale ================= */
+function renderEnd(st){
+  const c=st.ch,nx=CHAP_NEXT[c];
+  const box=document.createElement('div');box.className='box endcard';
+  box.innerHTML=`<div class="who">CHAPTER ${c} CLEAR</div><h2>${CH_LABEL[c]} · ${S.chapName}</h2>
+  <p class="pdesc">鐘聲響了 ${S.viewers} 次。你還在夢裡。</p>
+  <div class="stats"><div><b>${S.ev.length}</b><span>證物</span></div><div><b>${S.deaths||0}</b><span>沒醒來</span></div><div><b>${CHAP_PUZZLES[c].reduce((a,id)=>a+(S.hints[id]||0),0)}</b><span>本章提示</span></div></div>
+  <div class="next"><b style="color:var(--text)">下一章：${nx.name}</b><br>${nx.text}</div>
+  <div class="row" style="margin-top:14px"><button class="btn" id="nx">${nx.btn}</button><button class="btn ghost" id="rs">重新開始</button></div>`;
+  stage.appendChild(box);$('nx').onclick=next;$('rs').onclick=restart;
+}
+function renderFinale(){
+  const used=Object.values(S.hints).reduce((a,b)=>a+(b||0),0);
+  const E=S.ch.last==='ignore'?['結局二','今晚見','你假裝沒看到她。可是鏡子裡的你，會一直等到今晚。']:['結局一','早安','你醒來了，也對那個想逃走的自己，說了一聲早安。'];
+  const god=used===0&&!(S.deaths>0);
+  if(typeof recordEnding==='function'){recordEnding('nightmare',E[1]);if(god)recordEnding('nightmare','清醒夢大師')}
+  const box=document.createElement('div');box.className='box endcard';
+  box.innerHTML=`<div class="who">AWAKE · ${E[0]}</div><h2>${E[1]}</h2><p class="pdesc">${E[2]}</p>
+  <div class="stats"><div><b>5</b><span>次鐘聲</span></div><div><b>${S.deaths||0}</b><span>沒醒來</span></div><div><b>${used}</b><span>提示次數</span></div></div>
+  <div class="paper" style="margin-top:6px;font-size:14px;line-height:1.7"><b>真相</b><br>每 9 分鐘一次的鐘聲，是你鬧鐘的貪睡。沒有臉的監考官，是一直在床邊叫你的媽媽。<br>陪著你、勸你留下來的小鏡，是鏡子裡那個不想面對考試的你。</div>
+  ${god?`<div class="paper" style="margin-top:6px"><b>稱號解鎖 · 清醒夢大師</b><br>沒有睡著、沒有用任何提示。你在夢裡，一直記得自己是誰。</div>`
+   :`<div class="next">不在夢裡迷失、也不用提示破關，可以解鎖「清醒夢大師」稱號。<br><span style="color:var(--muted);font-size:13px">最後的選擇不同，結局也會不一樣。</span></div>`}
+  <div class="row" style="margin-top:14px"><button class="btn" id="rs">重新開始</button><a class="btn ghost home-link" href="../index.html">回到謎匣</a></div>
+  <p class="cap" style="margin-top:14px">謎匣 · 第柒匣《第零節》 · 感謝遊玩</p>`;
+  stage.appendChild(box);$('rs').onclick=restart;
+}
+function restart(){audio.unresolve();S=fresh();save();render()}
+
+/* ================= sheets ================= */
+function openSheet(html){$('sheetBody').innerHTML=html;$('sheet').hidden=false}
+const closeBtn=()=>`<div class="row" style="margin-top:14px"><button class="btn ghost" onclick="document.getElementById('sheet').hidden=true">關閉</button></div>`;
+$('sheet').onclick=e=>{if(e.target.id==='sheet')$('sheet').hidden=true};
+$('btnNote').onclick=()=>openSheet(`<h3>證物</h3><ul>${S.ev.length?S.ev.map(e=>`<li><b>${esc(e.name)}</b><br><span style="color:#ccc6dc">${esc(e.text)}</span></li>`).join(''):'<li class="locked">還沒有任何證物。</li>'}</ul>${closeBtn()}`);
+$('btnTesti').onclick=()=>openSheet(`<h3>夢日記</h3><ul>${(S.photos||[]).length?S.photos.map(id=>{const p=PHOTOS[id];return `<li><span class="ts">${p.time}</span><b>${p.name}</b><br><span style="color:#c8d4ce">${p.cap}</span></li>`}).join(''):'<li class="locked">還沒有照片。</li>'}</ul>${closeBtn()}`);
+$('btnHint').onclick=()=>{
+  const st=current();if(!st||st.t!=='puzzle')return;const id=st.id,info=PUZZLE_INFO[id];
+  const draw=()=>{const n=S.hints[id]||0;
+    $('sheetBody').innerHTML=`<h3>提示</h3><ul>${info.hints.map((h,k)=>`<li class="${k<n?'':'locked'}">提示 ${k+1}：${k<n?h:'尚未開啟'}</li>`).join('')}</ul>
+    <div class="row" style="margin-top:14px">${n<info.hints.length?'<button class="btn" id="moreHint">開啟下一個提示</button>':''}<button class="btn ghost" id="closeHint">關閉</button></div>`;
+    const m=$('moreHint');if(m)m.onclick=()=>{S.hints[id]=n+1;save();draw()};$('closeHint').onclick=()=>$('sheet').hidden=true};
+  $('sheet').hidden=false;draw();
+};
+
+/* ---------- chapter jump ---------- */
+function chapterList(){const list=[];SCRIPT.forEach((s,i)=>{if(s.t==='chapter')list.push({n:s.n,name:s.name,idx:i})});return list}
+function jumpTo(n){
+  const c=chapterList().find(x=>x.n===n);if(!c)return;
+  S=fresh();
+  for(let k=0;k<c.idx;k++){const st=SCRIPT[k];if(st.if&&S.ch[st.if[0]]!==st.if[1])continue;
+    if(st.t==='chapter'){S.chap=st.n;S.chapName=st.name}applyStep(st);
+    if(st.t==='ev'&&!S.ev.find(e=>e.id===st.id))S.ev.push({id:st.id,name:st.name,text:st.text});
+    if(st.t==='photo'&&!S.photos.includes(st.id))S.photos.push(st.id);
+    if(st.t==='chat')st.msgs.forEach(([u,m])=>{if(USERS[u]&&['xg','fake','host','bao'].includes(USERS[u].k))S.log.push({u,m,t:S.clock})});
+    if(st.t==='choice'){const o=st.options.find(o=>!o.die)||st.options[0];S.ch[st.key]=o.v;S.chText[st.key]=o.text}}
+  S.i=c.idx;save();try{audio.init()}catch(e){}
+  $('title').hidden=true;$('sheet').hidden=true;$('death').hidden=true;audio.unresolve();render();
+}
+function chapterSheet(){
+  openSheet(`<h3>選擇章節</h3><ul>${chapterList().map(c=>`<li style="padding:0"><button class="chapjump" data-n="${c.n}" style="width:100%;text-align:left;background:transparent;border:0;padding:12px;min-height:48px"><b>${CH_LABEL[c.n]}</b>　${c.name}</button></li>`).join('')}</ul>${closeBtn()}`);
+  document.querySelectorAll('.chapjump').forEach(b=>b.onclick=()=>jumpTo(+b.dataset.n));
+}
+
+/* ================= boot ================= */
+const saved=load();
+if(saved&&saved.i>0&&SCRIPT[saved.i])$('btnResume').hidden=false;
+$('btnStart').onclick=()=>{audio.init();S=fresh();save();$('title').hidden=true;render()};
+$('btnResume').onclick=()=>{audio.init();S=Object.assign(fresh(),saved);$('title').hidden=true;render()};
+$('btnChap').onclick=chapterSheet;
+(function(){const c=$('chap');c.setAttribute('role','button');c.tabIndex=0;c.style.cursor='pointer';c.onclick=chapterSheet;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chapterSheet()}}})();
+setScene('room');drawLive();
+</script>
+
+<script>
+/* ===== 謎匣 UI kit: icons on every button + AI-video style chapter picker ===== */
+(function(){
+const ICONS={
+ play:'<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>',
+ resume:'<path d="M5 5v14"/><path d="M9 5l11 7-11 7z" fill="currentColor" stroke="none"/>',
+ note:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+ bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/>',
+ scroll:'<path d="M8 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8"/><path d="M8 3a2 2 0 0 0-2 2v2h4V5a2 2 0 0 0-2-2zM10 10h6M10 14h6M10 18h3"/>',
+ skull:'<path d="M12 3a8 8 0 0 0-8 8c0 3 1.6 5 3.5 6v3h9v-3c1.9-1 3.5-3 3.5-6a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+ speaker:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+ mute:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/>',
+ box:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 12h18M10 8.5h4M10 15.5h4"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+ rotate:'<path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ wave:'<path d="M3 12h2l2-5 3 10 3-12 3 9 2-2h3"/>',
+ x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ shuffle:'<path d="M4 7h3l10 10h3M4 17h3l3-3M14 10l3-3h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+ door:'<path d="M6 21V4h10v17M4 21h16"/><circle cx="13" cy="12.5" r="1"/>',
+ key:'<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
+ bolt:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',
+ target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>'
+};
+const svgI=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||ICONS.chev}</svg>`;
+const MAP=[['關閉','x'],['開啟下一個提示','bulb'],['提示','bulb'],['看須知','scroll'],['須知','scroll'],['死亡圖鑑','skull'],['圖鑑','skull'],['筆記','note'],['證物','note'],['證詞','chat'],['怪談表','chat'],['靜音','mute'],['音效','speaker'],['謎匣','box'],['選擇章節','film'],['檢查點','rotate'],['重新','rotate'],['從頭','rotate'],['再玩','rotate'],['重排','shuffle'],['繼續','resume'],['回到房間','resume'],['進入','arrow'],['接收','wave'],['再聽','wave'],['播放','wave'],['自己走','door'],['鐵盒','key'],['開鎖','key'],['總開關','bolt'],['就是','target'],['指證','target'],['指出','target'],['開始','play'],['收聽','play'],['入住','play'],['進站','play'],['加入','play'],['刷卡','play'],['出發','arrow'],['送出','check'],['確認','check'],['說出','check'],['提出','check'],['告訴','check'],['寫進','check']];
+const EXC='.keys,.notes,.wheel,.mv,.fine,.pairs,.phone,.seatgrid,.shelf,.wall,.brk,.nodes,.opts,.chips,.pick,.tabs,.cp,.cp-launch';
+const pickIcon=t=>{for(const [k,i] of MAP)if(t.includes(k))return i;return 'chev'};
+function decorate(){
+  document.querySelectorAll('button,a.btn,a.icon-btn').forEach(el=>{
+    if(el.closest(EXC)||el.querySelector('svg,img'))return;
+    let t=el.textContent.trim();if(!t)return;
+    if(t==='匣'){el.textContent='謎匣';return}
+    if(t.length<=1)return;
+    const s=document.createElement('span');s.className='ico';s.innerHTML=svgI(el.classList.contains('choice')?'chev':pickIcon(t));
+    el.prepend(s);el.classList.add('has-ico');
+  });
+}
+let queued=false;const sched=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;decorate()})};
+
+/* ---------- accent & styles ---------- */
+const cs=getComputedStyle(document.documentElement);
+let ACC='#f2ab4c';for(const v of ['--line-color','--redglow','--amber']){const x=cs.getPropertyValue(v).trim();if(x){ACC=x;break}}
+const reduceM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NOISE=`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+const MONO='"IBM Plex Mono",ui-monospace,monospace',SERIF='"Noto Serif TC","Songti TC",serif';
+const CSS=`
+.has-ico{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.ico{display:inline-flex;flex:none}
+.ico svg{width:1.15em;height:1.15em}
+.icon-btn.has-ico{flex-direction:column;gap:1px;font-size:11px;line-height:1.2;padding:4px 6px;min-height:42px}
+.icon-btn.has-ico .ico svg{width:18px;height:18px}
+.choice.has-ico{display:flex;justify-content:flex-start;align-items:flex-start;gap:10px}
+.choice.has-ico .ico{color:${ACC};margin-top:4px}
+.cp{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;gap:14px;padding:calc(16px + env(safe-area-inset-top,0px)) 0 calc(16px + env(safe-area-inset-bottom,0px));background:radial-gradient(ellipse at 50% -10%,rgba(120,90,170,.32),transparent 60%),#07060a;color:#ece8f2;overflow-y:auto;overflow-x:hidden;animation:cpIn .45s ease}
+@keyframes cpIn{from{opacity:0}}
+.cp.closing{animation:cpOut .35s ease forwards}
+@keyframes cpOut{to{opacity:0}}
+.cp.leaving .cp-head,.cp.leaving .cp-rail,.cp.leaving .cp-chips{transition:filter .5s,opacity .5s;filter:blur(8px);opacity:0}
+.cp-grain{position:fixed;inset:-40%;pointer-events:none;background:${NOISE};opacity:.07;animation:cpGrain .6s steps(3) infinite}
+@keyframes cpGrain{33%{transform:translate(-3%,2%)}66%{transform:translate(2%,-3%)}}
+.cp-head{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-inline:16px}
+.cp-k{display:flex;align-items:center;gap:6px;font-family:${MONO};font-size:11px;letter-spacing:.3em;color:${ACC}}
+.cp-k svg{width:14px;height:14px}
+.cp-head h3{margin:4px 0 2px;font-family:${SERIF};font-weight:900;font-size:26px;line-height:1.2}
+.cp-head p{margin:0;font-size:13px;color:#a39cb4}
+.cp-x{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);display:grid;place-items:center;color:#ece8f2;padding:0}
+.cp-x svg{width:20px;height:20px}
+.cp-rail{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,320px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 8px;scrollbar-width:none}
+.cp-rail::-webkit-scrollbar{display:none}
+.cp-card{scroll-snap-align:center;display:flex;flex-direction:column;gap:10px;min-width:0;animation:cpCard .6s calc(var(--i)*.09s) cubic-bezier(.2,.9,.3,1) both}
+@keyframes cpCard{from{opacity:0;transform:translateY(24px) scale(.96)}}
+.cp-thumb{position:relative;display:block;width:100%;aspect-ratio:3/4;max-height:54vh;border:0;padding:0;border-radius:18px;overflow:hidden;background:#000;color:#fff;cursor:pointer;text-align:left;box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+.cp-card.cur .cp-thumb{box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 2px ${ACC}}
+.cp-art{position:absolute;inset:0;animation:cpDenoise 1.3s calc(.25s + var(--i)*.18s) ease-out both}
+@keyframes cpDenoise{from{filter:blur(16px) saturate(.1) brightness(1.6) contrast(1.4)}to{filter:none}}
+.cp-kb{position:absolute;inset:0}
+.cp-kb svg{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 60%;animation:cpKb 16s ease-in-out infinite alternate,cpDream 7s ease-in-out infinite}
+@keyframes cpKb{from{transform:scale(1.06)}to{transform:scale(1.24) translate(-4%,2%)}}
+@keyframes cpDream{50%{filter:blur(.7px) hue-rotate(12deg) saturate(1.3)}}
+.cp-rays{position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,240,220,.16) 48%,transparent 60%);background-size:260% 100%;mix-blend-mode:screen;animation:cpRays 6s ease-in-out infinite}
+@keyframes cpRays{from{background-position:120% 0}to{background-position:-60% 0}}
+.cp-noise{position:absolute;inset:-20%;background:${NOISE};background-size:180px;mix-blend-mode:overlay;opacity:.16;animation:cpNoiseIn 1.3s calc(.25s + var(--i)*.18s) ease-out both,cpGrain .5s steps(3) infinite}
+@keyframes cpNoiseIn{from{opacity:1}}
+.cp-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 28%,transparent 48%,rgba(0,0,0,.88))}
+.cp-hud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;font-family:${MONO};font-size:11px;letter-spacing:.12em}
+.cp-rec{color:#ff4a4a;animation:cpBlink 1.2s steps(1) infinite}
+@keyframes cpBlink{50%{opacity:.25}}
+.cp-gen{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;gap:8px;font-family:${MONO};font-size:12px;transition:opacity .4s}
+.cp-gen i{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:cpSpin .8s linear infinite}
+@keyframes cpSpin{to{transform:rotate(360deg)}}
+.cp-card.done .cp-gen{opacity:0}
+.cp-num{position:absolute;right:10px;bottom:52px;font-family:${SERIF};font-weight:900;font-size:76px;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35)}
+.cp-title{position:absolute;left:14px;right:14px;bottom:14px;display:flex;flex-direction:column}
+.cp-title small{font-size:12px;color:${ACC};letter-spacing:.2em}
+.cp-title b{font-family:${SERIF};font-weight:900;font-size:24px;line-height:1.3;text-shadow:0 2px 12px #000}
+.cp-meta{display:flex;flex-direction:column;gap:6px;padding-inline:2px}
+.cp-sub{font-size:13px;color:#a39cb4}
+.cp-prompt{font-family:${MONO};font-size:11px;color:#8a83a0;line-height:1.5;border-left:2px solid ${ACC};padding-left:8px}
+.cp-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border-radius:12px;border:0;background:${ACC};color:#0b0910;font-weight:700;font-size:15px}
+.cp-go svg{width:16px;height:16px}
+.cp-chips{display:flex;justify-content:center;gap:8px;padding-inline:16px;flex-wrap:wrap}
+.cp-chip{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:transparent;color:#a39cb4;font-family:${MONO};font-size:13px;padding:0}
+.cp-chip.on{background:${ACC};color:#0b0910;border-color:${ACC}}
+.cp-fly{position:fixed;z-index:60;border-radius:18px;overflow:hidden;background:#000;transition:left .75s cubic-bezier(.7,0,.2,1),top .75s cubic-bezier(.7,0,.2,1),width .75s cubic-bezier(.7,0,.2,1),height .75s cubic-bezier(.7,0,.2,1),border-radius .75s}
+.cp-fly.full{left:0!important;top:0!important;width:100vw!important;height:100vh!important;border-radius:0}
+.cp-fly .cp-kb svg{animation:none;transform:scale(1.12)}
+.cp-fly.dive .cp-kb{animation:cpDive 1.2s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes cpDive{to{transform:scale(1.7);filter:blur(5px) brightness(2.3) saturate(1.6)}}
+.cp-scan{position:absolute;left:0;right:0;height:30%;top:-30%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.2),transparent);animation:cpScan 1.1s .2s linear 2}
+@keyframes cpScan{to{top:100%}}
+.cp-fly.out,.cp-launch.out{opacity:0;transition:opacity .55s;pointer-events:none}
+.cp-launch{position:fixed;inset:0;z-index:61;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));cursor:pointer;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.65));color:#fff}
+.cp-type{font-family:${MONO};font-size:13px;color:#e8f4ee;min-height:1.6em}
+.cp-caret{display:inline-block;width:8px;height:14px;margin-left:2px;background:${ACC};vertical-align:middle;animation:cpBlink .6s steps(1) infinite}
+.cp-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.cp-bar i{display:block;height:100%;background:${ACC};transform-origin:left;animation:cpBar 1.5s cubic-bezier(.3,.1,.2,1) both}
+@keyframes cpBar{from{transform:scaleX(0)}}
+.cp-big{position:absolute;left:16px;right:16px;top:38%;text-align:center;opacity:0;transform:scale(1.15);filter:blur(10px);transition:opacity .6s,transform .6s,filter .6s}
+.cp-launch.reveal .cp-big{opacity:1;transform:none;filter:none}
+.cp-big small{display:block;font-family:${MONO};letter-spacing:.5em;color:${ACC};font-size:13px}
+.cp-big b{font-family:${SERIF};font-weight:900;font-size:clamp(40px,12vw,64px);text-shadow:0 0 30px rgba(0,0,0,.8),2px 0 rgba(255,0,60,.55),-2px 0 rgba(0,220,255,.55)}
+.cp-burst{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.cp,.cp *{animation:none!important;transition:none!important}}`;
+const st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
+
+/* ---------- AI-video chapter picker ---------- */
+const pad=n=>String(n).padStart(2,'0');
+function sceneFor(list,i){
+  const c=list[i];
+  try{if(typeof CHAP_SCENE!=='undefined'&&CHAP_SCENE[c.n]&&SCENES[CHAP_SCENE[c.n]])return CHAP_SCENE[c.n]}catch(e){}
+  const end=i+1<list.length?list[i+1].idx:SCRIPT.length;
+  for(let k=c.idx;k<end;k++){const s=SCRIPT[k];if(s&&s.scene&&SCENES[s.scene])return s.scene}
+  return Object.keys(SCENES)[0];
+}
+const subOf=n=>{try{return (typeof CC_SUB!=='undefined'&&CC_SUB[n])||''}catch(e){return ''}};
+let open=null,busy=false;
+function card(c,i,list,cur){
+  const k=sceneFor(list,i),sub=subOf(c.n);
+  const prompt=`${c.name}，${sub.replace(/ · /g,'，')}，深夜，電影感光影，懸疑`;
+  return `<article class="cp-card${c.n===cur?' cur':''}" style="--i:${i}" data-i="${i}">
+   <button class="cp-thumb" data-n="${c.n}" aria-label="從${CH_LABEL[c.n]}「${c.name}」開始">
+    <div class="cp-art"><div class="cp-kb">${SCENES[k]}</div></div><div class="cp-rays"></div><div class="cp-noise"></div><div class="cp-shade"></div>
+    <div class="cp-hud"><span class="cp-rec">● REC</span><span>${c.n===cur?'目前進度':'SCENE '+pad(c.n)}</span></div>
+    <div class="cp-gen"><i></i><span>生成中</span><b>0%</b></div>
+    <div class="cp-num">${pad(c.n)}</div>
+    <div class="cp-title"><small>${CH_LABEL[c.n]}</small><b>${c.name}</b></div>
+   </button>
+   <div class="cp-meta"><div class="cp-sub">${sub}</div><div class="cp-prompt">▸ prompt：${prompt}</div>
+    <button class="cp-go" data-n="${c.n}">${svgI('play')}從這裡開始</button></div>
+  </article>`;
+}
+function cinePick(){
+  if(open)return;
+  const list=chapterList(),title=document.getElementById('title');
+  const cur=title&&title.hidden?S.chap:0;
+  const el=document.createElement('div');el.className='cp';el.setAttribute('role','dialog');el.setAttribute('aria-label','選擇章節');
+  el.innerHTML=`<div class="cp-grain"></div>
+   <div class="cp-head"><div><div class="cp-k">${svgI('film')}SCENE SELECT</div><h3>選擇章節</h3><p>滑動挑一個場景，從那一刻開始。前面的線索會自動補上。</p></div><button class="cp-x" aria-label="關閉">${svgI('x')}</button></div>
+   <div class="cp-rail">${list.map((c,i)=>card(c,i,list,cur)).join('')}</div>
+   <div class="cp-chips">${list.map((c,i)=>`<button class="cp-chip${c.n===(cur||list[0].n)?' on':''}" data-i="${i}" aria-label="${CH_LABEL[c.n]}">${pad(c.n)}</button>`).join('')}</div>`;
+  document.body.appendChild(el);open=el;
+  const rail=el.querySelector('.cp-rail'),cards=[...el.querySelectorAll('.cp-card')],chips=[...el.querySelectorAll('.cp-chip')];
+  const ci=cur?list.findIndex(c=>c.n===cur):0;
+  if(ci>0)rail.scrollLeft=cards[ci].offsetLeft-16;
+  cards.forEach((cd,i)=>{
+    const b=cd.querySelector('.cp-gen b');
+    if(reduceM){cd.classList.add('done');return}
+    const t0=performance.now()+250+i*180;
+    (function tick(t){const p=Math.max(0,Math.min(1,(t-t0)/1300));b.textContent=Math.round(p*100)+'%';if(p<1&&open===el)requestAnimationFrame(tick);else cd.classList.add('done')})(performance.now());
+  });
+  rail.addEventListener('scroll',()=>{const mid=rail.scrollLeft+rail.clientWidth/2;let best=0,d=1e9;cards.forEach((c,i)=>{const m=c.offsetLeft+c.offsetWidth/2;if(Math.abs(m-mid)<d){d=Math.abs(m-mid);best=i}});chips.forEach((c,i)=>c.classList.toggle('on',i===best))},{passive:true});
+  el.addEventListener('click',e=>{
+    if(e.target.closest('.cp-x'))return closePick();
+    const ch=e.target.closest('.cp-chip');if(ch){cards[+ch.dataset.i].scrollIntoView({behavior:reduceM?'auto':'smooth',inline:'center',block:'nearest'});return}
+    const go=e.target.closest('.cp-thumb,.cp-go');if(go)launch(+go.dataset.n,go.closest('.cp-card').querySelector('.cp-thumb'));
+  });
+  el.querySelector('.cp-x').focus({preventScroll:true});
+}
+function closePick(){if(!open)return;const el=open;open=null;el.classList.add('closing');setTimeout(()=>el.remove(),340)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open&&!busy)closePick()});
+function finishJump(n){if(open){open.remove();open=null}busy=false;try{jumpTo(n)}catch(err){console.error(err)}}
+function launch(n,thumb){
+  if(busy)return;busy=true;
+  const c=chapterList().find(x=>x.n===n);
+  try{if(typeof audio!=='undefined'&&audio.init)audio.init()}catch(e){}
+  if(reduceM){finishJump(n);return}
+  const r=thumb.getBoundingClientRect();
+  const fly=document.createElement('div');fly.className='cp-fly';
+  fly.innerHTML=`<div class="cp-kb">${thumb.querySelector('.cp-kb').innerHTML}</div><div class="cp-rays"></div><div class="cp-scan"></div>`;
+  Object.assign(fly.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+  const ov=document.createElement('div');ov.className='cp-launch';
+  ov.innerHTML=`<div class="cp-big"><small>${CH_LABEL[n]}</small><b>${c.name}</b></div><div class="cp-type"></div><div class="cp-bar"><i></i></div><canvas class="cp-burst"></canvas>`;
+  document.body.append(fly,ov);open.classList.add('leaving');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>fly.classList.add('full')));
+  const text=`> 生成場景：${CH_LABEL[n]}「${c.name}」 ${subOf(n)}`,ty=ov.querySelector('.cp-type');let k=0;
+  const tyI=setInterval(()=>{k++;ty.innerHTML=text.slice(0,k).replace(/[&<>]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[s])+'<span class="cp-caret"></span>';if(k>=text.length)clearInterval(tyI)},Math.max(18,1000/text.length));
+  const T=[setTimeout(()=>fly.classList.add('dive'),900),setTimeout(()=>ov.classList.add('reveal'),1050),setTimeout(()=>burst(ov.querySelector('.cp-burst')),1650),setTimeout(done,2150)];
+  let finished=false;
+  function done(){if(finished)return;finished=true;T.forEach(clearTimeout);clearInterval(tyI);finishJump(n);fly.classList.add('out');ov.classList.add('out');setTimeout(()=>{fly.remove();ov.remove()},600)}
+  ov.addEventListener('click',done);
+}
+function burst(cv){
+  const w=cv.width=innerWidth,h=cv.height=innerHeight,x=cv.getContext('2d');if(!x)return;
+  const P=Array.from({length:220},()=>{const a=Math.random()*6.283,s=2+Math.random()*10;return {x:w/2,y:h*.45,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*2.6}});
+  const t0=performance.now();
+  (function f(t){const e=(t-t0)/700;x.clearRect(0,0,w,h);x.globalCompositeOperation='lighter';
+    for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vx*=.95;p.vy*=.95;x.globalAlpha=Math.max(0,1-e);x.fillStyle=Math.random()<.3?'#fff':ACC;x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fill()}
+    if(e<1)requestAnimationFrame(f)})(t0);
+}
+
+/* ---------- bind ---------- */
+window.cinePick=cinePick;
+const b=document.getElementById('btnChap');if(b)b.onclick=cinePick;
+const lab=document.getElementById('chap');if(lab){lab.onclick=cinePick;lab.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cinePick()}}}
+decorate();
+new MutationObserver(sched).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+
+/* ---------- episode deep link (#ch3) + resume audio on first tap ---------- */
+(function(){
+  const m=/^#ch(\d)$/.exec(location.hash||'');
+  if(m&&typeof jumpTo==='function'){setTimeout(()=>{try{jumpTo(+m[1])}catch(e){}try{history.replaceState(null,'',location.pathname)}catch(e){}},60)}
+  const wake=()=>{try{if(typeof audio!=='undefined'){if(!audio.ctx&&audio.init)audio.init();if(audio.ctx&&audio.ctx.state==='suspended')audio.ctx.resume()}}catch(e){}};
+  document.addEventListener('pointerdown',wake,{capture:true});document.addEventListener('keydown',wake,{capture:true});
+})();
+
+</script>
+</body>
+</html>

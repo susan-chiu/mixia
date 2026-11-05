@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  謎匣 — App 層隱私 manifest
+  ・不追蹤、不收集任何資料；遊戲進度只存在裝置的 WKWebView 本機儲存。
+  ・只用 Capacitor 核心與 SplashScreen／StatusBar，沒有用到需要聲明理由的 API（框架自帶各自的 manifest）。
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array/>
+</dict>
+</plist>

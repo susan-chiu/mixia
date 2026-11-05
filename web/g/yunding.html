@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}.home-link{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}</style>
+<title>雲頂旅社住宿須知</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: one-screen horror console — HUD on top, a living scene behind the story panel. Deliberately single dark look. */
+:root{
+  --ink:#0b0d11; --wall:#151920; --panel:#181d26; --line:#2c3443;
+  --sil:#12161d; --sil2:#212836;
+  --paper:#e4d9bf; --paper-ink:#2a241b; --red:#b8322a; --redglow:#ff4a3d;
+  --lamp:#d9c58e; --ok:#86c9a3; --text:#e6e2d8; --muted:#8f99ab;
+  --f-display:"Noto Serif TC","Songti TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-hand:"LXGW WenKai TC","Kaiti TC","DFKai-SB",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.7;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+#app{height:100%;max-width:480px;margin:0 auto;padding-inline:16px;padding-block:10px 14px;display:flex;flex-direction:column;gap:10px}
+.bar{display:flex;align-items:center;gap:8px}
+.chap{flex:1;min-width:0;font-size:13px;color:var(--muted);letter-spacing:.08em}
+.chap b{color:var(--text);font-weight:500}
+.clock{font-family:var(--f-mono);font-size:14px;color:var(--lamp);padding:2px 8px;border:1px solid var(--line);border-radius:6px}
+.tools{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.icon-btn{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 4px;font-size:13px;color:var(--text);min-height:36px}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.icon-btn.rule{border-color:#5a3a30;color:#f0c8b8}
+.status{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);min-height:18px}
+.batt{display:flex;gap:3px}
+.batt i{width:10px;height:14px;border-radius:2px;background:rgba(255,255,255,.1)}
+.batt i.on{background:var(--lamp)}
+.batt i.low{background:var(--red)}
+
+.stage-wrap{flex:1;min-height:0;position:relative;display:flex}
+.stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.scene{position:absolute;inset:0;border-radius:14px;overflow:hidden;pointer-events:none;background:linear-gradient(#141821,#0b0d11)}
+.scene[data-k=bus]{background:linear-gradient(#0d1420,#070a10)}
+.scene[data-k=basement]{background:linear-gradient(#0e0f10,#060606)}
+.scene[data-k=floor4]{background:linear-gradient(#0f1714,#070b09)}
+.scene[data-k=exit]{background:linear-gradient(#3a3226,#1a160f)}
+.scene::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(217,197,142,0) 20%,rgba(255,214,150,.35));opacity:0;transition:opacity 4s}
+.scene.dawn::after{opacity:1}
+#sceneArt{position:absolute;inset:0;animation:sceneIn 1.4s ease}
+#sceneArt svg{position:absolute;inset:0;width:100%;height:100%}
+#motes{position:absolute;inset:0;width:100%;height:100%}
+@keyframes sceneIn{from{opacity:0;transform:scale(1.05)}}
+.s1{fill:var(--sil)} .s2{fill:var(--sil2)} .st{stroke:var(--sil2);fill:none}
+.flick{animation:flick 6s infinite}
+@keyframes flick{0%,38%,42%,46%,100%{opacity:.8}40%,44%{opacity:.05}}
+.sway{transform-origin:200px 160px;animation:sway 3.5s ease-in-out infinite alternate}
+@keyframes sway{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
+.beckon{transform-origin:330px 150px;animation:beckon 1.6s ease-in-out infinite}
+@keyframes beckon{50%{transform:rotate(-14deg)}}
+
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+.dialog{margin-top:auto;cursor:pointer;min-height:132px;display:flex;flex-direction:column;gap:6px;background:rgba(22,27,36,.94);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.who{font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.who.me{color:var(--ok)} .who.xk{color:#9ec3f0} .who.yq{color:#e8b7d0} .who.teacher{color:var(--lamp)} .who.voice{color:var(--redglow)}
+.line{font-size:17px;min-height:2.6em}
+.line.narr{color:#c9ccd4}
+.line.voice{font-family:var(--f-display);font-weight:600;color:#f6d5cf;animation:vglitch .9s ease-out}
+@keyframes vglitch{0%{opacity:0;text-shadow:3px 0 rgba(255,74,61,.9),-3px 0 rgba(120,200,255,.6)}30%{opacity:1}45%{opacity:.4;text-shadow:-2px 0 rgba(255,74,61,.7)}60%{opacity:1}100%{text-shadow:none}}
+.cont{align-self:flex-end;font-size:12px;color:var(--muted)}
+.choices{display:grid;gap:8px;margin-top:4px}
+.choice{text-align:left;background:var(--wall);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.choice:hover{border-color:var(--lamp)}
+.timer{height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.timer i{display:block;height:100%;background:var(--red);transform-origin:left;animation:drain linear forwards}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.ev-tag{display:inline-block;background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:2px 10px;font-weight:500;transform:rotate(-1deg);animation:evin .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes evin{from{opacity:0;transform:translateY(-24px) rotate(-12deg) scale(1.2)}}
+
+.ptitle{font-family:var(--f-display);font-weight:900;font-size:20px;margin:0}
+.pdesc{color:#c9ccd4;margin:4px 0 0;font-size:15px}
+.st-msg{font-size:14px;color:var(--muted);min-height:1.6em}
+.st-msg.good{color:var(--ok)} .st-msg.bad{color:var(--redglow)}
+.btn{background:var(--lamp);color:#1c170c;border:0;border-radius:10px;padding:12px 16px;font-weight:700;min-height:44px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:500}
+.btn.danger{background:var(--red);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cap{font-size:12px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+.answer{display:flex;gap:8px}
+.answer input{flex:1;min-width:0;background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--text);font-size:18px;letter-spacing:.2em}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+
+/* the rule sheet — paper, black & red ink */
+.paper{background:var(--paper);color:var(--paper-ink);border-radius:3px;padding:14px 14px 12px;box-shadow:0 8px 22px rgba(0,0,0,.55);font-family:var(--f-hand)}
+.paper h4{margin:0 0 8px;font-family:var(--f-display);font-weight:900;font-size:16px;text-align:center;letter-spacing:.3em;border-bottom:1px solid rgba(0,0,0,.25);padding-bottom:6px}
+.rl{display:flex;gap:8px;padding:3px 0;font-size:16px;line-height:1.5;border-radius:3px}
+.rl b{font-family:var(--f-mono);font-weight:500;font-size:12px;opacity:.6;width:1.4em;flex:none;padding-top:3px}
+.rl.red{color:var(--red)}
+.rl.fake span{text-decoration:line-through;text-decoration-thickness:2px;opacity:.55}
+.rl.pick{cursor:pointer}
+.rl.pick:hover{background:rgba(0,0,0,.05)}
+.rl.marked{background:rgba(184,50,42,.12)}
+.rl.marked b::after{content:"✕";color:var(--red);margin-left:2px}
+.rl.new span{animation:inkin 1.6s ease}
+@keyframes inkin{0%{opacity:0;filter:blur(4px);letter-spacing:.3em}100%{opacity:1;filter:none}}
+.torn{height:14px;background:linear-gradient(135deg,var(--paper) 25%,transparent 25%) -7px 0/14px 14px,linear-gradient(225deg,var(--paper) 25%,transparent 25%) -7px 0/14px 14px;margin:6px -14px -26px}
+.note-hand{font-family:var(--f-hand);font-size:15px;color:#3d3426;margin-top:8px;border-top:1px dashed rgba(0,0,0,.25);padding-top:6px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (max-width:420px){.two{grid-template-columns:1fr}}
+
+/* roster */
+.roster{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.roster td,.roster th{border-bottom:1px solid rgba(0,0,0,.18);padding:4px 4px;text-align:left}
+.roster th{font-weight:700}
+.wall{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.photo{display:flex;flex-direction:column;align-items:center;gap:4px;background:#d8ccb0;color:var(--paper-ink);border:6px solid #efe6d0;border-bottom-width:14px;padding:6px 4px;box-shadow:0 4px 10px rgba(0,0,0,.5);min-width:0}
+.photo svg{width:56px;height:56px}
+.photo span{font-size:12px;line-height:1.3;text-align:center}
+.photo.on{outline:3px solid var(--redglow);outline-offset:2px}
+
+/* fuse box */
+.fuse{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.floors{display:grid;gap:6px}
+.fl{display:flex;align-items:center;gap:10px;background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-family:var(--f-mono);font-size:14px}
+.fl i{width:16px;height:16px;border-radius:50%;background:#2a2a24;transition:all .2s}
+.fl.on i{background:var(--lamp);box-shadow:0 0 12px 3px rgba(217,197,142,.6)}
+.fl.f4.on i{background:var(--redglow);box-shadow:0 0 14px 4px rgba(255,74,61,.7)}
+.brk{display:grid;gap:6px}
+.sw{display:flex;align-items:center;gap:10px;background:#20242c;border:1px solid var(--line);border-radius:8px;padding:6px 10px;text-align:left}
+.sw .k{width:22px;height:34px;border-radius:4px;background:#0c0e12;position:relative;flex:none}
+.sw .k::after{content:"";position:absolute;left:3px;right:3px;height:14px;border-radius:2px;background:#8f99ab;top:17px;transition:top .15s}
+.sw.on .k::after{top:3px;background:var(--lamp)}
+.sw span{font-size:13px;line-height:1.35}
+
+/* route */
+.nodes{display:grid;gap:8px;margin-top:12px}
+.node{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--wall);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left}
+.node b{font-family:var(--f-mono);color:var(--lamp);min-width:1.5em}
+.node.used{opacity:.4}
+.tl{font-family:var(--f-mono);font-size:13px;background:var(--ink);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin-top:10px;min-height:44px}
+.mapnote{font-family:var(--f-hand);font-size:14px;line-height:1.6}
+
+/* overlays */
+.sheet{position:fixed;inset:0;background:rgba(3,4,6,.75);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+.sheet>div{width:100%;max-width:480px;max-height:85%;overflow:auto;background:var(--panel);border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet h3{font-family:var(--f-display);margin:0 0 10px;font-size:18px}
+.sheet ul{padding-left:0;list-style:none;margin:0;display:grid;gap:8px}
+.sheet li{background:var(--wall);border-radius:8px;padding:10px 12px;font-size:15px}
+.locked{color:var(--muted)}
+.title{position:fixed;inset:0;z-index:5;background:radial-gradient(ellipse at 50% 25%,#2a1412 0%,var(--ink) 62%);display:flex;align-items:center;justify-content:center;padding-inline:24px}
+.title-inner{max-width:420px;display:grid;gap:14px}
+.title h1{font-family:var(--f-display);font-weight:900;font-size:clamp(38px,11vw,56px);line-height:1.15;margin:0;color:var(--paper);text-wrap:balance}
+.title h1 em{font-style:normal;display:block;font-family:var(--f-hand);color:var(--red);font-size:.5em;letter-spacing:.2em;text-shadow:0 0 14px rgba(255,74,61,.5)}
+.title p{color:#c9ccd4;margin:0}
+.title .meta{font-size:12px;letter-spacing:.14em;color:var(--muted)}
+.death{position:fixed;inset:0;z-index:9;background:#050505;display:flex;align-items:center;justify-content:center;padding-inline:24px;animation:dIn 1.2s ease}
+@keyframes dIn{0%{background:#5a0a06}15%{background:#050505}25%{background:#2a0503}40%{background:#050505}}
+.death-inner{max-width:400px;display:grid;gap:14px;text-align:center}
+.death .d-k{font-family:var(--f-mono);letter-spacing:.4em;color:var(--red);font-size:13px}
+.death h2{font-family:var(--f-display);font-weight:900;font-size:32px;margin:0;color:#f3e6e3;animation:dT 1.6s ease}
+@keyframes dT{from{letter-spacing:.6em;opacity:0;filter:blur(8px)}}
+.death p{margin:0;color:#c9b8b4;font-size:16px}
+.death .d-rule{font-family:var(--f-hand);color:var(--paper-ink);background:var(--paper);padding:10px 12px;border-radius:3px;font-size:15px;transform:rotate(-1deg)}
+.death .row{justify-content:center}
+.chapcard{position:fixed;inset:0;z-index:8;background:var(--ink);display:flex;align-items:center;justify-content:center;padding-inline:24px;text-align:center;cursor:pointer;animation:ccIn 3.2s ease forwards}
+@keyframes ccIn{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.cc-k{font-family:var(--f-mono);font-size:13px;letter-spacing:.4em;color:var(--red);animation:ccT 3s ease}
+.cc-n{font-family:var(--f-display);font-weight:900;font-size:clamp(38px,11vw,56px);color:var(--paper);margin:8px 0;animation:ccT 3s ease}
+.cc-s{color:var(--muted);font-size:14px;letter-spacing:.1em}
+@keyframes ccT{from{letter-spacing:.9em;opacity:0;filter:blur(6px)}40%{opacity:1;filter:none}}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 42%,rgba(150,6,6,.5) 100%)}
+.vignette.beat{animation:beat .45s ease-out}
+.vignette.red{animation:beat .9s ease-out}
+@keyframes beat{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.flash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;background:#e8eef7}
+.flash.flicker{animation:fl 1.1s steps(1)}
+@keyframes fl{0%{opacity:0}8%{opacity:.18}14%{opacity:0}30%{opacity:.12}36%{opacity:0}52%{opacity:.08}58%{opacity:0}}
+.flash.cut{background:#000;animation:cut 1.6s ease-out}
+@keyframes cut{0%{opacity:.95}60%{opacity:.85}100%{opacity:0}}
+.ping{animation:ping 1.2s ease-out}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,74,61,.8)}100%{box-shadow:0 0 0 14px rgba(255,74,61,0)}}
+.endcard h2{font-family:var(--f-display);font-weight:900;font-size:28px;margin:0 0 6px;color:var(--paper)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.stats div{background:var(--wall);border-radius:8px;padding:10px;text-align:center}
+.stats b{display:block;font-family:var(--f-mono);font-size:22px;color:var(--lamp)}
+.stats span{font-size:12px;color:var(--muted)}
+.next{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px;color:#c9ccd4;font-size:15px}
+
+/* cutscenes — base styles are the END state */
+.cut{position:relative;flex:1;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;padding-block:12px;perspective:700px}
+.cut>.cont{position:absolute;bottom:4px;right:4px}
+.cap2{font-family:var(--f-display);font-weight:600;font-size:18px;color:var(--paper);text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.9);animation:fadeUp .9s var(--d,0s) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
+.cut .paper{width:min(320px,100%);animation:unroll 1s ease both;transform-origin:top}
+@keyframes unroll{from{transform:scaleY(.05);opacity:0}}
+.cut .rl{animation:fadeUp .5s var(--d) both}
+.cut .rl.red{animation:bleed 1.2s var(--d) both}
+@keyframes bleed{0%{opacity:0;filter:blur(3px)}50%{opacity:1;color:var(--redglow);text-shadow:0 0 6px rgba(255,74,61,.6)}}
+.elev{display:flex;gap:10px;background:#1a1a1a;border:3px solid #3a3a3a;border-radius:6px;padding:10px 14px}
+.elev span{font-family:var(--f-mono);font-size:28px;color:#3a3a3a;width:1em;text-align:center}
+.elev span.lit{color:var(--redglow);text-shadow:0 0 12px var(--redglow);animation:litup .4s var(--d) steps(1) both}
+@keyframes litup{from{color:#3a3a3a;text-shadow:none}}
+.elev span.pass{animation:pass .9s var(--d) steps(1) both}
+@keyframes pass{0%{color:#3a3a3a}1%{color:var(--lamp);text-shadow:0 0 10px var(--lamp)}100%{color:#3a3a3a;text-shadow:none}}
+.door2{display:flex;width:220px;height:170px;background:radial-gradient(ellipse at 50% 60%,#fff4d6,#f2c983 60%,#c08b4a);border-radius:4px;overflow:hidden;box-shadow:0 0 60px rgba(255,214,150,.5)}
+.door2 i{flex:1;background:linear-gradient(90deg,#2a2018,#3b2a1f);transform:scaleX(.08);animation:dopen 1.6s .6s ease-in-out both}
+.door2 i:first-child{transform-origin:left} .door2 i:last-child{transform-origin:right}
+@keyframes dopen{from{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){.cut *,.flick,.sway,.beckon,.line.voice,.ev-tag,.cc-k,.cc-n,#sceneArt,.death h2,.death{animation:none!important}.vignette,.flash{display:none}}
+
+/* ===== cinema kit ===== */
+.dialog.withp{padding-left:104px;min-height:120px}
+.pt{position:absolute;left:14px;top:14px;width:76px;height:76px;border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.pt svg{display:block;width:100%;height:100%}
+.pt.enter{animation:ptin .4s cubic-bezier(.2,1.3,.4,1)}
+@keyframes ptin{from{opacity:0;transform:translateX(-14px) scale(.9)}}
+.pt.sil{animation:ptin .4s, ptgl 2.2s steps(1) infinite}
+@keyframes ptgl{0%,86%,100%{transform:none;filter:none}88%{transform:translateX(-3px);filter:hue-rotate(40deg)}92%{transform:translateX(3px)}}
+.dialog{animation:dlgin .35s ease-out}
+@keyframes dlgin{from{opacity:.4;transform:translateY(8px)}}
+body::before,body::after{content:"";position:fixed;left:0;right:0;height:0;background:#000;z-index:3;transition:height .5s ease;pointer-events:none}
+body::before{top:0} body::after{bottom:0}
+body.cine::before,body.cine::after{height:7vh}
+.scene::before{content:"";position:absolute;inset:0;background:#000;opacity:0;z-index:2;pointer-events:none}
+.scene.dip::before{animation:dip .9s ease}
+@keyframes dip{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+#sceneArt svg{animation:kb 24s ease-in-out infinite alternate;transform-origin:50% 55%}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.08) translate(-1%,1%)}}
+/* shared cutscene props */
+.cs-stage{position:relative;width:min(300px,100%);height:190px;border-radius:10px;overflow:hidden;background:#06080b;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.cs-rain{position:absolute;inset:0;background:repeating-linear-gradient(105deg,rgba(170,190,220,.0) 0 9px,rgba(170,190,220,.22) 9px 10px);background-size:40px 40px;animation:rainmv .5s linear infinite}
+@keyframes rainmv{to{background-position:-12px 40px}}
+.cs-sign{position:absolute;left:50%;top:38px;transform:translateX(-50%);font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.3em;color:#f2d39a;text-shadow:0 0 14px rgba(255,190,120,.7);opacity:.95;animation:signon 2.4s .6s steps(1) both}
+@keyframes signon{0%{opacity:0}12%{opacity:.9}16%{opacity:0}30%{opacity:.9}34%{opacity:.1}55%,100%{opacity:.95}}
+.cs-house{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:190px;height:110px;background:#0d1016;clip-path:polygon(0 35%,50% 0,100% 35%,100% 100%,0 100%)}
+.cs-house i{position:absolute;width:18px;height:16px;background:#1d222c}
+.cs-lights{position:absolute;bottom:14px;left:18px;display:flex;gap:22px;animation:hl 2.6s ease both}
+.cs-lights i{width:16px;height:10px;border-radius:50%;background:#fff3c8;box-shadow:0 0 22px 10px rgba(255,240,200,.45)}
+@keyframes hl{from{opacity:0;transform:translateX(-60px)}}
+.cs-door{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:120px;height:170px;background:linear-gradient(90deg,#3b2a1f,#4a3424);border:4px solid #2a1c12;animation:dshake .3s 1.1s 3}
+.cs-door::after{content:"";position:absolute;right:12px;top:84px;width:8px;height:8px;border-radius:50%;background:#c9b39a}
+@keyframes dshake{50%{transform:translateX(-50%) rotate(.8deg)}}
+.cs-gap{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:120px;height:7px;background:#e8d9a8;box-shadow:0 0 12px rgba(232,217,168,.7)}
+.cs-feet{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:120px;height:7px;display:flex;justify-content:center;gap:16px;animation:feet 1s .4s both}
+.cs-feet i{width:20px;height:7px;background:#06080b}
+@keyframes feet{from{opacity:0;transform:translateX(-30%)}}
+.cs-bed{position:absolute;left:30px;right:30px;bottom:30px;height:70px;border-radius:6px;background:#2a303c}
+.cs-quilt{position:absolute;left:60px;right:120px;bottom:72px;height:22px;border-radius:4px;background:#c9cdd6;box-shadow:0 6px 0 #a9aebb,0 12px 0 #8e93a0}
+.cs-phone{position:absolute;right:62px;bottom:76px;width:22px;height:36px;border-radius:4px;background:#0a0e12;border:2px solid #333}
+.cs-phone::after{content:"";position:absolute;inset:3px;border-radius:2px;background:#9ec3f0;box-shadow:0 0 18px 6px rgba(158,195,240,.45);animation:pglow 1.6s ease-in-out infinite alternate}
+@keyframes pglow{from{opacity:.5}}
+.cs-push{animation:push 4s ease-out both}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.18)}}
+.cs-mirror{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:150px;height:176px;border-radius:70px 70px 8px 8px;border:6px solid #6b7b72;background:linear-gradient(160deg,#24302b,#111814);overflow:hidden}
+.cs-me{position:absolute;left:44px;bottom:0;width:60px;height:110px;background:#0a0d0c;border-radius:30px 30px 0 0}
+.cs-behind{position:absolute;left:66px;bottom:20px;width:54px;height:110px;background:#1a1414;border-radius:27px 27px 0 0;opacity:.9;animation:behind 2.4s .8s ease both}
+.cs-behind::after{content:"";position:absolute;left:-26px;top:58px;width:30px;height:8px;border-radius:4px;background:#1a1414}
+@keyframes behind{from{opacity:0;transform:translateX(10px)}}
+.cs-train{position:absolute;bottom:22px;left:0;width:100%;height:84px;border-radius:10px;background:linear-gradient(180deg,#5a6a72,#3a4a52);animation:arriveL 2s .2s cubic-bezier(.2,.8,.3,1) both}
+.cs-train::before{content:"";position:absolute;left:14px;right:14px;top:14px;height:30px;background:repeating-linear-gradient(90deg,#0c1013 0 36px,transparent 36px 44px)}
+.cs-train::after{content:"";position:absolute;left:0;right:0;bottom:16px;height:5px;background:var(--line-color,#2fb3a3)}
+@keyframes arriveL{from{transform:translateX(110%)}}
+.cs-pfsign{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#2fb3a3;color:#04201c;font-weight:700;padding:3px 12px;border-radius:4px;font-size:14px;white-space:nowrap}
+.cs-led{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:13px;color:#f0b44c;background:#000;padding:2px 10px;border-radius:3px;white-space:nowrap;animation:fadeUp .6s 1.8s both}
+.cs-under{position:absolute;inset:0;background:#030405}
+.cs-beam{position:absolute;inset:0;background:radial-gradient(circle at var(--bx,60%) 60%,rgba(255,240,200,.55),rgba(255,240,200,.15) 22%,transparent 40%);animation:beam 2.6s ease-in-out both}
+@keyframes beam{0%{--bx:10%;opacity:.6}50%{opacity:1}}
+.cs-coat{position:absolute;left:46%;top:52%;width:70px;height:34px;border-radius:6px;background:#e8c43a;box-shadow:0 5px 0 #c9a42a,0 10px 0 #a8871f;transform:translateX(-50%)}
+.cs-note{position:absolute;left:58%;top:46%;width:30px;height:22px;background:#f2ead6;transform:rotate(12deg)}
+.cs-cab{position:absolute;inset:0;background:#06090b}
+.cs-slit{position:absolute;left:50%;top:10px;bottom:10px;width:70px;transform:translateX(-50%);background:linear-gradient(90deg,#0a0f12,#132027)}
+.cs-slit::before{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;background:#fff1c8;box-shadow:0 0 24px 8px rgba(255,241,200,.5);animation:slit 2.6s .4s ease-in-out both}
+@keyframes slit{from{width:1px;opacity:.4}}
+.cs-eyes{position:absolute;right:calc(50% - 30px);top:46%;display:flex;gap:7px;animation:fadeUp .6s 2.2s both}
+.cs-eyes i{width:5px;height:5px;border-radius:50%;background:#f2f2f2;box-shadow:0 0 6px #fff}
+@media (prefers-reduced-motion:reduce){.pt,.dialog,#sceneArt svg,.cs-rain,.scene.dip::before{animation:none!important}body::before,body::after{transition:none}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div class="chap" id="chap">第一章 · <b>入住</b></div>
+    <div class="clock" id="clock">19:40</div>
+  </div>
+  <div class="tools">
+    <button class="icon-btn rule" id="btnRules">須知</button>
+    <button class="icon-btn" id="btnNote">筆記</button>
+    <button class="icon-btn" id="btnHint" disabled>提示</button>
+    <button class="icon-btn" id="btnDex">圖鑑</button>
+    <a class="icon-btn home-link" href="../index.html" aria-label="回到謎匣">匣</a>
+    <button class="icon-btn" id="btnSound" aria-label="音效開關">音效</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="stage-wrap">
+    <div class="scene" id="scene" aria-hidden="true"><div id="sceneArt"></div><canvas id="motes"></canvas></div>
+    <div class="stage" id="stage"></div>
+  </div>
+</div>
+
+<div class="title" id="title">
+  <div class="title-inner">
+    <div class="meta">謎匣 · 第貳匣 · 規則怪談</div>
+    <h1><em>雲頂旅社</em>住宿須知</h1>
+    <p>颱風封了山路，全班被困在一間早就歇業的老旅社。櫃台上留著九條規則，其中幾條是假的。違反任何一條，你就回不去了。</p>
+    <div class="row">
+      <button class="btn" id="btnStart">辦理入住</button>
+      <button class="btn ghost" id="btnResume" hidden>回到房間（繼續）</button>
+      <button class="btn ghost" id="btnChap">選擇章節</button>
+      <a class="btn ghost home-link" href="../index.html">回到謎匣</a>
+    </div>
+    <p class="meta" id="titleDex"></p>
+    <p class="meta">難度 ★★★ · 會死亡 · 有驚嚇 · 約 60 分鐘</p>
+  </div>
+</div>
+<div class="sheet" id="sheet" hidden><div id="sheetBody"></div></div>
+<div class="death" id="death" hidden><div class="death-inner" id="deathBody"></div></div>
+<div class="vignette" id="vig" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="chapcard" id="chapcard" hidden><div><div class="cc-k" id="ccK"></div><div class="cc-n" id="ccN"></div><div class="cc-s" id="ccS"></div></div></div>
+
+<script>
+window.MIXIA_V='../v/';
+function recordEnding(game,name){try{const k='mixia_endings';const o=JSON.parse(localStorage.getItem(k)||'{}');o[game]=o[game]||[];if(!o[game].includes(name))o[game].push(name);localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
+function recordDeath(game,id){try{const k='mixia_deaths';const o=JSON.parse(localStorage.getItem(k)||'{}');o[game]=o[game]||[];if(!o[game].includes(id))o[game].push(id);localStorage.setItem(k,JSON.stringify(o))}catch(e){}}
+
+/* ================= data ================= */
+const RULES_INIT=[
+ {n:1,text:'入住後，請在晚上十點前回到房間。',ink:'black'},
+ {n:2,text:'晚上十點後，無論誰敲門，都不要回應。',ink:'black'},
+ {n:3,text:'本旅社員工都穿灰色制服；看見穿紅背心的人，請勿跟隨。',ink:'black'},
+ {n:4,text:'停電時，請保持安靜，直到燈重新亮起。',ink:'black'},
+ {n:5,text:'本旅社只有三層樓。',ink:'black'},
+ {n:6,text:'若聽見有人叫你的全名，請立刻回答，那是點名。',ink:'black'},
+ {n:7,text:'走廊的鏡子是用來確認身後的。覺得不對勁，請回頭看。',ink:'red'},
+ {n:8,text:'天亮以前，請不要離開旅社。',ink:'red'},
+ {n:9,text:'早餐七點供應，請所有房客準時到餐廳。',ink:'red'}];
+const FAKE=[6,7,8,9];
+const DEATHS={
+ door:{t:'開門',rule:2,text:'你打開了門。門外沒有人，只有一排濕濕的光腳印，一路走進你的房間。'},
+ answer:{t:'回應',rule:2,text:'你回答了。敲門聲停了。下一秒，聲音從你的床底下傳出來：「點到了。」'},
+ hesitate:{t:'猶豫',rule:2,text:'你猶豫太久。小凱揉著眼睛，走過去把門打開了。'},
+ redvest:{t:'紅背心',rule:3,text:'你跟著紅背心走到走廊盡頭。那裡沒有門，只有一面越來越近的牆。'},
+ follow:{t:'灰衣房務員',rule:3,text:'你跟著灰衣的房務員走。她帶你回到 203，可是床上，已經躺著另一個你。'},
+ dark:{t:'沒電',rule:4,text:'手電筒熄滅了。黑暗裡，有人輕輕把配電箱的門關上，然後站到你身邊。'},
+ voice:{t:'點名',rule:4,text:'你喊了小凱的名字。黑暗回答你：「謝謝。現在，換你留下來。」'},
+ mirror:{t:'回頭',rule:7,text:'你回頭了。身後沒有人。可是鏡子裡的你，沒有跟著轉頭。'},
+ exit:{t:'最後一眼',rule:10,text:'你回頭看了一眼。六點的鐘聲響起，大門在你面前，慢慢關上。'}};
+const ROSTER=[
+ {no:'0401',name:'林美珠',job:'櫃台',note:'1975 到職'},
+ {no:'0402',name:'吳金水',job:'廚房',note:'1972 到職'},
+ {no:'0405',name:'陳守義',job:'守夜',note:'1970 到職'},
+ {no:'0412',name:'張小芳',job:'房務',note:'1977 到職，1979.06 離職'},
+ {no:'0418',name:'王建國',job:'維修',note:'1978 到職'}];
+const PHOTOS=[{no:'0402',job:'廚房'},{no:'0412',job:'房務',bad:true},{no:'0401',job:'櫃台'},{no:'0418',job:'維修'},{no:'0405',job:'守夜',hide:true}];
+const BREAKERS=[{k:'A',f:[1,2]},{k:'B',f:[1,4]},{k:'C',f:[1,2,4]},{k:'D',f:[1,3,4]}];
+const ROUTE={T:{S:{F4:3,F3:2,B:4},F4:{F3:3,B:6,E:5},F3:{F4:5,B:5,E:3},B:{F4:6,F3:5,E:2}},R:{F4:4,F3:2,B:3},
+ N:{F4:{name:'四樓 403 衣櫃',who:'阿哲'},F3:{name:'三樓 301',who:'陳老師'},B:{name:'地下室鍋爐間',who:'小凱'}}};
+
+const SCRIPT=[
+ {t:'chapter',n:1,name:'入住'},
+ {t:'cut',id:'arrive',clock:'19:40',scene:'bus'},
+ {t:'say',who:'narr',text:'颱風把山路封了。遊覽車在半山腰拋錨，雨大到看不見車窗外。'},
+ {t:'say',who:'driver',f:'t',text:'附近……只剩雲頂旅社了吧。那間，很久很久沒開了。'},
+ {t:'say',who:'teacher',f:'a',text:'很久沒開也比睡在車上好。大家帶好東西，跟緊！'},
+ {t:'say',who:'narr',text:'全班撐著傘走了二十分鐘，才看見那塊褪色的招牌。'},
+ {t:'say',who:'teacher',f:'t',text:'……奇怪。這裡，我小時候好像來過。'},
+ {t:'say',who:'narr',clock:'20:05',scene:'lobby',text:'櫃台沒有人。牆上的掛鐘停在六點整。鑰匙一把一把排得整整齊齊，像是早就知道今晚會有人來。'},
+ {t:'say',who:'narr',text:'只有一個掛鉤是空的。下面的號碼牌寫著：403。'},
+ {t:'say',who:'yq',f:'a',text:'403？這間旅社不是只有三層樓嗎？'},
+ {t:'say',who:'teacher',text:'林雨晴，別嚇同學。大家照座號拿鑰匙，明天一早路通了就走。'},
+ {t:'say',who:'narr',text:'鑰匙旁邊，壓著一張泛黃的紙。'},
+ {t:'cut',id:'sheet'},
+ {t:'say',who:'xk',f:'h',text:'九條規則？搞得跟鬼屋一樣。欸，我們同一間，203！'},
+ {t:'say',who:'yq',f:'a',text:'陳小凱，你不要亂碰東西。……而且你們看，第七條以後的字，顏色不一樣。'},
+ {t:'say',who:'narr',clock:'21:10',scene:'room',text:'203 號房很舊，卻乾淨得很奇怪，乾淨得像一直有人在打掃。'},
+ {t:'say',who:'narr',text:'你拉開床頭櫃的抽屜。裡面躺著另一張須知，紙更黃，只寫到第五條，下面被撕掉了。'},
+ {t:'ev',id:'drawer',name:'抽屜裡的舊須知',text:'只有第一到五條，全是黑色。最下面寫著：「我寫的，都是黑色的。——守夜人」'},
+ {t:'say',who:'me',text:'兩張不一樣。櫃台那張，多了四條。'},
+ {t:'cp'},
+ {t:'puzzle',id:'fake'},
+ {t:'say',who:'xk',f:'s',text:'所、所以……有四條是假的？誰會寫假的規則害人啊。'},
+ {t:'say',who:'narr',clock:'22:00',fx:'flicker',text:'22:00。走廊的燈，暗了一格。'},
+ {t:'cut',id:'knock'},
+ {t:'say',who:'voice',label:'門外 · 陳老師的聲音',text:'是我。開門，點名。'},
+ {t:'say',who:'xk',f:'s',text:'是、是老師耶……要、要開嗎？'},
+ {t:'cp'},
+ {t:'choice',key:'door',timer:8,timeoutDie:'hesitate',options:[
+   {v:'open',text:'去開門',die:'door'},
+   {v:'reply',text:'「老師，我們都在！」',die:'answer'},
+   {v:'silent',text:'摀住小凱的嘴，一點聲音都不要發出來'}]},
+ {t:'say',who:'narr',text:'敲門聲持續了十三分鐘。然後，腳步聲往走廊盡頭去了。那腳步聲很輕，像是光著腳。'},
+ {t:'say',who:'xk',f:'s',text:'……陳、陳老師的房間在三樓。他為什麼，是從走廊盡頭走過來的？'},
+ {t:'say',who:'narr',text:'你們誰都沒有再說話。'},
+ {t:'end',ch:1},
+
+ {t:'chapter',n:2,name:'第一夜'},
+ {t:'say',who:'narr',clock:'02:14',scene:'room',text:'你被冷醒。房門開著一條縫。'},
+ {t:'cut',id:'vanish'},
+ {t:'say',who:'narr',text:'小凱的床是空的，被子摺得整整齊齊。小凱從來不摺被子。'},
+ {t:'ev',id:'phone',name:'小凱的手機',text:'留在枕頭上。最後一則訊息，02:00 傳給你：「房務的大姊姊說可以帶我去充電，馬上回來」'},
+ {t:'say',who:'me',text:'房務？三更半夜，哪來的房務？'},
+ {t:'say',who:'narr',scene:'redvest',text:'你走到走廊。盡頭站著一個穿紅背心的服務生。燈太暗了，你看不清楚他的臉。他朝你招手。'},
+ {t:'say',who:'narr',text:'他招手的速度，很慢，很規律。像是一直在等，等了很久很久。'},
+ {t:'cp'},
+ {t:'choice',key:'vest',timer:7,timeoutDie:'redvest',options:[
+   {v:'go',text:'跟上去，也許他知道小凱在哪',die:'redvest'},
+   {v:'away',text:'轉身，往反方向的樓梯走，去一樓櫃台'}]},
+ {t:'say',who:'narr',scene:'lobby',text:'櫃台後面的牆上，掛著一張員工合照。抽屜裡，有一本員工名冊。'},
+ {t:'say',who:'narr',text:'合照裡每個人都在笑。只有一個人的眼睛沒有看鏡頭，而是看著拍照的人身後。'},
+ {t:'ev',id:'roster',name:'員工名冊',text:'五位員工的編號、職位與到職年份'},
+ {t:'puzzle',id:'roster'},
+ {t:'say',who:'narr',text:'合照裡那個房務員穿著灰色制服，胸前別著 0412。可是 0412 張小芳，兩個月前就離職了。'},
+ {t:'say',who:'me',text:'它穿灰色制服……因為第三條說，穿灰色制服的才是員工。它在照著規則騙人。'},
+ {t:'rule',n:3,text:'本旅社員工都穿灰色制服；看見員工，請跟隨。',ink:'red',head:'須知被改寫了'},
+ {t:'say',who:'narr',text:'你口袋裡的須知變燙了。第三條的字，在你眼前一筆一筆變成紅色。'},
+ {t:'say',who:'voice',label:'身後 · 灰衣的房務員',text:'客人，這麼晚還沒睡？我帶你回房間吧。你朋友，也在等你喔。'},
+ {t:'cp'},
+ {t:'choice',key:'maid',timer:8,timeoutDie:'follow',options:[
+   {v:'follow',text:'「好……麻煩妳了。」',die:'follow'},
+   {v:'leave',text:'不回答，不看她，自己走回 203'}]},
+ {t:'say',who:'narr',text:'你走得很快。身後沒有腳步聲，可是走廊的燈，一盞一盞在你背後熄滅。'},
+ {t:'say',who:'narr',fx:'cut',text:'然後，整間旅社停電了。'},
+ {t:'end',ch:2},
+
+ {t:'chapter',n:3,name:'停電'},
+ {t:'say',who:'narr',clock:'03:02',scene:'corridor',text:'黑暗裡，有一隻冰冷的手抓住你的手腕。'},
+ {t:'say',who:'yq',f:'s',text:'噓！是我，雨晴。'},
+ {t:'say',who:'narr',text:'她手上的手電筒，光已經有點黃了。'},
+ {t:'say',who:'yq',f:'a',text:'別出聲。我看過你那張須知，停電要保持安靜。……我們房的阿哲，也不見了。'},
+ {t:'say',who:'yq',text:'配電箱在地下室。燈不亮，我們什麼都找不到。'},
+ {t:'say',who:'narr',scene:'basement',text:'地下室有股燒焦的味道。配電箱上有四個開關，旁邊用黑筆寫著說明。'},
+ {t:'ev',id:'fusenote',name:'配電箱說明',text:'「一層樓接到單數個開著的開關，燈才會亮。四樓的電，絕對不能開。手電筒撐不了多久。」'},
+ {t:'cp'},
+ {t:'puzzle',id:'fuse'},
+ {t:'say',who:'narr',fx:'flicker',text:'燈亮了。一樓、二樓、三樓。四樓那一格，是黑的。'},
+ {t:'say',who:'narr',text:'角落傳來小凱的聲音。'},
+ {t:'say',who:'voice',label:'黑暗裡 · 小凱的聲音',text:'救我……我在這裡。叫我的名字，我就出得去了。'},
+ {t:'cp'},
+ {t:'choice',key:'voice',timer:7,timeoutSafe:'雨晴用力把你往樓梯拉。',options:[
+   {v:'call',text:'「小凱！」',die:'voice'},
+   {v:'pull',text:'搖頭，拉著雨晴離開'}]},
+ {t:'say',who:'yq',f:'a',text:'那不是他。小凱緊張的時候會結巴，剛剛那個聲音，一個字都沒有卡。'},
+ {t:'say',who:'narr',scene:'lobby',text:'你們回到一樓。電梯門自己打開了。按鈕面板上，多了一顆按鈕。'},
+ {t:'cut',id:'elev'},
+ {t:'end',ch:3},
+
+ {t:'chapter',n:4,name:'不存在的四樓'},
+ {t:'say',who:'narr',clock:'04:20',scene:'floor4',text:'四樓的走廊跟二樓一模一樣，只是每個房號的第一個數字，都變成了 4。'},
+ {t:'say',who:'yq',f:'s',text:'403……櫃台那個空掛鉤，就是這一間。'},
+ {t:'say',who:'narr',text:'403 的門開著。房間裡沒有床，只有一張書桌。桌上攤著一本日記。'},
+ {t:'ev',id:'diary',name:'守夜人日記 1979',text:'「它會模仿我的字，但只會用紅色。第十條我藏起來了，暗號只用我寫的規則，標點不算。」'},
+ {t:'say',who:'narr',text:'日記的第一頁寫著名字：陳守義。最後幾行字跡很亂：「如果有一天，我的孫子也住進這裡……」後面被水漬暈開了。'},
+ {t:'cp'},
+ {t:'puzzle',id:'diary'},
+ {t:'say',who:'narr',text:'走廊盡頭，有一扇漆成紅色的窄門。門後的牆上，貼著須知被撕掉的那一角。'},
+ {t:'rule',n:10,text:'早上六點前，一定要離開旅社。晚一分鐘，你就是旅社的一部分了。',ink:'black',head:'找到第十條'},
+ {t:'say',who:'yq',f:'t',text:'六點……櫃台的鐘，停在六點。現在已經四點半了，阿哲、小凱、陳老師都還在這裡面。'},
+ {t:'say',who:'narr',text:'回電梯要經過走廊的大鏡子。'},
+ {t:'cut',id:'mirror'},
+ {t:'say',who:'voice',label:'身後 · 小凱的聲音',text:'你為什麼不回頭看我？須知上寫了，覺得不對勁就要回頭啊。'},
+ {t:'cp'},
+ {t:'choice',key:'mirror',timer:6,timeoutDie:'mirror',options:[
+   {v:'turn',text:'回頭看',die:'mirror'},
+   {v:'walk',text:'盯著鏡子裡的自己，一步一步往前走'}]},
+ {t:'say',who:'narr',text:'你走過鏡子。肩膀上的重量，一下子消失了。'},
+ {t:'say',who:'yq',f:'a',text:'第七條是假的。它就是想讓你回頭。'},
+ {t:'say',who:'narr',text:'雨晴在日記的最後一頁，找到一張手繪地圖，上面畫了三個圈。'},
+ {t:'ev',id:'map',name:'守夜人的地圖',text:'被帶走的人會被藏起來：四樓 403 衣櫃、三樓 301、地下室鍋爐間'},
+ {t:'end',ch:4},
+
+ {t:'chapter',n:5,name:'天亮之前'},
+ {t:'say',who:'narr',clock:'05:38',scene:'corridor',text:'電梯把你們送回二樓。時間是 05:38。'},
+ {t:'say',who:'yq',f:'a',text:'二十二分鐘。三個人，三個地方。走錯順序，就來不及了。'},
+ {t:'cp'},
+ {t:'puzzle',id:'route'},
+ {t:'say',who:'narr',if:['route','solo'],text:'你一個人衝下樓梯。身後，所有人都在叫你的名字。'},
+ {t:'say',who:'narr',if:['route','solo'],text:'你沒有回頭。第十條說，六點前一定要離開。'},
+ {t:'say',who:'narr',if:['route','solo'],clock:'05:59',scene:'exit',text:'大門在你身後關上。雨停了。'},
+ {t:'say',who:'narr',if:['route','all'],text:'403 的衣櫃裡，阿哲抱著膝蓋縮在最裡面，一直在數數。'},
+ {t:'say',who:'narr',if:['route','all'],text:'301 的陳老師睡得很沉。他的枕頭底下，壓著一張紅字紙條：「早餐七點供應」。你把它撕了。'},
+ {t:'say',who:'teacher',f:'s',if:['route','all'],text:'……你們怎麼在這裡？現在幾點？'},
+ {t:'say',who:'xk',f:'t',if:['route','all'],text:'我、我、我以為，要被關在這裡一、一輩子了……'},
+ {t:'say',who:'narr',if:['route','all'],clock:'05:59',scene:'exit',text:'大門就在前面。外面的雨停了，天邊有一點點白。'},
+ {t:'say',who:'voice',if:['route','all'],label:'身後 · 小凱的聲音',text:'等等！我還沒出來！'},
+ {t:'say',who:'xk',f:'shock',if:['route','all'],text:'那、那是我的聲音……可是我在這裡啊！'},
+ {t:'cp'},
+ {t:'choice',key:'exit',if:['route','all'],timer:5,timeoutDie:'exit',options:[
+   {v:'look',text:'回頭確認',die:'exit'},
+   {v:'run',text:'抓住大家的手，衝出大門'}]},
+ {t:'cut',id:'dawn',if:['route','all']},
+ {t:'choice',key:'last',if:['route','all'],options:[
+   {v:'all',text:'「我們一起走。」'},
+   {v:'keeper',text:'（停在門口）「……總要有人留下來，寫真的規則。」'}]},
+ {t:'say',who:'narr',if:['last','all'],text:'你們跌跌撞撞衝進晨光裡。天亮了，這次你終於可以回頭。'},
+ {t:'say',who:'narr',if:['last','all'],text:'山坡上只剩一片空地，長滿了芒草。沒有招牌，沒有大門，什麼都沒有。'},
+ {t:'say',who:'teacher',f:'t',if:['last','all'],text:'……我們昨天晚上，到底是在哪裡過夜的？'},
+ {t:'say',who:'yq',f:'h',if:['last','all'],text:'在一個很守規矩的地方。'},
+ {t:'say',who:'narr',if:['last','all'],text:'你摸摸口袋。那張須知還在，上面的字，全都變回了黑色。'},
+ {t:'say',who:'narr',if:['last','keeper'],text:'你把大家推出門外。雨晴回頭想抓住你，你對她笑了一下。'},
+ {t:'say',who:'yq',f:'t',if:['last','keeper'],text:'你這個笨蛋……'},
+ {t:'say',who:'narr',if:['last','keeper'],text:'門關上了。櫃台上有一支黑筆，和一張空白的紙。'},
+ {t:'say',who:'narr',if:['last','keeper'],text:'很多年以後，一群被颱風困住的學生走進雲頂旅社。櫃台上的須知，字跡是黑色的，很工整。'},
+ {t:'finale'}
+];
+const PORTRAITS={
+ xk:{style:'messy',hair:'#2a2420',cloth:'#3b6ea5',bg:'#1b2838'},
+ yq:{style:'pony',hair:'#151012',cloth:'#e6e2d8',collar:'#2a3550',bg:'#2a1f2c'},
+ teacher:{style:'short',hair:'#3a3a3a',cloth:'#6b7b8c',collar:'#e6e2d8',tie:'#5a2a2a',glasses:true,skin:'#e8c7a8',bg:'#262619'},
+ driver:{style:'none',cap:'#2b3a4a',cloth:'#3a4a5a',skin:'#d9b08f',bg:'#18202a',f:'t'},
+ voice:{sil:true}
+};
+const PUZZLE_INFO={
+ fake:{hints:['守夜人說他寫的都是黑色。紅色的，先標起來。','不只紅色。有一條是黑色的，卻沒有出現在抽屜那張舊須知上。','假的規則：第 6、7、8、9 條。'],ch:1},
+ roster:{hints:['合照上寫著拍攝日期。對照名冊，看誰的年份對不上。','名冊上有一個人，在合照拍攝之前就離職了。','0412 張小芳 1979 年 6 月離職，不可能出現在 8 月的合照裡。'],ch:2},
+ fuse:{hints:['每扇開關會讓好幾層樓的通電次數 +1。單數才會亮，所以四樓要是雙數。','一樓接了全部四個開關。一、二、三樓都要單數，四樓要雙數。','打開 A、B、D，C 保持關著。'],ch:3},
+ diary:{hints:['「3-15」是第 3 條第 15 個字，標點不算。','守夜人只相信自己寫的規則。第三條現在是被改過的紅字，要看抽屜裡的舊版本。','答案是「紅門後」：3-15 紅、2-10 門、2-5 後。'],ch:4},
+ route:{hints:['把每條路線的移動時間和救人時間加起來，從 05:38 出發，06:00 前要到大門。','四樓只能搭電梯上去，從三樓上四樓要繞路，很慢。所以先去四樓比較好。','403 衣櫃 → 301 → 地下室鍋爐間 → 大門，剛好 22 分鐘。'],ch:5}
+};
+const CHAP_PUZZLES={1:['fake'],2:['roster'],3:['fuse'],4:['diary'],5:['route']};
+const CHAP_EV={1:['drawer'],2:['phone','roster'],3:['fusenote'],4:['diary','map'],5:[]};
+const CHAP_NEXT={1:{name:'第一夜',text:'凌晨兩點，小凱的床空了。走廊盡頭，有人在招手。',btn:'進入第二章'},
+ 2:{name:'停電',text:'整間旅社陷入黑暗。須知第四條：停電時，請保持安靜。',btn:'進入第三章'},
+ 3:{name:'不存在的四樓',text:'旅社只有三層樓。可是電梯，停在了 4。',btn:'進入第四章'},
+ 4:{name:'天亮之前',text:'06:00 前離開，而且一個人都不能少。',btn:'進入最終章'}};
+const CH_LABEL=['','第一章','第二章','第三章','第四章','最終章'];
+const CC_SUB={1:'19:40 · 雲頂旅社',2:'02:14 · 203 號房',3:'03:02 · 地下室',4:'04:20 · 四樓',5:'05:38 · 天亮之前'};
+const CHAP_SCENE={1:'bus',2:'room',3:'corridor',4:'floor4',5:'corridor'};
+const WHO={narr:'',me:'你',xk:'小凱',yq:'雨晴',teacher:'陳老師',driver:'司機',voice:'？？？'};
+
+/* ================= state ================= */
+const $=id=>document.getElementById(id);
+const stage=$('stage');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fresh(){return {i:0,ev:[],ch:{},chText:{},hints:{},clock:'19:40',chap:1,chapName:'入住',rules:[],battery:null,scene:null,snap:null,deathsRun:0}}
+let S=fresh();
+let DEX=[];
+function save(){try{localStorage.setItem('yunding',JSON.stringify(S))}catch(e){}}
+function load(){try{const r=localStorage.getItem('yunding');return r?JSON.parse(r):null}catch(e){return null}}
+function loadDex(){try{DEX=JSON.parse(localStorage.getItem('yunding_dex')||'[]')}catch(e){DEX=[]}}
+function saveDex(){try{localStorage.setItem('yunding_dex',JSON.stringify(DEX))}catch(e){}}
+loadDex();
+
+/* ================= audio ================= */
+const audio={ctx:null,on:true,mg:null,rain:null,mood:.6,n:0,resolved:false,
+  init(){
+    if(this.ctx)return;
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;const c=this.ctx=new C();
+      this.mg=c.createGain();this.mg.gain.value=0;this.mg.connect(c.destination);
+      const len=c.sampleRate*2,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);
+      for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+      this.noiseBuf=buf;
+      const src=c.createBufferSource();src.buffer=buf;src.loop=true;
+      const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1200;
+      const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=300;
+      this.rain=c.createGain();this.rain.gain.value=0;
+      src.connect(hp).connect(lp).connect(this.rain).connect(c.destination);src.start();
+      this.wet=c.createDelay(1);this.wet.delayTime.value=.42;
+      const fb=c.createGain();fb.gain.value=.5;const wl=c.createBiquadFilter();wl.type='lowpass';wl.frequency.value=1100;
+      this.wet.connect(wl).connect(fb).connect(this.wet);wl.connect(this.mg);
+      const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=150;f.Q.value=7;
+      [[41.2,'sawtooth',.05],[41.6,'sawtooth',.05],[61.7,'sine',.03]].forEach(([hz,ty,g])=>{const o=c.createOscillator();o.type=ty;o.frequency.value=hz;const gn=c.createGain();gn.gain.value=g;o.connect(gn).connect(f);o.start()});
+      const lfo=c.createOscillator();lfo.frequency.value=.05;const lg=c.createGain();lg.gain.value=90;lfo.connect(lg).connect(f.frequency);lfo.start();
+      this.drone=c.createGain();this.drone.gain.value=1;f.connect(this.drone).connect(this.mg);
+      setInterval(()=>this.tick(),1000);
+      this.apply();
+    }catch(e){this.ctx=null}
+  },
+  apply(){if(!this.mg)return;const t=this.ctx.currentTime;
+    this.mg.gain.setTargetAtTime(this.on?this.mood*.9:0,t,1);
+    const out=curScene==='bus'||curScene==='exit'&&!this.resolved;const indoorRain=['room','lobby','corridor','redvest'].includes(curScene);
+    this.rain.gain.setTargetAtTime(this.on?(out?.07:indoorRain?.02:.006):0,t,1.5)},
+  setMood(m){this.mood=m;this.apply()},
+  tone(hz,o={}){if(!this.mg)return;const {type='sine',a=2,d=4,g=.02,glide=0,wet=true}=o;const c=this.ctx,t=c.currentTime,osc=c.createOscillator(),e=c.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(hz,t);if(glide)osc.frequency.linearRampToValueAtTime(hz*glide,t+a+d);
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+a);e.gain.linearRampToValueAtTime(0,t+a+d);
+    osc.connect(e);e.connect(this.mg);if(wet)e.connect(this.wet);osc.start(t);osc.stop(t+a+d+.1)},
+  thump(at,g=.35){if(!this.mg||!this.on)return;const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),e=c.createGain();
+    o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(35,t+.18);
+    e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(g,t+.01);e.gain.exponentialRampToValueAtTime(.0001,t+.25);
+    o.connect(e).connect(this.mg);o.start(t);o.stop(t+.3);setTimeout(fxBeat,at*1000)},
+  knock(){if(!this.mg||!this.on)return;[0,.32,.64].forEach(at=>{const c=this.ctx,t=c.currentTime+at,src=c.createBufferSource();src.buffer=this.noiseBuf;
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=180;bp.Q.value=2;const e=c.createGain();
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(1.2,t+.005);e.gain.exponentialRampToValueAtTime(.001,t+.18);
+    src.connect(bp).connect(e).connect(this.ctx.destination);src.start(t,Math.random());src.stop(t+.2)})},
+  whisper(){if(!this.mg||!this.on)return;const c=this.ctx,t=c.currentTime,src=c.createBufferSource();src.buffer=this.noiseBuf;
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2400;bp.Q.value=4;const e=c.createGain();
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.18,t+.6);e.gain.linearRampToValueAtTime(0,t+1.8);
+    bp.frequency.linearRampToValueAtTime(1200,t+1.8);src.connect(bp).connect(e);e.connect(this.mg);e.connect(this.wet);src.start(t);src.stop(t+2)},
+  sting(kind){if(!this.mg||!this.on)return;
+    if(kind==='wrong')[61.7,65.4,92.5].forEach(hz=>this.tone(hz,{type:'sawtooth',a:.02,d:1.2,g:.05,wet:false}));
+    if(kind==='ev')this.tone(880,{a:.01,d:2,g:.02});
+    if(kind==='death'){[46.2,49,69.3,73.4,98].forEach(hz=>this.tone(hz,{type:'sawtooth',a:.01,d:2.6,g:.07,wet:true}));this.tone(1900,{a:.01,d:1.4,g:.02,glide:.6})}
+    if(kind==='rule'){this.tone(233,{type:'triangle',a:.3,d:2,g:.03});this.tone(247,{type:'triangle',a:.3,d:2,g:.03})}},
+  tk(){if(this.on&&this.mg)this.tone(2300,{a:.002,d:.022,g:.007,wet:false})},
+  click(){this.tone(1800,{a:.003,d:.05,g:.05,wet:false})},
+  tick(){if(!this.on||!this.mg||this.resolved)return;this.n++;
+    const ch=S.chap||1;
+    if(this.n%9===0)[[220,233.08],[207.65,293.66],[185,196]][this.n%3].forEach(hz=>this.tone(hz*(Math.random()<.5?1:.5),{type:'triangle',a:3,d:5,g:.011}));
+    if(Math.random()<.05+ch*.02)this.tone(900+Math.random()*900,{a:1.5,d:3,g:.004,glide:.9});
+    if(Math.random()<.025*ch)this.whisper()},
+  resolve(){if(!this.mg||this.resolved)return;this.resolved=true;this.drone.gain.setTargetAtTime(0,this.ctx.currentTime,2);this.apply();
+    if(this.on)[261.63,329.63,392,523.25].forEach((hz,i)=>setTimeout(()=>this.tone(hz,{a:2,d:6,g:.02}),i*700))},
+  unresolve(){if(!this.mg||!this.resolved)return;this.resolved=false;this.drone.gain.setTargetAtTime(1,this.ctx.currentTime,1)}
+};
+$('btnSound').onclick=()=>{audio.init();audio.on=!audio.on;$('btnSound').textContent=audio.on?'音效':'靜音';audio.apply()};
+
+/* ================= scenes ================= */
+const svgWrap=b=>`<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">${b}</svg>`;
+function rep(n,f){let s='';for(let i=0;i<n;i++)s+=f(i);return s}
+const corridorBase=`<polygon points="0,0 150,110 150,200 0,300" class="s1"/><polygon points="400,0 250,110 250,200 400,300" class="s1"/>
+  <polygon points="0,300 150,200 250,200 400,300" fill="#0f1218"/>
+  ${rep(3,i=>{const x1=20+i*45,y=40+i*25,h=170-i*50;return `<rect x="${x1}" y="${y}" width="${22-i*5}" height="${h}" class="s2"/><rect x="${380-x1-(22-i*5)}" y="${y}" width="${22-i*5}" height="${h}" class="s2"/>`})}
+  <rect x="150" y="110" width="100" height="90" fill="#07090c"/>`;
+const SCENES={
+ bus:svgWrap(`<rect x="0" y="210" width="400" height="90" fill="#06080c"/>
+  <polygon points="0,210 120,150 260,175 400,140 400,210" class="s1"/>
+  <g transform="translate(40,170)"><rect width="150" height="56" rx="8" class="s2"/>${rep(5,i=>`<rect x="${10+i*27}" y="8" width="20" height="16" fill="#0a0d13"/>`)}<circle cx="30" cy="58" r="10" class="s1"/><circle cx="120" cy="58" r="10" class="s1"/><circle cx="148" cy="30" r="4" fill="#d9c58e" opacity=".6"/></g>
+  <g transform="translate(270,100)"><polygon points="0,60 50,25 100,60" class="s1"/><rect x="8" y="58" width="84" height="60" class="s1"/><rect x="58" y="72" width="12" height="12" fill="#b8322a" opacity=".8" class="flick"/><rect x="18" y="40" width="64" height="12" fill="#2a241b"/><text x="50" y="50" text-anchor="middle" font-size="9" fill="#8f99ab" font-family="serif">雲頂旅社</text></g>`),
+ lobby:svgWrap(`<rect x="0" y="200" width="400" height="100" fill="#0e1015"/>
+  <rect x="60" y="160" width="230" height="60" class="s2"/><rect x="60" y="152" width="230" height="10" fill="#2a2f3b"/>
+  <g>${rep(12,i=>`<rect x="${80+(i%6)*30}" y="${50+Math.floor(i/6)*36}" width="4" height="${i===4?0:14}" fill="#8f99ab" opacity=".5"/><circle cx="${82+(i%6)*30}" cy="${48+Math.floor(i/6)*36}" r="3" class="st" stroke-width="1.5"/>`)}</g>
+  <circle cx="330" cy="70" r="24" fill="#1d222c" class="st" stroke-width="3"/><line x1="330" y1="70" x2="330" y2="54" stroke="#8f99ab" stroke-width="2"/><line x1="330" y1="70" x2="342" y2="74" stroke="#8f99ab" stroke-width="2"/>
+  <g class="flick"><rect x="170" y="0" width="4" height="40" class="s2"/><circle cx="172" cy="46" r="7" fill="#d9c58e" opacity=".7"/><circle cx="172" cy="80" r="70" fill="#d9c58e" opacity=".04"/></g>`),
+ room:svgWrap(`<rect x="0" y="230" width="400" height="70" fill="#0f1218"/>
+  <rect x="150" y="40" width="100" height="110" fill="#0a0f18" class="st" stroke-width="5"/><line x1="200" y1="40" x2="200" y2="150" class="st" stroke-width="3"/>
+  <rect x="20" y="170" width="120" height="50" rx="4" class="s2"/><rect x="20" y="160" width="40" height="18" rx="4" fill="#2a303c"/>
+  <rect x="260" y="170" width="120" height="50" rx="4" class="s2"/><rect x="340" y="160" width="40" height="18" rx="4" fill="#2a303c"/><rect x="262" y="172" width="116" height="20" fill="#2c3240"/>
+  <rect x="170" y="190" width="60" height="40" class="s1"/><rect x="176" y="200" width="48" height="6" fill="#2c3443"/>
+  <rect x="330" y="20" width="60" height="150" class="s1"/><rect x="334" y="96" width="4" height="10" fill="#8f99ab" opacity=".4"/>`),
+ corridor:svgWrap(corridorBase+`<g class="flick"><rect x="185" y="20" width="30" height="4" fill="#dfe8f0"/><rect x="120" y="0" width="160" height="70" fill="#dfe8f0" opacity=".03"/></g>`),
+ redvest:svgWrap(corridorBase+`<g class="sway"><ellipse cx="200" cy="128" rx="8" ry="10" fill="#0c0e12"/><rect x="190" y="138" width="20" height="40" rx="5" fill="#8a1f18"/><rect x="194" y="176" width="5" height="22" fill="#0c0e12"/><rect x="201" y="176" width="5" height="22" fill="#0c0e12"/></g>
+  <g class="beckon" style="transform-origin:208px 142px"><rect x="207" y="140" width="4" height="18" fill="#0c0e12"/></g>`),
+ basement:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#080808"/>
+  ${rep(4,i=>`<rect x="0" y="${30+i*18}" width="400" height="6" fill="#1a1a1a"/>`)}<rect x="60" y="0" width="10" height="300" fill="#141414"/><rect x="330" y="0" width="12" height="300" fill="#141414"/>
+  <rect x="150" y="110" width="100" height="120" fill="#1c1e22" stroke="#33363d" stroke-width="3"/>${rep(4,i=>`<rect x="${162+i*21}" y="140" width="14" height="30" fill="#0c0d0f"/>`)}<circle cx="236" cy="122" r="3" fill="#b8322a" class="flick"/>
+  <polygon points="200,300 120,230 280,230" fill="#d9c58e" opacity=".05"/>`),
+ floor4:svgWrap(corridorBase.replace(/#0f1218/,'#0b120f').replace('#07090c','#5a1410')+`<rect x="280" y="80" width="40" height="110" fill="#1b2420" stroke="#6b7b72" stroke-width="3"/><rect x="284" y="84" width="32" height="102" fill="#24302b" opacity=".8"/><ellipse cx="300" cy="140" rx="6" ry="8" fill="#0c0e12" opacity=".6"/>`),
+ exit:svgWrap(`<rect x="0" y="0" width="400" height="300" fill="#1a150f"/><rect x="130" y="60" width="140" height="200" fill="#f2d39a" opacity=".85"/>
+  <rect x="120" y="50" width="160" height="10" fill="#2a2018"/><rect x="120" y="50" width="10" height="210" fill="#2a2018"/><rect x="270" y="50" width="10" height="210" fill="#2a2018"/>
+  <polygon points="130,260 270,260 340,300 60,300" fill="#f2d39a" opacity=".15"/>`)
+};
+const MOTE_KIND={bus:'rain',lobby:'dust',room:'dust',corridor:'dust',redvest:'dust',basement:'dust',floor4:'dust',exit:'warm'};
+let curScene=null,motes=[],moteKind='dust';
+function setScene(k){
+  if(k===curScene)return;if(curScene)sceneDip();curScene=k;
+  $('scene').dataset.k=k;
+  const art=$('sceneArt');art.style.animation='none';void art.offsetWidth;art.style.animation='';art.innerHTML=SCENES[k]||'';
+  initMotes(MOTE_KIND[k]||'dust');audio.apply();
+}
+function initMotes(kind){
+  moteKind=kind;const n=kind==='rain'?90:kind==='warm'?16:30;
+  motes=Array.from({length:n},()=>({x:Math.random(),y:Math.random(),r:kind==='warm'?8+Math.random()*16:.5+Math.random()*1.4,
+    vx:kind==='rain'?-.002:(Math.random()-.5)*.00025,vy:kind==='rain'?.012+Math.random()*.008:kind==='warm'?-.0003:(Math.random()-.5)*.00015,p:Math.random()*6.28}));
+}
+const mc=$('motes'),mx=mc.getContext('2d');
+function drawMotes(t){
+  const dpr=Math.min(2,devicePixelRatio||1),w=mc.clientWidth,h=mc.clientHeight;if(!w||!h)return;
+  if(mc.width!==Math.round(w*dpr)){mc.width=Math.round(w*dpr);mc.height=Math.round(h*dpr)}
+  mx.setTransform(dpr,0,0,dpr,0,0);mx.clearRect(0,0,w,h);
+  for(const m of motes){
+    if(!reduce){m.x+=m.vx;m.y+=m.vy;if(m.x<-.05)m.x=1.05;if(m.x>1.05)m.x=-.05;if(m.y<-.1)m.y=1.1;if(m.y>1.1)m.y=-.1}
+    const X=m.x*w,Y=m.y*h;
+    if(moteKind==='rain'){mx.strokeStyle='rgba(170,190,220,.25)';mx.lineWidth=1;mx.beginPath();mx.moveTo(X,Y);mx.lineTo(X-3,Y+14);mx.stroke()}
+    else if(moteKind==='warm'){const g=mx.createRadialGradient(X,Y,0,X,Y,m.r);g.addColorStop(0,'rgba(255,214,150,.18)');g.addColorStop(1,'rgba(255,214,150,0)');mx.fillStyle=g;mx.beginPath();mx.arc(X,Y,m.r,0,6.28);mx.fill()}
+    else{mx.fillStyle=`rgba(217,197,142,${.12+.1*Math.sin(t*.001+m.p)})`;mx.beginPath();mx.arc(X,Y,m.r,0,6.28);mx.fill()}
+  }
+}
+if(!reduce)(function loop(t){drawMotes(t);requestAnimationFrame(loop)})(0);
+
+/* ================= fx ================= */
+function fxRestart(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+function fxBeat(){fxRestart($('vig'),'beat')}
+function fxRed(){fxRestart($('vig'),'red')}
+function fxFlicker(){fxRestart($('flash'),'flicker')}
+function fxCut(){fxRestart($('flash'),'cut')}
+function shake(el){audio.sting('wrong');fxRed();el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
+function showChapterCard(n,name){
+  const c=$('chapcard');$('ccK').textContent=n===5?'FINAL CHAPTER':'CHAPTER '+n;$('ccN').textContent=name;$('ccS').textContent=CC_SUB[n]||'';
+  c.hidden=false;c.style.animation='none';void c.offsetWidth;c.style.animation='';
+  clearTimeout(c._t);c._t=setTimeout(()=>c.hidden=true,3200);c.onclick=()=>{clearTimeout(c._t);c.hidden=true};
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ================= HUD ================= */
+function drawStatus(){
+  let h=`<span>${S.chapName}</span>`;
+  if(S.battery!=null){h+=`<span>手電筒</span><span class="batt">${rep(8,i=>`<i class="${i<S.battery?(S.battery<=2?'low':'on'):''}"></i>`)}</span>`}
+  h+=`<span style="margin-left:auto">死亡 ${S.deathsRun||0} 次</span>`;
+  $('status').innerHTML=h;
+}
+
+
+/* ================= cinema kit: portraits, letterbox, scene dips, type ticks ================= */
+const FACES={
+ n:`<circle cx="33" cy="38" r="1.9" fill="#1a1410"/><circle cx="47" cy="38" r="1.9" fill="#1a1410"/><path d="M29 32.5h7M44 32.5h7" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M36 47q4 1.6 8 0" stroke="#7a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+ h:`<path d="M30.5 39q2.5-3 5 0M44.5 39q2.5-3 5 0" stroke="#1a1410" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M29 31h7M44 31h7" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M34.5 45.5q5.5 5 11 0" stroke="#7a4a3a" stroke-width="1.8" fill="#b65a4a" stroke-linecap="round"/>`,
+ s:`<circle cx="33" cy="38" r="3.3" fill="#fff"/><circle cx="47" cy="38" r="3.3" fill="#fff"/><circle cx="33" cy="38.3" r="1.4" fill="#1a1410"/><circle cx="47" cy="38.3" r="1.4" fill="#1a1410"/><path d="M29 31.5l7-2.2M44 29.3l7 2.2" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="40" cy="48" rx="2.3" ry="2.9" fill="#5a2a22"/>`,
+ a:`<circle cx="33" cy="38.5" r="1.9" fill="#1a1410"/><circle cx="47" cy="38.5" r="1.9" fill="#1a1410"/><path d="M29 30.5l7 2.6M51 30.5l-7 2.6" stroke="#2a201a" stroke-width="1.8" stroke-linecap="round"/><path d="M35.5 48h9" stroke="#7a4a3a" stroke-width="1.8" stroke-linecap="round"/>`,
+ t:`<path d="M30.5 38.5h5M44.5 38.5h5" stroke="#1a1410" stroke-width="1.8" stroke-linecap="round"/><path d="M29 33l7-2M44 31l7 2" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M36 49q4-2.6 8 0" stroke="#7a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
+ sly:`<circle cx="33" cy="38.5" r="1.9" fill="#1a1410"/><path d="M44.5 38.5q2.5-1.6 5 0" stroke="#1a1410" stroke-width="1.8" fill="none"/><path d="M29 32.5h7M44 30l7 1.5" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><path d="M35 47.5q6 1.6 10-2" stroke="#7a4a3a" stroke-width="1.7" fill="none" stroke-linecap="round"/>`,
+ shock:`<circle cx="33" cy="37.5" r="3.7" fill="#fff"/><circle cx="47" cy="37.5" r="3.7" fill="#fff"/><circle cx="33" cy="37.5" r="1.2" fill="#1a1410"/><circle cx="47" cy="37.5" r="1.2" fill="#1a1410"/><path d="M29 29.5l7-1.4M44 28.1l7 1.4" stroke="#2a201a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="40" cy="49" rx="3.4" ry="4.4" fill="#5a2a22"/>`
+};
+function portraitSVG(p,f){
+  if(p.sil)return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="#0a0506"/><path d="M8 80q4-24 32-24t32 24z" fill="#020202"/><ellipse cx="40" cy="38" rx="17" ry="20" fill="#020202"/><circle cx="33" cy="38" r="2.4" fill="#ff3b30"/><circle cx="47" cy="38" r="2.4" fill="#ff3b30"/><circle cx="33" cy="38" r="6" fill="#ff3b30" opacity=".18"/><circle cx="47" cy="38" r="6" fill="#ff3b30" opacity=".18"/></svg>`;
+  const sk=p.skin||'#f0d0b2',hc=p.hair||'#221a16';
+  let back='',hair='',acc='',cloth='';
+  if(p.style==='long')back=`<path d="M21 36q0-21 19-21t19 21l2 30H19z" fill="${hc}"/>`;
+  if(p.style==='pony')back=`<ellipse cx="59" cy="32" rx="5" ry="10" fill="${hc}"/>`;
+  const top={short:`<path d="M23 37q1-20 17-20t17 20q-5-10-17-10t-17 10z" fill="${hc}"/>`,
+    messy:`<path d="M23 35l2-12 5 4 3-9 5 7 5-8 3 8 6-5 1 9 4 6q-7-8-17-8t-17 8z" fill="${hc}"/>`,
+    pony:`<path d="M23 37q1-20 17-20t17 20q-6-11-17-11t-17 11z" fill="${hc}"/>`,
+    long:`<path d="M23 36q4-14 17-14t17 14q-8-7-17-7t-17 7z" fill="${hc}"/>`,
+    bun:`<circle cx="40" cy="17" r="6" fill="${hc}"/><path d="M23 37q1-19 17-19t17 19q-6-10-17-10t-17 10z" fill="${hc}"/>`,
+    none:''}[p.style||'short'];
+  hair=top;
+  cloth=`<path d="M8 80q3-21 32-23t32 23z" fill="${p.cloth||'#445'}"/>`;
+  if(p.collar)cloth+=`<path d="M33 57l7 9 7-9" fill="${p.collar}"/>`;
+  if(p.tie)cloth+=`<path d="M38.5 60h3l1.5 14-3 3-3-3z" fill="${p.tie}"/>`;
+  if(p.vest)cloth+=`<path d="M14 72h52M18 66h44" stroke="#f4f4ec" stroke-width="2.4" opacity=".8"/>`;
+  if(p.glasses)acc+=`<g fill="none" stroke="#2a2a2a" stroke-width="1.4"><circle cx="33" cy="38" r="5"/><circle cx="47" cy="38" r="5"/><path d="M38 38h4"/></g>`;
+  if(p.mask)acc+=`<path d="M26 42q14-3 28 0l-1 9q-13 7-26 0z" fill="${p.mask}"/>`;
+  if(p.cap)acc+=`<path d="M22 31q2-15 18-15t18 15z" fill="${p.cap}"/><rect x="20" y="29" width="40" height="5" rx="2.5" fill="${p.cap}" opacity=".85"/>${p.badge?`<circle cx="40" cy="23" r="2.6" fill="${p.badge}"/>`:''}`;
+  if(p.phones)acc+=`<path d="M22 36q0-22 18-22t18 22" stroke="#1a1a1a" stroke-width="3.4" fill="none"/><rect x="18" y="32" width="7" height="12" rx="3" fill="#1a1a1a"/><rect x="55" y="32" width="7" height="12" rx="3" fill="#1a1a1a"/>`;
+  if(p.lamp)acc+=`<path d="M23 27h34" stroke="#2a2a2a" stroke-width="4"/><circle cx="40" cy="26" r="4" fill="#fff6c8"/><circle cx="40" cy="26" r="10" fill="#fff6c8" opacity=".25"/>`;
+  if(p.hood)acc+=`<path d="M17 52q-2-38 23-39 25 1 23 39h-6q2-28-17-29-19 1-17 29z" fill="${p.hood}"/>`;
+  return `<svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="${p.bg||'#1d2430'}"/>${back}${cloth}<rect x="35" y="50" width="10" height="9" fill="${sk}"/><ellipse cx="40" cy="38" rx="16.5" ry="18.5" fill="${sk}"/><circle cx="29" cy="44" r="2.6" fill="#e89a8a" opacity="${f==='h'?.5:.18}"/><circle cx="51" cy="44" r="2.6" fill="#e89a8a" opacity="${f==='h'?.5:.18}"/>${FACES[f]||FACES.n}${hair}${acc}</svg>`;
+}
+let lastSpeaker=null;
+function addPortrait(box,st){
+  const key=st.who==='voice'?'voice':st.who;const p=PORTRAITS[key];
+  if(!p){lastSpeaker=null;return}
+  const f=st.f||p.f||'n';
+  const d=document.createElement('div');d.className='pt'+(key==='voice'?' sil':'')+(lastSpeaker===key?'':' enter');
+  d.innerHTML=portraitSVG(p,f);box.classList.add('withp');box.prepend(d);lastSpeaker=key;
+}
+function cineOn(){document.body.classList.add('cine')}
+function cineOff(){document.body.classList.remove('cine')}
+function sceneDip(){const s=$('scene');if(!s)return;s.classList.remove('dip');void s.offsetWidth;s.classList.add('dip')}
+
+/* ================= engine ================= */
+let typing=null,timers=[];
+function clearTimers(){timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[]}
+function current(){return SCRIPT[S.i]}
+function next(){clearTimers();cineOff();S.i++;save();render()}
+function passes(st){return !st.if||S.ch[st.if[0]]===st.if[1]}
+function render(){
+  clearTimers();
+  let st=current(),newChap=false;
+  while(st&&(!passes(st)||st.t==='chapter'||st.t==='cp')){
+    if(passes(st)){
+      if(st.t==='chapter'){S.chap=st.n;S.chapName=st.name;S.scene=CHAP_SCENE[st.n];newChap=true;if(st.n===3)S.battery=8}
+      if(st.t==='cp'){S.i++;S.snap=null;S.snap=JSON.stringify(S);save();st=current();continue}
+    }
+    S.i++;st=current();
+  }
+  if(newChap)showChapterCard(S.chap,S.chapName);
+  if(st&&st.scene)S.scene=st.scene;
+  setScene(S.scene||CHAP_SCENE[S.chap]);
+  if(st&&st.clock)S.clock=st.clock;
+  if($('clock').textContent!==S.clock){$('clock').textContent=S.clock;fxRestart($('clock'),'ping')}
+  $('chap').innerHTML=CH_LABEL[S.chap]+' · <b>'+S.chapName+'</b>';
+  $('btnHint').disabled=!(st&&st.t==='puzzle');
+  drawStatus();
+  if(st&&st.t==='finale')audio.resolve();else{audio.unresolve();audio.setMood({1:.5,2:.65,3:.8,4:.95,5:.85}[S.chap]||.6)}
+  stage.innerHTML='';
+  if(!st)return;
+  ({say:renderSay,ev:renderEv,choice:renderChoice,puzzle:renderPuzzle,rule:renderRule,cut:renderCut,end:renderEnd,finale:renderFinale})[st.t](st);
+}
+function dialogShell(who,label){
+  const box=document.createElement('div');box.className='box dialog';box.tabIndex=0;box.setAttribute('role','button');
+  const name=label||WHO[who];
+  if(name){const w=document.createElement('div');w.className='who '+who;w.textContent=name;box.appendChild(w)}
+  stage.appendChild(box);return box;
+}
+function typeInto(el,text,done){
+  if(reduce){if(typing&&typing.cancel)typing.cancel();typing=null;el.textContent=text;done&&done();return}
+  let k=0;el.textContent='';
+  if(typing&&typing.cancel)typing.cancel();const me={cancel(){clearInterval(id)},finish(){clearInterval(id);el.textContent=text;if(typing===me)typing=null;done&&done()}};typing=me;
+  const id=setInterval(()=>{k++;el.textContent=text.slice(0,k);if(k%2)audio.tk();if(k>=text.length)me.finish()},32);
+}
+function bindGo(box,go){box.onclick=go;box.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};box.focus({preventScroll:true})}
+function renderSay(st){
+  const box=dialogShell(st.who,st.label);addPortrait(box,st);
+  const line=document.createElement('div');line.className='line '+st.who;box.appendChild(line);
+  const cont=document.createElement('div');cont.className='cont';cont.textContent='點一下繼續 ▸';cont.style.visibility='hidden';box.appendChild(cont);
+  if(st.who==='voice')audio.whisper();
+  if(st.fx==='flicker')fxFlicker();
+  if(st.fx==='cut'){fxCut();audio.sting('death')}
+  if(st.fx==='knock'){audio.knock();setTimeout(()=>audio.knock(),1400);fxBeat()}
+  typeInto(line,st.text,()=>cont.style.visibility='visible');
+  bindGo(box,()=>{if(typing){typing.finish();return}next()});
+}
+function renderEv(st){
+  if(!S.ev.find(e=>e.id===st.id))S.ev.push({id:st.id,name:st.name,text:st.text});save();
+  audio.sting('ev');fxRestart($('btnNote'),'ping');
+  const box=dialogShell('narr');
+  box.insertAdjacentHTML('afterbegin','<div class="who">已加入筆記</div>');
+  const line=document.createElement('div');line.className='line';line.style.fontSize='15px';
+  line.innerHTML='<span class="ev-tag"></span><div style="margin-top:8px"></div>';
+  line.querySelector('.ev-tag').textContent=st.name;line.lastChild.textContent=st.text;box.appendChild(line);
+  box.insertAdjacentHTML('beforeend','<div class="cont">點一下繼續 ▸</div>');
+  bindGo(box,next);
+}
+function renderChoice(st){
+  const box=document.createElement('div');box.className='box dialog';box.style.cursor='default';
+  box.innerHTML=`<div class="who me">${st.timer?'快！你要怎麼做？':'你要怎麼做？'}</div>${st.timer?`<div class="timer"><i style="animation-duration:${st.timer}s"></i></div>`:''}<div class="choices"></div>`;
+  const c=box.querySelector('.choices');let done=false;
+  const pick=o=>{if(done)return;done=true;clearTimers();S.ch[st.key]=o.v;S.chText[st.key]=o.text;
+    if(o.die)return die(o.die);next()};
+  st.options.forEach(o=>{const b=document.createElement('button');b.className='choice';b.textContent=o.text;b.onclick=()=>pick(o);c.appendChild(b)});
+  stage.appendChild(box);
+  if(st.timer){
+    let beat=0;timers.push(setInterval(()=>{beat++;audio.thump(0,.25+beat*.01)},Math.max(380,900-st.timer*20)));
+    timers.push(setTimeout(()=>{if(done)return;done=true;clearTimers();
+      if(st.timeoutDie)return die(st.timeoutDie);
+      const safe=st.options.find(o=>!o.die);S.ch[st.key]=safe.v;S.chText[st.key]=safe.text;
+      stage.innerHTML='';const b2=dialogShell('narr');const l=document.createElement('div');l.className='line narr';l.textContent=st.timeoutSafe||'';b2.appendChild(l);
+      b2.insertAdjacentHTML('beforeend','<div class="cont">點一下繼續 ▸</div>');bindGo(b2,next);
+    },st.timer*1000));
+  }
+}
+function renderRule(st){
+  const r=S.rules.find(x=>x.n===st.n);
+  if(r){if(!r.orig)r.orig=r.text;r.text=st.text;r.ink=st.ink;r.changed=true}else S.rules.push({n:st.n,text:st.text,ink:st.ink,isNew:true});
+  S.rules.sort((a,b)=>a.n-b.n);save();
+  audio.sting('rule');if(st.ink==='red')fxRed();fxRestart($('btnRules'),'ping');
+  const box=dialogShell('narr');box.insertAdjacentHTML('afterbegin',`<div class="who voice">${st.head}</div>`);
+  const p=document.createElement('div');p.className='paper';
+  p.innerHTML=`<div class="rl new ${st.ink==='red'?'red':''}"><b>${st.n}</b><span></span></div>`;p.querySelector('span').textContent=st.text;
+  box.appendChild(p);box.insertAdjacentHTML('beforeend','<div class="cont">點一下繼續 ▸</div>');
+  bindGo(box,next);
+}
+
+/* ================= death ================= */
+function die(id){
+  clearTimers();cineOff();
+  const d=DEATHS[id];
+  if(!DEX.includes(id)){DEX.push(id);saveDex()}
+  S.deathsRun=(S.deathsRun||0)+1;
+  audio.sting('death');fxRed();
+  const rule=id==='exit'?'第 10 條：早上六點前，一定要離開旅社。':id==='mirror'?'第 7 條是假的。真正的守夜人，從沒叫你回頭。':`第 ${d.rule} 條：${RULES_INIT[d.rule-1].text}`;
+  $('deathBody').innerHTML=`<div class="d-k">YOU BROKE THE RULES</div><h2>你沒有回去</h2><p></p><div class="d-rule"></div>
+    <p class="cap" style="margin:0">死亡圖鑑 ${DEX.length} / ${Object.keys(DEATHS).length} · 新收錄「${d.t}」</p>
+    <div class="row"><button class="btn danger" id="retry">從檢查點重來</button><button class="btn ghost" id="dRules">看須知</button></div>`;
+  $('deathBody').querySelector('p').textContent=d.text;
+  $('deathBody').querySelector('.d-rule').textContent=rule;
+  const dv=$('death');dv.hidden=false;dv.style.animation='none';void dv.offsetWidth;dv.style.animation='';
+  $('retry').onclick=retry;$('dRules').onclick=openRules;$('retry').focus();
+}
+function retry(){
+  const deaths=S.deathsRun;const snap=S.snap;
+  if(snap){S=JSON.parse(snap);S.snap=snap}
+  S.deathsRun=deaths;save();
+  $('death').hidden=true;$('sheet').hidden=true;render();
+}
+
+/* ================= puzzles ================= */
+function renderPuzzle(st){({fake:pFake,roster:pRoster,fuse:pFuse,diary:pDiary,route:pRoute})[st.id]()}
+function ruleLines(list,opts={}){
+  return list.map(r=>`<div class="rl ${r.ink==='red'?'red':''} ${r.fake?'fake':''} ${opts.pick?'pick':''}" data-n="${r.n}"><b>${r.n}</b><span>${esc(r.text)}</span></div>`).join('');
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c])}
+
+function pFake(){
+  const marked=new Set();
+  const box=document.createElement('div');box.className='box';
+  box.innerHTML=`<h2 class="ptitle">謎題一 · 哪幾條是假的？</h2>
+  <p class="pdesc">點一下櫃台須知上的規則，把你認為是假的標起來。標錯了，可能會害死人。</p>
+  <div class="two">
+    <div><div class="cap">櫃台的須知</div><div class="paper" id="fk"><h4>住宿須知</h4>${ruleLines(S.rules,{pick:true})}</div></div>
+    <div><div class="cap">抽屜裡的舊須知</div><div class="paper"><h4>住宿須知</h4>${ruleLines(RULES_INIT.slice(0,5))}<div class="note-hand">（以下被撕掉）<br>我寫的，都是黑色的。——守夜人</div></div></div>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="fkGo">確認</button><span class="st-msg" id="fkSt">已標記 0 條</span></div>`;
+  stage.appendChild(box);
+  box.querySelectorAll('#fk .rl').forEach(el=>el.onclick=()=>{const n=+el.dataset.n;marked.has(n)?marked.delete(n):marked.add(n);el.classList.toggle('marked');$('fkSt').className='st-msg';$('fkSt').textContent=`已標記 ${marked.size} 條`});
+  $('fkGo').onclick=()=>{
+    const ok=FAKE.every(n=>marked.has(n))&&marked.size===FAKE.length,st=$('fkSt');
+    if(ok){S.rules.forEach(r=>{if(FAKE.includes(r.n))r.fake=true});save();st.className='st-msg good';st.textContent='四條假規則，被你劃掉了。';$('fkGo').disabled=true;
+      box.querySelectorAll('#fk .rl').forEach(el=>{if(FAKE.includes(+el.dataset.n))el.classList.add('fake')});setTimeout(next,1300)}
+    else{const real=[...marked].filter(n=>!FAKE.includes(n)).length,missed=FAKE.filter(n=>!marked.has(n)).length;
+      st.className='st-msg bad';st.textContent=real?`你劃掉了 ${real} 條真的規則。少了它們，你活不過今晚。`:`還有 ${missed} 條假規則沒找出來。`;shake(box)}
+  };
+}
+function face(hide){return `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="#b5a888"/><circle cx="28" cy="22" r="11" fill="#5a5040"/><path d="M8 56c2-14 10-20 20-20s18 6 20 20z" fill="#6b6b66"/>${hide?'<rect x="14" y="16" width="28" height="9" fill="#2a241b" opacity=".85"/>':''}</svg>`}
+function pRoster(){
+  let pick=-1;
+  const box=document.createElement('div');box.className='box';
+  box.innerHTML=`<h2 class="ptitle">謎題二 · 誰不該在合照裡？</h2>
+  <p class="pdesc">牆上的合照，和抽屜裡的員工名冊。合照裡有一個人，不應該出現。</p>
+  <div class="paper" style="margin-top:12px"><h4>員工名冊 · 1979</h4>
+   <table class="roster"><tr><th>編號</th><th>姓名</th><th>職位</th><th>備註</th></tr>${ROSTER.map(r=>`<tr><td>${r.no}</td><td>${r.name}</td><td>${r.job}</td><td>${r.note}</td></tr>`).join('')}</table></div>
+  <div class="cap" style="margin-top:14px">牆上的照片 · 背面寫著「1979 年 8 月 全體員工」</div>
+  <div class="wall">${PHOTOS.map((p,i)=>`<button class="photo" data-i="${i}">${face(p.hide)}<span>${p.job}<br>${p.no} · 灰制服</span></button>`).join('')}</div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="roGo" disabled>就是這個人</button><span class="st-msg" id="roSt"></span></div>`;
+  stage.appendChild(box);
+  box.querySelectorAll('.photo').forEach(el=>el.onclick=()=>{pick=+el.dataset.i;box.querySelectorAll('.photo').forEach(x=>x.classList.toggle('on',x===el));$('roGo').disabled=false});
+  $('roGo').onclick=()=>{
+    const st=$('roSt');
+    if(PHOTOS[pick].bad){st.className='st-msg good';st.textContent='照片裡的她，對你笑了一下。';$('roGo').disabled=true;setTimeout(next,1300)}
+    else{st.className='st-msg bad';st.textContent='名冊上的資料，跟這張照片對得上。';shake(box)}
+  };
+}
+function pFuse(){
+  const on=[false,false,false,false];
+  const box=document.createElement('div');box.className='box';
+  box.innerHTML=`<h2 class="ptitle">謎題三 · 配電箱</h2>
+  <p class="pdesc">每扳一次開關，手電筒就少一格電。讓一、二、三樓亮起來，四樓保持黑暗，再合上總開關。</p>
+  <div class="note-hand" style="background:var(--paper);padding:8px 10px;border-radius:3px;margin-top:10px">一層樓接到單數個開著的開關，燈才會亮。<br>四樓的電，絕對不能開。</div>
+  <div class="fuse"><div class="floors" id="floors"></div><div class="brk" id="brk"></div></div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="fuGo">合上總開關</button><span class="st-msg" id="fuSt"></span></div>`;
+  stage.appendChild(box);
+  const lit=()=>{const c={1:0,2:0,3:0,4:0};BREAKERS.forEach((b,i)=>{if(on[i])b.f.forEach(f=>c[f]++)});return [1,2,3,4].map(f=>c[f]%2===1)};
+  const draw=()=>{
+    const L=lit();
+    $('floors').innerHTML=[4,3,2,1].map(f=>`<div class="fl ${L[f-1]?'on':''} f${f}"><i></i>${f}F${f===4?' ⚠':''}</div>`).join('');
+    $('brk').innerHTML='';
+    BREAKERS.forEach((b,i)=>{const s=document.createElement('button');s.className='sw'+(on[i]?' on':'');s.setAttribute('aria-pressed',on[i]);
+      s.innerHTML=`<span class="k"></span><span><b>${b.k}</b>　接 ${b.f.map(x=>x+'F').join('、')}</span>`;
+      s.onclick=()=>{if(S.battery<=0)return;on[i]=!on[i];S.battery--;audio.click();drawStatus();draw();
+        if(lit()[3]){fxRed();audio.whisper()}
+        if(S.battery<=0&&!solved())setTimeout(()=>die('dark'),700)};
+      $('brk').appendChild(s)});
+  };
+  const solved=()=>{const L=lit();return L[0]&&L[1]&&L[2]&&!L[3]};
+  draw();
+  $('fuGo').onclick=()=>{
+    const st=$('fuSt');
+    if(solved()){st.className='st-msg good';st.textContent='喀。整棟樓震了一下。';$('fuGo').disabled=true;save();setTimeout(next,1000)}
+    else{S.battery--;drawStatus();st.className='st-msg bad';st.textContent=lit()[3]?'四樓亮了。上面有東西，開始走動。':'燈沒有全亮。總開關又彈開了。';shake(box);
+      if(S.battery<=0)setTimeout(()=>die('dark'),700)}
+  };
+}
+function pDiary(){
+  const box=document.createElement('div');box.className='box';
+  box.innerHTML=`<h2 class="ptitle">謎題四 · 守夜人的暗號</h2>
+  <p class="pdesc">日記最後一頁寫著三組數字。只能用守夜人親手寫的規則來解，標點不算。</p>
+  <div class="paper" style="margin-top:12px"><div class="mapnote">它學我的字，學得很像。<br>可它只會用紅色。<br>第十條在：<b style="font-family:var(--f-mono);font-size:17px">3-15 · 2-10 · 2-5</b></div></div>
+  <div class="two">
+    <div><div class="cap">你身上的須知（現在）</div><div class="paper">${ruleLines(S.rules.filter(r=>r.n<=5))}</div></div>
+    <div><div class="cap">抽屜裡的舊須知</div><div class="paper">${ruleLines(RULES_INIT.slice(0,5))}</div></div>
+  </div>
+  <div class="answer" style="margin-top:12px"><input id="dAns" maxlength="8" autocomplete="off" spellcheck="false" placeholder="三個字" aria-label="解出的暗號"><button class="btn" id="dGo">送出</button></div>
+  <div class="st-msg" id="dSt"></div>`;
+  stage.appendChild(box);
+  const go=()=>{
+    const v=$('dAns').value.replace(/[\s，,。]/g,''),st=$('dSt');if(!v)return;
+    if(v==='紅門後'){st.className='st-msg good';st.textContent='紅色的門。走廊盡頭，就有一扇。';$('dAns').disabled=true;setTimeout(next,1200)}
+    else if(v==='工門後'){st.className='st-msg bad';st.textContent='「工」……那是被它改過的第三條。守夜人不會用它的字。';shake(box);audio.whisper()}
+    else{st.className='st-msg bad';st.textContent='走廊上沒有這個地方。再數一次，標點不算。';shake(box)}
+  };
+  $('dGo').onclick=go;$('dAns').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};
+}
+function pRoute(){
+  let order=[];
+  const box=document.createElement('div');box.className='box';
+  box.innerHTML=`<h2 class="ptitle">最終謎題 · 天亮之前</h2>
+  <p class="pdesc">05:38 從二樓出發，06:00 前所有人都要走出大門。依序點選救人的順序。</p>
+  <div class="paper" style="margin-top:12px"><div class="mapnote">
+   從二樓出發：搭電梯上 403 要 3 分；走樓梯到 301 要 2 分；下地下室要 4 分。<br>
+   403 → 301 電梯往下 3 分；301 → 403 要繞回二樓搭電梯，5 分。<br>
+   403 ↔ 地下室 6 分；301 ↔ 地下室 5 分。<br>
+   救人：403 衣櫃 4 分、301 叫醒陳老師 2 分、鍋爐間 3 分。<br>
+   到大門：地下室 2 分、301 3 分、403 5 分。</div></div>
+  <div class="nodes" id="nodes"></div>
+  <div class="tl" id="tl"></div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="rGo" disabled>出發</button><button class="btn ghost" id="rReset">重排</button></div>
+  <div class="st-msg" id="rSt"></div>
+  <div class="row" style="margin-top:6px"><button class="btn ghost" id="rSolo" style="border-color:#5a3a30;color:#f0c8b8">來不及了，我自己走</button></div>`;
+  stage.appendChild(box);
+  const calc=()=>{let t=0,cur='S',log=[];order.forEach(n=>{t+=ROUTE.T[cur][n];const arr=t;t+=ROUTE.R[n];log.push([n,arr,t]);cur=n});const end=order.length===3?t+ROUTE.T[cur].E:null;return {log,end}};
+  const hm=m=>{const tot=5*60+38+m;return String(Math.floor(tot/60)).padStart(2,'0')+':'+String(tot%60).padStart(2,'0')};
+  const draw=()=>{
+    $('nodes').innerHTML='';
+    Object.entries(ROUTE.N).forEach(([k,n])=>{const b=document.createElement('button');const idx=order.indexOf(k);b.className='node'+(idx>=0?' used':'');
+      b.innerHTML=`<span><b>${idx>=0?idx+1:'·'}</b>　${n.name}</span><span style="color:var(--muted);font-size:13px">${n.who}</span>`;
+      b.onclick=()=>{if(idx>=0||order.length>=3)return;order.push(k);audio.click();draw()};$('nodes').appendChild(b)});
+    const {log,end}=calc();
+    $('tl').innerHTML=log.length?log.map(([n,a,d])=>`${hm(a)} 抵達${ROUTE.N[n].name} → ${hm(d)} 救出${ROUTE.N[n].who}`).join('<br>')+(end!=null?`<br>${hm(end)} 抵達大門`:''):'<span style="color:var(--muted)">還沒選路線。</span>';
+    $('rGo').disabled=order.length<3;
+  };
+  draw();
+  $('rReset').onclick=()=>{order=[];$('rSt').textContent='';draw()};
+  $('rGo').onclick=()=>{
+    const {end}=calc(),st=$('rSt');
+    if(end<=22){S.ch.route='all';S.chText.route='一個都不留下';st.className='st-msg good';st.textContent=`${hm(end)}，剛好趕得上。走！`;$('rGo').disabled=true;setTimeout(next,1200)}
+    else{st.className='st-msg bad';st.textContent=`這樣走，${hm(end)} 才到大門。晚了 ${end-22} 分鐘。`;shake(box)}
+  };
+  $('rSolo').onclick=()=>{S.ch.route='solo';S.chText.route='自己先走';next()};
+}
+
+/* ================= cutscenes ================= */
+const CUTS={
+ arrive:{dur:4200,html:()=>`<div class="cs-stage"><div class="cs-rain"></div><div class="cs-house"><i style="left:30px;top:52px"></i><i style="left:86px;top:52px;background:#b8322a"></i><i style="left:142px;top:52px"></i></div><div class="cs-sign">雲頂旅社</div><div class="cs-lights"><i></i><i></i></div></div><div class="cap2" style="--d:2.4s">颱風夜。山上，只剩下一間旅社。</div>`,
+  sound(){audio.tone(48,{type:'sawtooth',a:.05,d:2.6,g:.06,wet:false});setTimeout(()=>audio.tone(42,{type:'sawtooth',a:.05,d:2,g:.05,wet:false}),1400)}},
+ knock:{dur:3800,html:()=>`<div class="cs-stage"><div class="cs-door"></div><div class="cs-gap"></div><div class="cs-feet"><i></i><i></i></div></div><div class="cap2" style="--d:2.2s">叩、叩、叩。門縫底下，有兩道影子。</div>`,
+  sound(){setTimeout(()=>{audio.knock();fxBeat()},1100);setTimeout(()=>{audio.knock();fxBeat()},2400)}},
+ vanish:{dur:3600,html:()=>`<div class="cs-stage"><div class="cs-push" style="position:absolute;inset:0"><div class="cs-bed"></div><div class="cs-quilt"></div><div class="cs-phone"></div></div></div><div class="cap2" style="--d:2s">另一張床上，沒有人。</div>`,
+  sound(){audio.whisper()}},
+ mirror:{dur:4200,html:()=>`<div class="cs-stage"><div class="cs-mirror"><div class="cs-me"></div><div class="cs-behind"></div></div></div><div class="cap2" style="--d:2.6s">鏡子裡，你身後站著小凱。他把手搭在你的肩膀上。</div>`,
+  sound(){setTimeout(()=>{audio.whisper();audio.thump(0)},900);setTimeout(()=>audio.thump(0),1300)}},
+ sheet:{dur:5200,html:()=>`<div class="paper"><h4>住宿須知</h4>${RULES_INIT.map((r,i)=>`<div class="rl ${r.ink==='red'?'red':''}" style="--d:${.6+i*.4}s"><b>${r.n}</b><span>${r.text}</span></div>`).join('')}</div><div class="cap2" style="--d:4.4s">黑色的字，和紅色的字。</div>`,
+  sound(){[2.8,3.2,3.6].forEach(t=>setTimeout(()=>audio.sting('rule'),t*1000))},
+  after(){S.rules=RULES_INIT.map(r=>({...r}));save();fxRestart($('btnRules'),'ping')}},
+ elev:{dur:4200,html:()=>`<div class="elev"><span class="pass" style="--d:.3s">1</span><span class="pass" style="--d:1.1s">2</span><span class="pass" style="--d:1.9s">3</span><span class="lit" style="--d:2.7s">4</span></div><div class="cap2" style="--d:3.2s">本旅社只有三層樓。</div>`,
+  sound(){[300,1100,1900].forEach(t=>setTimeout(()=>audio.click(),t));setTimeout(()=>{audio.sting('death');fxRed()},2700)}},
+ dawn:{dur:3800,html:()=>`<div class="door2"><i></i><i></i></div><div class="cap2" style="--d:2.4s">06:00。外面，天亮了。</div>`,
+  sound(){setTimeout(()=>audio.resolve(),600)},after(){$('scene').classList.add('dawn')}}
+};
+function renderCut(st){
+  cineOn();lastSpeaker=null;
+  const c=CUTS[st.id],box=document.createElement('div');box.className='cut';box.tabIndex=0;
+  box.innerHTML=c.html()+'<div class="cont" style="visibility:hidden">點一下繼續 ▸</div>';
+  stage.appendChild(box);box.focus({preventScroll:true});
+  try{c.sound()}catch(e){}
+  if(c.after)c.after();
+  let done=false;const fin=()=>{done=true;box.querySelector('.cont').style.visibility='visible'};
+  timers.push(setTimeout(fin,reduce?300:c.dur));
+  const go=()=>{if(!done){clearTimers();try{box.getAnimations({subtree:true}).forEach(a=>a.finish())}catch(e){}fin();return}next()};
+  box.onclick=go;box.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};
+}
+
+/* ================= chapter end & finale ================= */
+function renderEnd(st){
+  const c=st.ch,nx=CHAP_NEXT[c];
+  const used=CHAP_PUZZLES[c].reduce((a,id)=>a+(S.hints[id]||0),0);
+  const box=document.createElement('div');box.className='box endcard';
+  box.innerHTML=`<div class="who">CHAPTER ${c} CLEAR</div><h2>${CH_LABEL[c]} · ${S.chapName}</h2>
+  <p class="pdesc">你還活著。至少，現在還是。</p>
+  <div class="stats"><div><b>${S.deathsRun||0}</b><span>本輪死亡</span></div><div><b>${DEX.length}/${Object.keys(DEATHS).length}</b><span>死亡圖鑑</span></div><div><b>${used}</b><span>提示次數</span></div></div>
+  <div class="next"><b style="color:var(--text)">下一章：${nx.name}</b><br>${nx.text}</div>
+  <div class="row" style="margin-top:14px"><button class="btn" id="nextChap">${nx.btn}</button><button class="btn ghost" id="restart">重新入住</button></div>`;
+  stage.appendChild(box);
+  $('nextChap').onclick=next;$('restart').onclick=restart;
+}
+function renderFinale(){
+  const total=Object.keys(DEATHS).length;
+  const E=S.ch.route==='solo'?['結局三','獨自逃出','你活下來了。回到學校以後，畢業照拍得很順利。只是照片裡少了三個人，而且，沒有人記得他們。']
+    :S.ch.last==='keeper'?['結局二','新的守夜人','你留了下來。從此以後，雲頂旅社的須知，都是用黑筆寫的。']
+    :['結局一','全員生還','十條規則、一個晚上，你們一個都沒有少。'];
+  const hidden=S.ch.route!=='solo'&&S.ch.last==='all'&&DEX.length>=total;
+  recordEnding('yunding',E[1]);if(hidden)recordEnding('yunding','守夜人的名字');
+  const box=document.createElement('div');box.className='box endcard';
+  box.innerHTML=`<div class="who">THE END · ${E[0]}</div><h2>${E[1]}</h2><p class="pdesc">${E[2]}</p>
+  <div class="stats"><div><b>${S.deathsRun||0}</b><span>本輪死亡</span></div><div><b>${DEX.length}/${total}</b><span>死亡圖鑑</span></div><div><b>${Object.values(S.hints).reduce((a,b)=>a+(b||0),0)}</b><span>提示次數</span></div></div>
+  ${hidden?`<div class="paper" style="margin-top:6px"><div class="mapnote"><b>隱藏結局 · 守夜人的名字</b><br>回程的遊覽車上，陳老師看著窗外的芒草，忽然說：「我爺爺以前在山上的旅社當守夜人。他叫陳守義。」<br>你把口袋裡的須知遞給他。他看了很久，說：「這是他的字。」</div></div>`
+   :`<div class="next">還有其他結局，和一個隱藏結局。<br><span style="color:var(--muted);font-size:13px">提示：把死亡圖鑑全部收集完，再讓所有人一起活著離開。</span></div>`}
+  <div class="row" style="margin-top:14px"><button class="btn" id="restart">重新入住</button><button class="btn ghost" id="dexBtn">死亡圖鑑</button><a class="btn ghost home-link" href="../index.html">回到謎匣</a></div>
+  <p class="cap" style="margin-top:14px">謎匣 · 第貳匣《雲頂旅社住宿須知》 · 感謝遊玩</p>`;
+  stage.appendChild(box);
+  $('restart').onclick=restart;$('dexBtn').onclick=openDex;
+}
+function restart(){$('scene').classList.remove('dawn');audio.unresolve();S=fresh();save();render()}
+
+/* ================= sheets ================= */
+function openSheet(html){$('sheetBody').innerHTML=html;$('sheet').hidden=false}
+function closeBtn(){return `<div class="row" style="margin-top:14px"><button class="btn ghost" onclick="document.getElementById('sheet').hidden=true">關閉</button></div>`}
+$('sheet').onclick=e=>{if(e.target.id==='sheet')$('sheet').hidden=true};
+function openRules(){
+  const cur=S.rules.length?`<div class="paper"><h4>住宿須知</h4>${ruleLines(S.rules)}${S.rules.some(r=>r.orig)?`<div class="note-hand">被改寫前的第三條：${RULES_INIT[2].text}</div>`:''}</div>`:'<p class="locked">你還沒拿到須知。</p>';
+  const drawer=S.ev.find(e=>e.id==='drawer')?`<div class="cap" style="margin-top:14px">抽屜裡的舊須知</div><div class="paper">${ruleLines(RULES_INIT.slice(0,5))}<div class="note-hand">我寫的，都是黑色的。——守夜人</div></div>`:'';
+  openSheet(`<h3>住宿須知</h3>${cur}${drawer}${closeBtn()}`);
+}
+function openDex(){
+  const ids=Object.keys(DEATHS);
+  openSheet(`<h3>死亡圖鑑 ${DEX.length} / ${ids.length}</h3><ul>${ids.map(id=>DEX.includes(id)?`<li><b>${DEATHS[id].t}</b><br><span style="color:#c9ccd4">${DEATHS[id].text}</span></li>`:`<li class="locked">？？？</li>`).join('')}</ul>${closeBtn()}`);
+}
+$('btnRules').onclick=openRules;$('btnDex').onclick=openDex;
+$('btnNote').onclick=()=>{
+  const items=S.ev.length?S.ev.map(e=>`<li><b>${e.name}</b><br><span style="color:#c9ccd4">${e.text}</span></li>`).join(''):'<li class="locked">還沒有任何線索。</li>';
+  openSheet(`<h3>筆記</h3><ul>${items}</ul>${closeBtn()}`);
+};
+$('btnHint').onclick=()=>{
+  const st=current();if(!st||st.t!=='puzzle')return;const id=st.id,info=PUZZLE_INFO[id];
+  const draw=()=>{const n=S.hints[id]||0;
+    $('sheetBody').innerHTML=`<h3>提示</h3><ul>${info.hints.map((h,k)=>`<li class="${k<n?'':'locked'}">提示 ${k+1}：${k<n?h:'尚未開啟'}</li>`).join('')}</ul>
+    <div class="row" style="margin-top:14px">${n<info.hints.length?'<button class="btn" id="moreHint">開啟下一個提示</button>':''}<button class="btn ghost" id="closeHint">關閉</button></div>`;
+    const m=$('moreHint');if(m)m.onclick=()=>{S.hints[id]=n+1;save();draw()};$('closeHint').onclick=()=>$('sheet').hidden=true};
+  $('sheet').hidden=false;draw();
+};
+
+
+/* ---------- chapter jump ---------- */
+function chapterList(){
+  const list=[];SCRIPT.forEach((s,i)=>{if(s.t==='chapter')list.push({n:s.n,name:s.name,idx:i})});
+  if(!list.find(c=>c.n===1))list.unshift({n:1,name:fresh().chapName,idx:0});
+  return list;
+}
+function simStep(st){
+  if(st.t==='chapter'){S.chap=st.n;S.chapName=st.name}
+  if(st.clock)S.clock=st.clock;
+  if(st.scene)S.scene=st.scene;
+  if(st.t==='ev'&&!S.ev.find(e=>e.id===st.id))S.ev.push({id:st.id,name:st.name,text:st.text});
+  if(st.t==='choice'){const o=st.options.find(o=>!o.die)||st.options[0];S.ch[st.key]=o.v;S.chText=S.chText||{};S.chText[st.key]=o.text}
+  simExtra(st);
+}
+function jumpTo(n){
+  const c=chapterList().find(x=>x.n===n);if(!c)return;
+  S=fresh();
+  for(let k=0;k<c.idx;k++){const st=SCRIPT[k];if(st.if&&S.ch[st.if[0]]!==st.if[1])continue;simStep(st)}
+  S.i=c.idx;save();
+  try{audio.init()}catch(e){}
+  $('title').hidden=true;$('sheet').hidden=true;
+  const sc=document.getElementById('scene');if(sc)sc.classList.remove('dawn');
+  if(audio.unresolve)audio.unresolve();
+  if(typeof setFreq==='function')setFreq(S.freq);
+  render();
+  if(SCRIPT[c.idx].t!=='chapter'&&typeof showChapterCard==='function')showChapterCard(S.chap,S.chapName);
+}
+function chapterSheet(){
+  const list=chapterList();
+  openSheet(`<h3>選擇章節</h3><p style="color:var(--muted);font-size:14px;margin:0 0 10px">跳到任一章的開頭。前面章節的線索與選擇，會自動幫你補上。</p>
+  <ul>${list.map(c=>`<li style="padding:0"><button class="chapjump" data-n="${c.n}" style="width:100%;text-align:left;background:transparent;border:0;padding:12px;min-height:48px;display:flex;justify-content:space-between;gap:8px"><span><b>${CH_LABEL[c.n]}</b>　${c.name}</span>${c.n===S.chap&&S.i>0&&$('title').hidden?'<span style="color:var(--muted);font-size:12px">目前</span>':''}</button></li>`).join('')}</ul>
+  <div class="row" style="margin-top:14px"><button class="btn ghost" id="chapClose">關閉</button></div>`);
+  document.querySelectorAll('.chapjump').forEach(b=>b.onclick=()=>jumpTo(+b.dataset.n));
+  $('chapClose').onclick=()=>$('sheet').hidden=true;
+}
+function simExtra(st){if(st.t==='chapter'&&st.n===3)S.battery=8;if(st.t==='cut'&&st.id==='sheet')S.rules=RULES_INIT.map(r=>({...r}));if(st.t==='puzzle'&&st.id==='fake')S.rules.forEach(r=>{if(FAKE.includes(r.n))r.fake=true});if(st.t==='rule'){const r=S.rules.find(x=>x.n===st.n);if(r){if(!r.orig)r.orig=r.text;r.text=st.text;r.ink=st.ink;r.changed=true}else S.rules.push({n:st.n,text:st.text,ink:st.ink,isNew:true});S.rules.sort((a,b)=>a.n-b.n)}}
+
+/* ================= boot ================= */
+const saved=load();
+if(saved&&saved.i>0&&SCRIPT[saved.i])$('btnResume').hidden=false;
+$('titleDex').textContent=DEX.length?`死亡圖鑑 ${DEX.length} / ${Object.keys(DEATHS).length}`:'';
+$('btnStart').onclick=()=>{audio.init();S=fresh();save();$('title').hidden=true;render()};
+$('btnResume').onclick=()=>{audio.init();S=Object.assign(fresh(),saved);$('title').hidden=true;render()};
+setScene('bus');drawStatus();
+
+$('btnChap').onclick=chapterSheet;
+(function(){const c=$('chap');c.setAttribute('role','button');c.tabIndex=0;c.style.cursor='pointer';c.title='選擇章節';c.onclick=chapterSheet;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chapterSheet()}}})();
+</script>
+
+<script>
+/* ===== 謎匣 UI kit: icons on every button + AI-video style chapter picker ===== */
+(function(){
+const ICONS={
+ play:'<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>',
+ resume:'<path d="M5 5v14"/><path d="M9 5l11 7-11 7z" fill="currentColor" stroke="none"/>',
+ note:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+ bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/>',
+ scroll:'<path d="M8 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8"/><path d="M8 3a2 2 0 0 0-2 2v2h4V5a2 2 0 0 0-2-2zM10 10h6M10 14h6M10 18h3"/>',
+ skull:'<path d="M12 3a8 8 0 0 0-8 8c0 3 1.6 5 3.5 6v3h9v-3c1.9-1 3.5-3 3.5-6a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+ speaker:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+ mute:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/>',
+ box:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 12h18M10 8.5h4M10 15.5h4"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+ rotate:'<path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ wave:'<path d="M3 12h2l2-5 3 10 3-12 3 9 2-2h3"/>',
+ x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ shuffle:'<path d="M4 7h3l10 10h3M4 17h3l3-3M14 10l3-3h3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+ door:'<path d="M6 21V4h10v17M4 21h16"/><circle cx="13" cy="12.5" r="1"/>',
+ key:'<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
+ bolt:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',
+ target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>'
+};
+const svgI=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||ICONS.chev}</svg>`;
+const MAP=[['關閉','x'],['開啟下一個提示','bulb'],['提示','bulb'],['看須知','scroll'],['須知','scroll'],['死亡圖鑑','skull'],['圖鑑','skull'],['筆記','note'],['證物','note'],['證詞','chat'],['怪談表','chat'],['靜音','mute'],['音效','speaker'],['謎匣','box'],['選擇章節','film'],['檢查點','rotate'],['重新','rotate'],['從頭','rotate'],['再玩','rotate'],['重排','shuffle'],['繼續','resume'],['回到房間','resume'],['進入','arrow'],['接收','wave'],['再聽','wave'],['播放','wave'],['自己走','door'],['鐵盒','key'],['開鎖','key'],['總開關','bolt'],['就是','target'],['指證','target'],['指出','target'],['開始','play'],['收聽','play'],['入住','play'],['進站','play'],['加入','play'],['刷卡','play'],['出發','arrow'],['送出','check'],['確認','check'],['說出','check'],['提出','check'],['告訴','check'],['寫進','check']];
+const EXC='.keys,.notes,.wheel,.mv,.fine,.pairs,.phone,.seatgrid,.shelf,.wall,.brk,.nodes,.opts,.chips,.pick,.tabs,.cp,.cp-launch';
+const pickIcon=t=>{for(const [k,i] of MAP)if(t.includes(k))return i;return 'chev'};
+function decorate(){
+  document.querySelectorAll('button,a.btn,a.icon-btn').forEach(el=>{
+    if(el.closest(EXC)||el.querySelector('svg,img'))return;
+    let t=el.textContent.trim();if(!t)return;
+    if(t==='匣'){el.textContent='謎匣';return}
+    if(t.length<=1)return;
+    const s=document.createElement('span');s.className='ico';s.innerHTML=svgI(el.classList.contains('choice')?'chev':pickIcon(t));
+    el.prepend(s);el.classList.add('has-ico');
+  });
+}
+let queued=false;const sched=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;decorate()})};
+
+/* ---------- accent & styles ---------- */
+const cs=getComputedStyle(document.documentElement);
+let ACC='#f2ab4c';for(const v of ['--line-color','--redglow','--amber']){const x=cs.getPropertyValue(v).trim();if(x){ACC=x;break}}
+const reduceM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NOISE=`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+const MONO='"IBM Plex Mono",ui-monospace,monospace',SERIF='"Noto Serif TC","Songti TC",serif';
+const CSS=`
+.has-ico{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.ico{display:inline-flex;flex:none}
+.ico svg{width:1.15em;height:1.15em}
+.icon-btn.has-ico{flex-direction:column;gap:1px;font-size:11px;line-height:1.2;padding:4px 6px;min-height:42px}
+.icon-btn.has-ico .ico svg{width:18px;height:18px}
+.choice.has-ico{display:flex;justify-content:flex-start;align-items:flex-start;gap:10px}
+.choice.has-ico .ico{color:${ACC};margin-top:4px}
+.cp{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;gap:14px;padding:calc(16px + env(safe-area-inset-top,0px)) 0 calc(16px + env(safe-area-inset-bottom,0px));background:radial-gradient(ellipse at 50% -10%,rgba(120,90,170,.32),transparent 60%),#07060a;color:#ece8f2;overflow-y:auto;overflow-x:hidden;animation:cpIn .45s ease}
+@keyframes cpIn{from{opacity:0}}
+.cp.closing{animation:cpOut .35s ease forwards}
+@keyframes cpOut{to{opacity:0}}
+.cp.leaving .cp-head,.cp.leaving .cp-rail,.cp.leaving .cp-chips{transition:filter .5s,opacity .5s;filter:blur(8px);opacity:0}
+.cp-grain{position:fixed;inset:-40%;pointer-events:none;background:${NOISE};opacity:.07;animation:cpGrain .6s steps(3) infinite}
+@keyframes cpGrain{33%{transform:translate(-3%,2%)}66%{transform:translate(2%,-3%)}}
+.cp-head{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-inline:16px}
+.cp-k{display:flex;align-items:center;gap:6px;font-family:${MONO};font-size:11px;letter-spacing:.3em;color:${ACC}}
+.cp-k svg{width:14px;height:14px}
+.cp-head h3{margin:4px 0 2px;font-family:${SERIF};font-weight:900;font-size:26px;line-height:1.2}
+.cp-head p{margin:0;font-size:13px;color:#a39cb4}
+.cp-x{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);display:grid;place-items:center;color:#ece8f2;padding:0}
+.cp-x svg{width:20px;height:20px}
+.cp-rail{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,320px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 8px;scrollbar-width:none}
+.cp-rail::-webkit-scrollbar{display:none}
+.cp-card{scroll-snap-align:center;display:flex;flex-direction:column;gap:10px;min-width:0;animation:cpCard .6s calc(var(--i)*.09s) cubic-bezier(.2,.9,.3,1) both}
+@keyframes cpCard{from{opacity:0;transform:translateY(24px) scale(.96)}}
+.cp-thumb{position:relative;display:block;width:100%;aspect-ratio:3/4;max-height:54vh;border:0;padding:0;border-radius:18px;overflow:hidden;background:#000;color:#fff;cursor:pointer;text-align:left;box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+.cp-card.cur .cp-thumb{box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 2px ${ACC}}
+.cp-art{position:absolute;inset:0;animation:cpDenoise 1.3s calc(.25s + var(--i)*.18s) ease-out both}
+@keyframes cpDenoise{from{filter:blur(16px) saturate(.1) brightness(1.6) contrast(1.4)}to{filter:none}}
+.cp-kb{position:absolute;inset:0}
+.cp-kb svg{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 60%;animation:cpKb 16s ease-in-out infinite alternate,cpDream 7s ease-in-out infinite}
+@keyframes cpKb{from{transform:scale(1.06)}to{transform:scale(1.24) translate(-4%,2%)}}
+@keyframes cpDream{50%{filter:blur(.7px) hue-rotate(12deg) saturate(1.3)}}
+.cp-rays{position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,240,220,.16) 48%,transparent 60%);background-size:260% 100%;mix-blend-mode:screen;animation:cpRays 6s ease-in-out infinite}
+@keyframes cpRays{from{background-position:120% 0}to{background-position:-60% 0}}
+.cp-noise{position:absolute;inset:-20%;background:${NOISE};background-size:180px;mix-blend-mode:overlay;opacity:.16;animation:cpNoiseIn 1.3s calc(.25s + var(--i)*.18s) ease-out both,cpGrain .5s steps(3) infinite}
+@keyframes cpNoiseIn{from{opacity:1}}
+.cp-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 28%,transparent 48%,rgba(0,0,0,.88))}
+.cp-hud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;font-family:${MONO};font-size:11px;letter-spacing:.12em}
+.cp-rec{color:#ff4a4a;animation:cpBlink 1.2s steps(1) infinite}
+@keyframes cpBlink{50%{opacity:.25}}
+.cp-gen{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;gap:8px;font-family:${MONO};font-size:12px;transition:opacity .4s}
+.cp-gen i{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:cpSpin .8s linear infinite}
+@keyframes cpSpin{to{transform:rotate(360deg)}}
+.cp-card.done .cp-gen{opacity:0}
+.cp-num{position:absolute;right:10px;bottom:52px;font-family:${SERIF};font-weight:900;font-size:76px;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35)}
+.cp-title{position:absolute;left:14px;right:14px;bottom:14px;display:flex;flex-direction:column}
+.cp-title small{font-size:12px;color:${ACC};letter-spacing:.2em}
+.cp-title b{font-family:${SERIF};font-weight:900;font-size:24px;line-height:1.3;text-shadow:0 2px 12px #000}
+.cp-meta{display:flex;flex-direction:column;gap:6px;padding-inline:2px}
+.cp-sub{font-size:13px;color:#a39cb4}
+.cp-prompt{font-family:${MONO};font-size:11px;color:#8a83a0;line-height:1.5;border-left:2px solid ${ACC};padding-left:8px}
+.cp-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border-radius:12px;border:0;background:${ACC};color:#0b0910;font-weight:700;font-size:15px}
+.cp-go svg{width:16px;height:16px}
+.cp-chips{display:flex;justify-content:center;gap:8px;padding-inline:16px;flex-wrap:wrap}
+.cp-chip{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:transparent;color:#a39cb4;font-family:${MONO};font-size:13px;padding:0}
+.cp-chip.on{background:${ACC};color:#0b0910;border-color:${ACC}}
+.cp-fly{position:fixed;z-index:60;border-radius:18px;overflow:hidden;background:#000;transition:left .75s cubic-bezier(.7,0,.2,1),top .75s cubic-bezier(.7,0,.2,1),width .75s cubic-bezier(.7,0,.2,1),height .75s cubic-bezier(.7,0,.2,1),border-radius .75s}
+.cp-fly.full{left:0!important;top:0!important;width:100vw!important;height:100vh!important;border-radius:0}
+.cp-fly .cp-kb svg{animation:none;transform:scale(1.12)}
+.cp-fly.dive .cp-kb{animation:cpDive 1.2s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes cpDive{to{transform:scale(1.7);filter:blur(5px) brightness(2.3) saturate(1.6)}}
+.cp-scan{position:absolute;left:0;right:0;height:30%;top:-30%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.2),transparent);animation:cpScan 1.1s .2s linear 2}
+@keyframes cpScan{to{top:100%}}
+.cp-fly.out,.cp-launch.out{opacity:0;transition:opacity .55s;pointer-events:none}
+.cp-launch{position:fixed;inset:0;z-index:61;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:0 20px calc(40px + env(safe-area-inset-bottom,0px));cursor:pointer;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.65));color:#fff}
+.cp-type{font-family:${MONO};font-size:13px;color:#e8f4ee;min-height:1.6em}
+.cp-caret{display:inline-block;width:8px;height:14px;margin-left:2px;background:${ACC};vertical-align:middle;animation:cpBlink .6s steps(1) infinite}
+.cp-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.cp-bar i{display:block;height:100%;background:${ACC};transform-origin:left;animation:cpBar 1.5s cubic-bezier(.3,.1,.2,1) both}
+@keyframes cpBar{from{transform:scaleX(0)}}
+.cp-big{position:absolute;left:16px;right:16px;top:38%;text-align:center;opacity:0;transform:scale(1.15);filter:blur(10px);transition:opacity .6s,transform .6s,filter .6s}
+.cp-launch.reveal .cp-big{opacity:1;transform:none;filter:none}
+.cp-big small{display:block;font-family:${MONO};letter-spacing:.5em;color:${ACC};font-size:13px}
+.cp-big b{font-family:${SERIF};font-weight:900;font-size:clamp(40px,12vw,64px);text-shadow:0 0 30px rgba(0,0,0,.8),2px 0 rgba(255,0,60,.55),-2px 0 rgba(0,220,255,.55)}
+.cp-burst{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.cp,.cp *{animation:none!important;transition:none!important}}`;
+const st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
+
+/* ---------- AI-video chapter picker ---------- */
+const pad=n=>String(n).padStart(2,'0');
+function sceneFor(list,i){
+  const c=list[i];
+  try{if(typeof CHAP_SCENE!=='undefined'&&CHAP_SCENE[c.n]&&SCENES[CHAP_SCENE[c.n]])return CHAP_SCENE[c.n]}catch(e){}
+  const end=i+1<list.length?list[i+1].idx:SCRIPT.length;
+  for(let k=c.idx;k<end;k++){const s=SCRIPT[k];if(s&&s.scene&&SCENES[s.scene])return s.scene}
+  return Object.keys(SCENES)[0];
+}
+const subOf=n=>{try{return (typeof CC_SUB!=='undefined'&&CC_SUB[n])||''}catch(e){return ''}};
+let open=null,busy=false;
+function card(c,i,list,cur){
+  const k=sceneFor(list,i),sub=subOf(c.n);
+  const prompt=`${c.name}，${sub.replace(/ · /g,'，')}，深夜，電影感光影，懸疑`;
+  return `<article class="cp-card${c.n===cur?' cur':''}" style="--i:${i}" data-i="${i}">
+   <button class="cp-thumb" data-n="${c.n}" aria-label="從${CH_LABEL[c.n]}「${c.name}」開始">
+    <div class="cp-art"><div class="cp-kb">${SCENES[k]}</div></div><div class="cp-rays"></div><div class="cp-noise"></div><div class="cp-shade"></div>
+    <div class="cp-hud"><span class="cp-rec">● REC</span><span>${c.n===cur?'目前進度':'SCENE '+pad(c.n)}</span></div>
+    <div class="cp-gen"><i></i><span>生成中</span><b>0%</b></div>
+    <div class="cp-num">${pad(c.n)}</div>
+    <div class="cp-title"><small>${CH_LABEL[c.n]}</small><b>${c.name}</b></div>
+   </button>
+   <div class="cp-meta"><div class="cp-sub">${sub}</div><div class="cp-prompt">▸ prompt：${prompt}</div>
+    <button class="cp-go" data-n="${c.n}">${svgI('play')}從這裡開始</button></div>
+  </article>`;
+}
+function cinePick(){
+  if(open)return;
+  const list=chapterList(),title=document.getElementById('title');
+  const cur=title&&title.hidden?S.chap:0;
+  const el=document.createElement('div');el.className='cp';el.setAttribute('role','dialog');el.setAttribute('aria-label','選擇章節');
+  el.innerHTML=`<div class="cp-grain"></div>
+   <div class="cp-head"><div><div class="cp-k">${svgI('film')}SCENE SELECT</div><h3>選擇章節</h3><p>滑動挑一個場景，從那一刻開始。前面的線索會自動補上。</p></div><button class="cp-x" aria-label="關閉">${svgI('x')}</button></div>
+   <div class="cp-rail">${list.map((c,i)=>card(c,i,list,cur)).join('')}</div>
+   <div class="cp-chips">${list.map((c,i)=>`<button class="cp-chip${c.n===(cur||list[0].n)?' on':''}" data-i="${i}" aria-label="${CH_LABEL[c.n]}">${pad(c.n)}</button>`).join('')}</div>`;
+  document.body.appendChild(el);open=el;
+  const rail=el.querySelector('.cp-rail'),cards=[...el.querySelectorAll('.cp-card')],chips=[...el.querySelectorAll('.cp-chip')];
+  const ci=cur?list.findIndex(c=>c.n===cur):0;
+  if(ci>0)rail.scrollLeft=cards[ci].offsetLeft-16;
+  cards.forEach((cd,i)=>{
+    const b=cd.querySelector('.cp-gen b');
+    if(reduceM){cd.classList.add('done');return}
+    const t0=performance.now()+250+i*180;
+    (function tick(t){const p=Math.max(0,Math.min(1,(t-t0)/1300));b.textContent=Math.round(p*100)+'%';if(p<1&&open===el)requestAnimationFrame(tick);else cd.classList.add('done')})(performance.now());
+  });
+  rail.addEventListener('scroll',()=>{const mid=rail.scrollLeft+rail.clientWidth/2;let best=0,d=1e9;cards.forEach((c,i)=>{const m=c.offsetLeft+c.offsetWidth/2;if(Math.abs(m-mid)<d){d=Math.abs(m-mid);best=i}});chips.forEach((c,i)=>c.classList.toggle('on',i===best))},{passive:true});
+  el.addEventListener('click',e=>{
+    if(e.target.closest('.cp-x'))return closePick();
+    const ch=e.target.closest('.cp-chip');if(ch){cards[+ch.dataset.i].scrollIntoView({behavior:reduceM?'auto':'smooth',inline:'center',block:'nearest'});return}
+    const go=e.target.closest('.cp-thumb,.cp-go');if(go)launch(+go.dataset.n,go.closest('.cp-card').querySelector('.cp-thumb'));
+  });
+  el.querySelector('.cp-x').focus({preventScroll:true});
+}
+function closePick(){if(!open)return;const el=open;open=null;el.classList.add('closing');setTimeout(()=>el.remove(),340)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open&&!busy)closePick()});
+function finishJump(n){if(open){open.remove();open=null}busy=false;try{jumpTo(n)}catch(err){console.error(err)}}
+function launch(n,thumb){
+  if(busy)return;busy=true;
+  const c=chapterList().find(x=>x.n===n);
+  try{if(typeof audio!=='undefined'&&audio.init)audio.init()}catch(e){}
+  if(reduceM){finishJump(n);return}
+  const r=thumb.getBoundingClientRect();
+  const fly=document.createElement('div');fly.className='cp-fly';
+  fly.innerHTML=`<div class="cp-kb">${thumb.querySelector('.cp-kb').innerHTML}</div><div class="cp-rays"></div><div class="cp-scan"></div>`;
+  Object.assign(fly.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+  const ov=document.createElement('div');ov.className='cp-launch';
+  ov.innerHTML=`<div class="cp-big"><small>${CH_LABEL[n]}</small><b>${c.name}</b></div><div class="cp-type"></div><div class="cp-bar"><i></i></div><canvas class="cp-burst"></canvas>`;
+  document.body.append(fly,ov);open.classList.add('leaving');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>fly.classList.add('full')));
+  const text=`> 生成場景：${CH_LABEL[n]}「${c.name}」 ${subOf(n)}`,ty=ov.querySelector('.cp-type');let k=0;
+  const tyI=setInterval(()=>{k++;ty.innerHTML=text.slice(0,k).replace(/[&<>]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[s])+'<span class="cp-caret"></span>';if(k>=text.length)clearInterval(tyI)},Math.max(18,1000/text.length));
+  const T=[setTimeout(()=>fly.classList.add('dive'),900),setTimeout(()=>ov.classList.add('reveal'),1050),setTimeout(()=>burst(ov.querySelector('.cp-burst')),1650),setTimeout(done,2150)];
+  let finished=false;
+  function done(){if(finished)return;finished=true;T.forEach(clearTimeout);clearInterval(tyI);finishJump(n);fly.classList.add('out');ov.classList.add('out');setTimeout(()=>{fly.remove();ov.remove()},600)}
+  ov.addEventListener('click',done);
+}
+function burst(cv){
+  const w=cv.width=innerWidth,h=cv.height=innerHeight,x=cv.getContext('2d');if(!x)return;
+  const P=Array.from({length:220},()=>{const a=Math.random()*6.283,s=2+Math.random()*10;return {x:w/2,y:h*.45,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*2.6}});
+  const t0=performance.now();
+  (function f(t){const e=(t-t0)/700;x.clearRect(0,0,w,h);x.globalCompositeOperation='lighter';
+    for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vx*=.95;p.vy*=.95;x.globalAlpha=Math.max(0,1-e);x.fillStyle=Math.random()<.3?'#fff':ACC;x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fill()}
+    if(e<1)requestAnimationFrame(f)})(t0);
+}
+
+/* ---------- bind ---------- */
+window.cinePick=cinePick;
+const b=document.getElementById('btnChap');if(b)b.onclick=cinePick;
+const lab=document.getElementById('chap');if(lab){lab.onclick=cinePick;lab.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cinePick()}}}
+decorate();
+new MutationObserver(sched).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+
+/* ---------- episode deep link (#ch3) + resume audio on first tap ---------- */
+(function(){
+  const m=/^#ch(\d)$/.exec(location.hash||'');
+  if(m&&typeof jumpTo==='function'){setTimeout(()=>{try{jumpTo(+m[1])}catch(e){}try{history.replaceState(null,'',location.pathname)}catch(e){}},60)}
+  const wake=()=>{try{if(typeof audio!=='undefined'){if(!audio.ctx&&audio.init)audio.init();if(audio.ctx&&audio.ctx.state==='suspended')audio.ctx.resume()}}catch(e){}};
+  document.addEventListener('pointerdown',wake,{capture:true});document.addEventListener('keydown',wake,{capture:true});
+})();
+
+</script>
+</body>
+</html>

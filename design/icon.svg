@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#3a2a52"/>
+      <stop offset=".55" stop-color="#1a1226"/>
+      <stop offset="1" stop-color="#0a070f"/>
+    </radialGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a5236"/>
+      <stop offset="1" stop-color="#4a2f1e"/>
+    </linearGradient>
+    <linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8e6040"/>
+      <stop offset="1" stop-color="#5a3a25"/>
+    </linearGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3d58a"/>
+      <stop offset="1" stop-color="#a87a2c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ff3b2f" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ff3b2f" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#sky)"/>
+  <circle cx="790" cy="210" r="86" fill="#f1e6c8" opacity=".92"/>
+  <circle cx="815" cy="235" r="18" fill="#d6c79f"/>
+  <circle cx="765" cy="190" r="11" fill="#d6c79f"/>
+  <g fill="#fff" opacity=".7"><circle cx="190" cy="170" r="5"/><circle cx="330" cy="110" r="4"/><circle cx="560" cy="150" r="5"/><circle cx="250" cy="300" r="3"/></g>
+  <!-- cabinet -->
+  <rect x="168" y="380" width="688" height="520" rx="40" fill="url(#wood)"/>
+  <rect x="168" y="380" width="688" height="26" rx="13" fill="#9a6a46" opacity=".6"/>
+  <!-- dark gap inside the opened drawer -->
+  <rect x="214" y="452" width="596" height="132" rx="10" fill="#050307"/>
+  <ellipse cx="512" cy="520" rx="260" ry="70" fill="url(#glow)" filter="url(#blur)"/>
+  <!-- eyes in the gap -->
+  <g fill="#ff4b3a">
+    <ellipse cx="432" cy="520" rx="34" ry="20"/>
+    <ellipse cx="592" cy="520" rx="34" ry="20"/>
+  </g>
+  <g fill="#1a0000"><ellipse cx="432" cy="520" rx="9" ry="18"/><ellipse cx="592" cy="520" rx="9" ry="18"/></g>
+  <!-- drawer front, pulled slightly out -->
+  <rect x="196" y="584" width="632" height="276" rx="22" fill="url(#front)"/>
+  <rect x="196" y="584" width="632" height="18" rx="9" fill="#b07a52" opacity=".55"/>
+  <path d="M240 650h544M240 760h544" stroke="#4a2f1e" stroke-width="6" opacity=".35"/>
+  <!-- brass keyhole plate -->
+  <rect x="452" y="650" width="120" height="150" rx="26" fill="url(#brass)"/>
+  <circle cx="512" cy="705" r="22" fill="#2a1a0c"/>
+  <path d="M498 715h28l12 58h-52z" fill="#2a1a0c"/>
+  <!-- drip of light from keyhole -->
+  <circle cx="512" cy="705" r="8" fill="#ff4b3a"/>
+</svg>

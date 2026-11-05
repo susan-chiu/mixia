@@ -1,0 +1,80 @@
+# 謎匣 Mixia — Codemagic 自動打包設定（做法和潛境一樣）
+# 專案結構（這個檔案放在 Git 儲存庫最上層）：
+#   web/          App 的網頁內容（謎匣首頁 + 10 個故事 + 影片）
+#   scripts/      prepare_www.py：把 web/ 整理成 www/（App 專用觸控設定、首頁包成完整網頁）
+#   ios/App       iOS 專案（Capacitor 7，Swift Package Manager）
+#
+# 在 Codemagic 網站需要先設定（第一次）：
+#   1. Add application → 選 GitHub 的 mixia 這個 repo → 類型選 Other
+#   2. App Store Connect API 金鑰：直接沿用潛境已經連好的 subverse_asc（同一個 Apple 帳號的金鑰，所有 App 都能用）
+#   3. App Store Connect 先建立 App（Bundle ID：tw.mixia.riddlebox）
+workflows:
+  ios-release:
+    name: 謎匣 iOS（TestFlight）
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: subverse_asc
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: tw.mixia.riddlebox
+      xcode: latest
+      node: 22
+      vars:
+        XCODE_PROJECT: ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+        # App Store Connect → 謎匣 → App 資訊 → Apple ID（一串數字）。把 none 換成那串數字，才會自動接續 build 號
+        APP_STORE_APPLE_ID: none
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+    scripts:
+      - name: 安裝相依套件
+        script: npm ci || npm install
+      - name: 由 web 更新 iOS 網頁內容並同步
+        script: |
+          python3 scripts/prepare_www.py
+          npx cap sync ios
+      - name: 套用簽章設定
+        script: xcode-project use-profiles
+      - name: 設定 build 號
+        script: |
+          NEXT=$BUILD_NUMBER
+          if [ "$APP_STORE_APPLE_ID" != "none" ]; then
+            LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" || echo 0)
+            NEXT=$((LATEST + 1))
+          fi
+          echo "CFBundleVersion = $NEXT"
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $NEXT;/g" "$XCODE_PROJECT/project.pbxproj"
+      - name: 確認隱私 manifest 已包含
+        script: |
+          plutil -lint ios/App/App/PrivacyInfo.xcprivacy
+          grep -q "PrivacyInfo.xcprivacy in Resources" "$XCODE_PROJECT/project.pbxproj"
+      - name: 建置 IPA
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME" || (grep -h -B2 -A6 error: /tmp/xcodebuild_logs/*.log | head -80; tail -25 /tmp/xcodebuild_logs/*.log; exit 1)
+      - name: 確認 IPA 內含遊戲內容與隱私 manifest
+        script: |
+          IPA=$(ls build/ios/ipa/*.ipa | head -1)
+          unzip -l "$IPA" | grep -q "App.app/PrivacyInfo.xcprivacy" && echo "✓ PrivacyInfo.xcprivacy 已打包進 App"
+          unzip -l "$IPA" | grep -q "App.app/public/g/eighth.html" && echo "✓ 10 個故事已打包進 App"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - yskyskygirl19830613@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

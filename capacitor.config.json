@@ -1,0 +1,16 @@
+{
+  "appId": "tw.mixia.riddlebox",
+  "appName": "謎匣",
+  "webDir": "www",
+  "backgroundColor": "#0b0d12",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0b0d12",
+    "scheme": "Mixia",
+    "allowsLinkPreview": false
+  },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 900, "backgroundColor": "#0b0d12", "showSpinner": false, "launchAutoHide": true },
+    "StatusBar": { "style": "DARK", "overlaysWebView": true }
+  }
+}

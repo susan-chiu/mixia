@@ -1,0 +1,427 @@
+<title>謎匣</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=LXGW+WenKai+TC:wght@400&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<style>
+/* Layout: one-screen app shell — a haunted night-sky hero band (moon, school, radio tower, crow, train, fog) holding the wordmark, then the wooden box of drawers, the opened drawer's card, and a tab bar. Deliberately single dark look. */
+:root{
+  --ink:#0c0a12; --panel:#1a1726; --wall:#14111e; --line:#342d48;
+  --wood:#4a3424; --wood-dk:#24180f; --wood-fg:#c9b39a;
+  --paper:#ebe0c6; --paper-ink:#3b2f21;
+  --amber:#f2ab4c; --red:#ff4a4a; --blood:#b8322a;
+  --text:#e9e4ee; --muted:#9a93ad;
+  --f-display:"Noto Serif TC","Songti TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-hand:"LXGW WenKai TC","Kaiti TC",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-tap-highlight-color:transparent;overflow:hidden}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+svg.i{width:1.15em;height:1.15em;flex:none}
+#app{height:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column;position:relative}
+main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 16px 20px;display:flex;flex-direction:column;gap:16px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;height:214px;margin:0 -16px;flex:none;overflow:hidden;background:linear-gradient(180deg,#140f22 0%,#241a36 55%,#2c1f33 100%)}
+.hero svg.sky{position:absolute;inset:0;width:100%;height:100%}
+#fog{position:absolute;left:0;right:0;bottom:0;width:100%;height:70%;pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,transparent 40%,rgba(0,0,0,.55) 100%);pointer-events:none}
+.hero-top{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;z-index:2}
+.mark small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.32em;color:#b8aecb}
+.mark h1{position:relative;margin:0;font-family:var(--f-display);font-weight:900;font-size:40px;letter-spacing:.16em;color:var(--paper);line-height:1.15;text-shadow:0 2px 18px rgba(0,0,0,.8)}
+.mark h1::before,.mark h1::after{content:attr(data-t);position:absolute;left:0;top:0;opacity:0}
+.mark h1::before{color:#ff2a4a;animation:gl1 7s steps(1) infinite}
+.mark h1::after{color:#2ad4ff;animation:gl2 7s steps(1) infinite}
+@keyframes gl1{0%,92%,100%{opacity:0;transform:none}93%{opacity:.7;transform:translate(-3px,1px)}95%{opacity:.6;transform:translate(2px,-1px)}97%{opacity:0}}
+@keyframes gl2{0%,92%,100%{opacity:0;transform:none}93%{opacity:.6;transform:translate(3px,-1px)}95%{opacity:.5;transform:translate(-2px,1px)}97%{opacity:0}}
+.drip{position:absolute;top:44px;width:3px;border-radius:0 0 3px 3px;background:var(--blood);transform-origin:top;animation:drip 6s ease-in infinite}
+.drip::after{content:"";position:absolute;left:-1.5px;bottom:-5px;width:6px;height:7px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--blood)}
+@keyframes drip{0%{height:0;opacity:0}10%{opacity:1}60%{height:14px;opacity:1}80%{height:16px;opacity:0}100%{height:0;opacity:0}}
+.hero-act{display:flex;gap:8px;align-items:center}
+.pill{display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.18);background:rgba(12,10,18,.55);border-radius:8px;padding:5px 10px;font-family:var(--f-mono);font-size:12px;color:var(--amber);white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.snd{display:flex;align-items:center;gap:5px;min-height:34px;border:1px solid rgba(255,255,255,.18);background:rgba(12,10,18,.55);border-radius:8px;padding:4px 10px;font-size:12px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.snd[aria-pressed=true]{color:var(--amber);border-color:rgba(242,171,76,.5)}
+.whisper{position:absolute;left:16px;right:16px;bottom:24px;margin:0;font-family:var(--f-hand);font-size:15px;color:#e8b8c0;text-shadow:0 0 10px rgba(255,60,80,.45),0 2px 6px #000;opacity:0;transition:opacity 1.6s ease;z-index:2}
+.whisper.on{opacity:.9}
+/* sky animations */
+.cloud{animation:drift 60s linear infinite}
+.cloud.c2{animation-duration:85s;animation-delay:-30s}
+@keyframes drift{from{transform:translateX(-120px)}to{transform:translateX(520px)}}
+.tw{animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.2}}
+.blinkR{animation:blinkR 1.6s steps(1) infinite}
+@keyframes blinkR{50%{opacity:.15}}
+.winR{animation:winR 5s infinite}
+@keyframes winR{0%,40%,44%,48%,100%{opacity:.85}42%,46%{opacity:.1}}
+.peek{opacity:0;animation:peek 13s infinite}
+@keyframes peek{0%,68%{opacity:0}70%,78%{opacity:1}79%{opacity:0}80%,88%{opacity:1}90%,100%{opacity:0}}
+.crow-h{transform-origin:368px 112px;animation:bob 5s ease-in-out infinite}
+@keyframes bob{0%,60%,100%{transform:none}65%{transform:rotate(-18deg)}75%{transform:rotate(10deg)}}
+.crow-w{transform-origin:362px 118px;animation:flap 9s ease-in-out infinite}
+@keyframes flap{0%,88%,100%{transform:none}90%{transform:scaleY(-.6)}92%{transform:none}94%{transform:scaleY(-.6)}}
+.train{animation:train 17s linear infinite}
+@keyframes train{0%{transform:translateX(-220px)}32%{transform:translateX(480px)}100%{transform:translateX(480px)}}
+
+/* ---------- box ---------- */
+.box{position:relative;background:linear-gradient(170deg,var(--wood),var(--wood-dk));border-radius:16px;padding:14px 12px 18px;display:grid;gap:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.6)}
+.box::before{content:"";position:absolute;inset:0;border-radius:16px;background:repeating-linear-gradient(95deg,rgba(0,0,0,.08) 0 2px,transparent 2px 9px);pointer-events:none}
+.box-h{position:relative;display:flex;justify-content:space-between;align-items:center}
+.box-h span:first-child{display:flex;align-items:center;gap:6px;font-family:var(--f-display);font-weight:600;font-size:14px;color:var(--paper);letter-spacing:.2em}
+.box-h span:last-child{font-family:var(--f-mono);font-size:11px;color:var(--wood-fg)}
+.drawers{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;background:#140d08;border-radius:8px;padding:6px}
+.drawer{position:relative;min-height:86px;border-radius:6px;border:1px solid #2a1c12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(#5a4232,#3b2a1f);color:var(--wood-fg);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:transform .35s cubic-bezier(.3,1.4,.5,1),box-shadow .3s;padding:4px 2px;overflow:hidden}
+.drawer b{font-family:var(--f-display);font-weight:900;font-size:19px;line-height:1}
+.drawer .di{width:20px;height:20px;opacity:.85}
+.drawer span{font-size:10px;line-height:1.2;text-align:center}
+.drawer .kh{width:7px;height:10px;border-radius:3px 3px 1px 1px;background:#140d08;box-shadow:0 0 0 2px #8a7656}
+.drawer[aria-pressed=true]{transform:translateY(10px);background:linear-gradient(#6b4a32,#4a3424);color:var(--paper);box-shadow:0 14px 20px rgba(0,0,0,.65),0 -6px 18px var(--glow),inset 0 1px 0 rgba(255,255,255,.12)}
+.drawer[aria-pressed=true] .di{color:var(--acc);opacity:1;filter:drop-shadow(0 0 6px var(--acc))}
+.drawer[aria-pressed=true] .kh{background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.drawer.locked::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(35deg,transparent 0 10px,rgba(160,160,170,.35) 10px 12px);pointer-events:none}
+.drawer.rattle{animation:rattle .6s}
+@keyframes rattle{15%,45%,75%{transform:translateX(-2px) rotate(-1deg)}30%,60%,90%{transform:translateX(2px) rotate(1deg)}}
+
+/* ---------- card ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px;animation:open .45s cubic-bezier(.2,1.2,.4,1);box-shadow:0 0 0 1px rgba(0,0,0,.4),0 14px 34px rgba(0,0,0,.5)}
+@keyframes open{from{opacity:0;transform:translateY(-8px)}}
+.card-top{display:flex;gap:14px}
+.cover{position:relative;width:110px;height:146px;flex:none;border-radius:10px;overflow:hidden;background:#0b0e15;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+.cover>svg{display:block;width:100%;height:100%;animation:den 1s .1s ease-out both,breath 6s ease-in-out 1.2s infinite}
+@keyframes den{from{filter:blur(12px) saturate(.1) brightness(1.6)}to{filter:none}}
+@keyframes breath{50%{transform:scale(1.06)}}
+.cover .nz{position:absolute;inset:-20%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay;opacity:.18;animation:nzIn 1s .1s ease-out both,grain .5s steps(3) infinite}
+@keyframes nzIn{from{opacity:1}}
+@keyframes grain{33%{transform:translate(-4%,3%)}66%{transform:translate(3%,-4%)}}
+.cover .gen{position:absolute;inset:auto 0 0 0;padding:4px 6px;font-family:var(--f-mono);font-size:10px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;justify-content:space-between;transition:opacity .4s}
+.cover.done .gen{opacity:0}
+.cover.poster{width:100%;height:auto;aspect-ratio:4/5;border-radius:14px}
+.cover.poster>svg{animation:den 1s .1s ease-out both,pBreath 9s ease-in-out 1.2s infinite alternate}
+@keyframes pBreath{to{transform:scale(1.06)}}
+.play{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:transparent;color:#fff;font-size:12px;letter-spacing:.1em;text-shadow:0 2px 8px #000}
+.play i{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.85);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:pulseRing 2.2s ease-out infinite}
+.play i svg{width:24px;height:24px;margin-left:3px}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}100%{box-shadow:0 0 0 18px rgba(255,255,255,0)}}
+.eps{display:grid;gap:6px;border-top:1px dashed var(--line);padding-top:12px}
+.eps h4{display:flex;align-items:center;gap:6px;margin:0 0 2px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.1em}
+.ep{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 12px;border-radius:10px;background:var(--wall);text-decoration:none;border:1px solid transparent}
+.ep:hover{border-color:var(--line)}
+.ep b{font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--acc);flex:none;width:3.4em}
+.ep span{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.ep strong{font-family:var(--f-display);font-weight:600;font-size:15px;color:var(--paper)}
+.ep small{font-size:12px;color:var(--muted)}
+.ep>svg{color:var(--acc);opacity:.8}
+.meta{display:flex;flex-direction:column;gap:6px;min-width:0}
+.meta .k{display:flex;align-items:center;gap:5px;font-size:12px}
+.meta h2{margin:0;font-family:var(--f-display);font-weight:900;font-size:21px;line-height:1.3;color:var(--paper)}
+.meta .tag{font-size:13px;color:var(--muted)}
+.fear{display:flex;align-items:center;gap:3px;font-size:12px;color:var(--muted)}
+.fear svg{width:14px;height:14px}
+.blurb{margin:0;font-size:15px;line-height:1.7;color:#d6d0dc}
+.facts{display:flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:12px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+.prog{display:grid;gap:6px}
+.prog .row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.prog .row span{display:flex;align-items:center;gap:5px}
+.bar{height:6px;border-radius:3px;background:#262037;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px}
+.cta{position:relative;overflow:hidden;min-height:52px;border-radius:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-size:16px}
+.cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);background-size:250% 100%;animation:shine 4s ease-in-out infinite}
+@keyframes shine{from{background-position:130% 0}to{background-position:-80% 0}}
+.cta.dis{border:1px dashed var(--line);color:var(--muted);background:transparent}
+.cta.dis::after{display:none}
+
+.list{display:grid;gap:10px}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.sec h3{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-family:var(--f-display);font-size:17px;color:var(--paper)}
+.items{display:grid;gap:6px}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--wall);border-radius:8px;padding:9px 12px;font-size:15px}
+.item span:first-child{display:flex;align-items:center;gap:8px}
+.item.lock{color:var(--muted)}
+.item small{font-size:12px;color:var(--muted)}
+.chip{font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.intro{display:flex;gap:8px;align-items:flex-start;color:var(--muted);font-size:14px;margin:16px 0 0}
+
+nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #241f33;background:#09070e;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{position:relative;background:transparent;border:0;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:12px}
+nav button[aria-selected=true]{color:var(--amber)}
+nav button[aria-selected=true]::before{content:"";position:absolute;top:0;width:24px;height:2px;border-radius:2px;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+nav svg{width:22px;height:22px}
+.grainAll{position:fixed;inset:-40%;pointer-events:none;z-index:20;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.05;animation:grain .7s steps(3) infinite}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.peek{opacity:0}}
+.vt{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px;animation:vtIn .35s ease}
+@keyframes vtIn{from{opacity:0}}
+.vt-in{position:relative;width:min(960px,100%)}
+.vt-in video{display:block;width:100%;aspect-ratio:480/268;border-radius:10px;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.vt-x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center;z-index:2}
+.vt-x svg{width:20px;height:20px}
+.vt-end{position:absolute;inset:0;border-radius:10px;background:rgba(0,0,0,.78);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff}
+.vt-end b{font-size:22px;letter-spacing:.1em}
+.vt-go{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none}
+.vt-go svg{width:16px;height:16px}
+.vt-re{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:10px;padding:10px 16px}
+@media (prefers-reduced-motion:reduce){.vt{animation:none}}
+.cover.photo .play{top:57%}
+</style>
+
+<div id="app">
+  <main id="main"></main>
+  <nav aria-label="主選單" role="tablist">
+    <button role="tab" data-tab="box" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 12h18M10 8.5h4M10 15.5h4"/></svg>謎匣</button>
+    <button role="tab" data-tab="endings" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/></svg>結局收藏</button>
+    <button role="tab" data-tab="deaths" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a8 8 0 0 0-8 8c0 3 1.6 5 3.5 6v3h9v-3c1.9-1 3.5-3 3.5-6a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/></svg>死亡圖鑑</button>
+  </nav>
+</div>
+<div class="grainAll" aria-hidden="true"></div>
+<script src="trailers.js" charset="utf-8"></script>
+<script>
+const ICONS={
+ play:'<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>',
+ x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+ unlock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 7.5-2"/>',
+ radio:'<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 3l7 5"/><circle cx="16" cy="14" r="2.5"/><path d="M6 12h5M6 15h5"/>',
+ key:'<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
+ train:'<rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 10h14M8 21l2-4M16 21l-2-4"/><circle cx="9" cy="13.5" r="1"/><circle cx="15" cy="13.5" r="1"/>',
+ ghost:'<path d="M6 20V10a6 6 0 0 1 12 0v10l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5z"/><circle cx="10" cy="10" r="1"/><circle cx="14" cy="10" r="1"/>',
+ skull:'<path d="M12 3a8 8 0 0 0-8 8c0 3 1.6 5 3.5 6v3h9v-3c1.9-1 3.5-3 3.5-6a8 8 0 0 0-8-8z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/>',
+ speaker:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+ mute:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/>',
+ eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M10 15h4l1 5H9z"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ door:'<path d="M6 21V4h10v17M4 21h16"/><circle cx="13" cy="12.5" r="1"/>',
+ hourglass:'<path d="M7 3h10M7 21h10M8 3c0 5 8 6 8 9s-8 4-8 9M16 3c0 5-8 6-8 9s8 4 8 9"/>',
+ tree:'<path d="M12 3l6 9h-3l4 6H5l4-6H6z"/><path d="M12 18v3"/>',
+ bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+ mask:'<path d="M4 5q8-3 16 0v6q0 8-8 10Q4 19 4 11z"/><circle cx="9" cy="10" r="1.4" fill="currentColor"/><circle cx="15" cy="10" r="1.4" fill="currentColor"/><path d="M9 15q3 2 6 0"/>',
+ loop:'<path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/>',
+ glass:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v16M4 12h16"/><path d="M14 7l3 3"/>',
+ cam:'<rect x="2.5" y="7" width="13" height="10" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5"/><circle cx="6" cy="10" r="1" fill="currentColor" stroke="none"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>'
+};
+const ico=(k,cls='i')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+const skull=on=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a8 8 0 0 0-8 8c0 3 1.6 5 3.5 6v3h9v-3c1.9-1 3.5-3 3.5-6a8 8 0 0 0-8-8z" fill="${on?'currentColor':'#2c2640'}"/><circle cx="9" cy="11" r="1.7" fill="#1a1726"/><circle cx="15" cy="11" r="1.7" fill="#1a1726"/></svg>`;
+
+const GAMES=[
+ {id:'1996',no:'壹',icon:'radio',short:'1996',title:'1996 的訊號',tag:'懸疑 · 時空 · 溫暖結局',fear:2,acc:'#f2ab4c',fg:'#2a1a08',href:'g/1996.html',save:'sig1996',video:'v/1996_trailer.mp4',vlen:34,
+  blurb:'每晚十一點，舊廣播室的收音機會收到一個女生的求救。她說她在 1996 年，而學校就快要消失了。',facts:'5 章 · 11 道謎題 · 2 種結局 · 約 60 分鐘',
+  start:'開始收聽',cont:'繼續收聽',endings:['重逢','訊號'],
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#1a2030"/><rect x="52" y="16" width="40" height="46" fill="#121a2a" stroke="#33405a" stroke-width="3"/><circle cx="78" cy="30" r="7" fill="#ebe0c6" opacity=".6"/><rect x="14" y="78" width="76" height="44" rx="6" fill="#3b2a1f"/><rect x="22" y="86" width="60" height="14" rx="2" fill="#ebe0c6"/><rect x="50" y="86" width="2" height="14" fill="#ff5a4c"/><circle cx="76" cy="111" r="4" fill="#ff5a4c"/><text x="22" y="115" font-family="monospace" font-size="9" fill="#f2ab4c">96.3</text></svg>`},
+ {id:'yunding',no:'貳',icon:'key',short:'雲頂旅社',title:'雲頂旅社住宿須知',tag:'規則怪談 · 恐怖 · 會死亡',fear:5,acc:'#ff5a4c',fg:'#ffffff',btnBg:'#b8322a',href:'g/yunding.html',save:'yunding',
+  blurb:'颱風夜，全班被困在山上的老旅社。須知上有 9 條規則，其中幾條是假的。違反一條，就回不去了。',facts:'5 章 · 9 種死法 · 3 種結局 + 隱藏結局',
+  start:'辦理入住',cont:'回到房間',endings:['全員生還','新的守夜人','獨自逃出','守夜人的名字'],hiddenEnding:'守夜人的名字',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#0c0f16"/><rect width="104" height="70" fill="#141a26" opacity=".8"/><polygon points="10,120 10,58 52,30 94,58 94,120" fill="#1c222e"/><rect x="22" y="66" width="14" height="14" fill="#262f42"/><rect x="45" y="66" width="14" height="14" fill="#262f42"/><rect x="68" y="66" width="14" height="14" fill="#ff5a4c" opacity=".85"/><rect x="22" y="90" width="14" height="14" fill="#262f42"/><rect x="68" y="90" width="14" height="14" fill="#262f42"/><rect x="44" y="96" width="16" height="24" fill="#0c0f16"/><text x="52" y="20" font-family="serif" font-size="9" fill="#95a1b7" text-anchor="middle">雲頂旅社</text></svg>`},
+ {id:'metro',no:'參',icon:'train',short:'末班捷運',title:'末班捷運',tag:'推理 · 辦案 · 不會死亡',fear:2,acc:'#2fb3a3',fg:'#04201c',href:'g/metro.html',save:'metro',
+  blurb:'斷電四十秒，車廂裡少了一個人。列車停在隧道中央，沒有人下得了車。答案，還在這節車廂裡。',facts:'5 章 · 5 道推理 · 2 種結局 · 名偵探稱號',
+  start:'刷卡進站',cont:'繼續辦案',endings:['末班車上的朋友','各自的終點','名偵探'],hiddenEnding:'名偵探',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#0c1013"/><rect y="34" width="104" height="5" fill="#2fb3a3" opacity=".7"/><rect x="8" y="56" width="88" height="54" rx="8" fill="#22303a"/><rect x="16" y="64" width="22" height="18" rx="3" fill="#05080a"/><rect x="44" y="64" width="22" height="18" rx="3" fill="#05080a"/><rect x="72" y="64" width="16" height="18" rx="3" fill="#05080a"/><rect x="52" y="68" width="6" height="12" rx="2" fill="#f2b6c6" opacity=".9"/><rect x="8" y="94" width="88" height="4" fill="#2fb3a3"/><circle cx="90" cy="48" r="3" fill="#ff5a4c"/><text x="52" y="126" font-family="monospace" font-size="10" fill="#2fb3a3" text-anchor="middle">LAST 23:38</text></svg>`},
+ {id:'wonders',no:'肆',icon:'ghost',short:'七不思議',title:'校園七大不可思議',tag:'輕恐怖 · 推理 · 不會死亡',fear:3,acc:'#b48ef0',fg:'#1c0f2e',href:'g/wonders.html',save:'wonders',
+  blurb:'一夜之間，全校公告欄貼滿同一張紙：解開七大不可思議的人，可以實現一個願望。快被廢社的怪談研究社，決定一個一個查清楚。',facts:'5 章 · 6 道推理 · 2 種結局 · 王牌稱號',
+  start:'加入怪談研究社',cont:'繼續調查',endings:['真相大白','我們的秘密','怪談社王牌'],hiddenEnding:'怪談社王牌',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#1d1a2a"/><rect x="14" y="20" width="76" height="92" fill="#5a4030"/><rect x="20" y="26" width="64" height="80" fill="#ece4cf"/><text x="52" y="40" font-family="serif" font-size="9" font-weight="700" fill="#2c2620" text-anchor="middle">七大不可思議</text>${[0,1,2,3,4,5].map(i=>`<rect x="26" y="${48+i*8}" width="${34+(i%3)*8}" height="3" fill="#2c2620" opacity=".55"/>`).join('')}<text x="26" y="101" font-family="serif" font-size="9" fill="#b8322a">七、？？？</text><circle cx="88" cy="22" r="4" fill="#b48ef0"/></svg>`},
+ {id:'live',no:'伍',icon:'cam',short:'幽靈直播',title:'幽靈直播',tag:'網路懸疑 · 驚悚 · 高難度',fear:5,acc:'#ff3d7f',fg:'#ffffff',btnBg:'#c2245c',href:'g/live.html',save:'live',
+  blurb:'你是夜探主播小夜的聊天室管理員。今晚她直播廢棄的星光樂園，聊天室裡有一個帳號，每次都比「現場」還早 10 秒。你保護的人，真的值得你相信嗎？',facts:'5 章 · 7 道謎題 · 6 種中斷 · 2 種結局 + 稱號 · 難度 ★★★★',
+  start:'進入直播間',cont:'回到直播間',endings:['真相直播','沒播出的真相','神級管理員'],hiddenEnding:'神級管理員',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#120a18"/><circle cx="52" cy="62" r="30" fill="none" stroke="#3a2f58" stroke-width="2"/>${[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return `<circle cx="${(52+30*Math.cos(a)).toFixed(1)}" cy="${(62+30*Math.sin(a)).toFixed(1)}" r="4" fill="${i===3?'#ff3d7f':'#f6c35a'}" opacity="${i===3?1:.6}"/>`}).join('')}<path d="M40 120l12-58 12 58" stroke="#3a2f58" stroke-width="2" fill="none"/><rect x="8" y="10" width="30" height="12" rx="3" fill="#ff3d7f"/><text x="23" y="19" font-family="monospace" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">LIVE</text><text x="96" y="19" font-family="monospace" font-size="8" fill="#ebe0c6" text-anchor="end">6,230</text><rect x="8" y="100" width="56" height="9" rx="4" fill="#000" opacity=".55"/><text x="12" y="107" font-family="sans-serif" font-size="6.5" fill="#ff8ab0">小光_0817：不要去。</text></svg>`},
+ {id:'seventh',no:'陸',icon:'tree',short:'第七個人',title:'第七個人',tag:'山林懸疑 · 台灣傳說 · 高難度',fear:5,acc:'#8fd18a',fg:'#0c1a0e',btnBg:'#4f9a52',href:'g/seventh.html',save:'seventh',
+  blurb:'登山社六個人走進起霧的鬼湖步道。天黑後在廢棄工寮點名，卻點出了七個人。其中一個，不是人。',facts:'5 章 · 5 道謎題 · 5 種迷失 · 2 種結局 + 稱號 · 難度 ★★★★',
+  start:'踏上步道',cont:'繼續上山',endings:['不回頭','還會再見','山林嚮導'],hiddenEnding:'山林嚮導',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#0e1a14"/><path d="M0 80 L26 46 L46 66 L70 30 L104 70 V136 H0Z" fill="#1c3028"/><rect y="70" width="104" height="20" fill="#cfd8d2" opacity=".15"/><polygon points="22,96 52,80 82,96" fill="#2a2018"/><rect x="26" y="96" width="52" height="30" fill="#1e1610"/><rect x="58" y="102" width="12" height="10" fill="#e8b04a" opacity=".8"/>${[0,1,2,3,4,5,6].map(i=>`<circle cx="${14+i*12.6}" cy="20" r="4" fill="${i===6?'#ff5a4a':'#8fd18a'}" opacity="${i===6?1:.55}"/>`).join('')}<text x="52" y="132" font-family="monospace" font-size="8" fill="#8fd18a" text-anchor="middle">1 2 3 4 5 6 … 7</text></svg>`},
+ {id:'nightmare',no:'柒',icon:'bell',short:'第零節',title:'第零節',tag:'學生惡夢 · 心理懸疑 · 高難度',fear:5,acc:'#ff6b5a',fg:'#ffffff',btnBg:'#c8402e',href:'g/nightmare.html',save:'nightmare',
+  blurb:'會考前一晚，你說「好想睡著，不要醒來」。再睜開眼，你在一間正在上「第零節」的教室裡。同學都沒有臉，走廊上有一個沒有臉的監考官。',facts:'5 章 · 6 道謎題 · 5 種沒醒來 · 2 種結局 + 稱號 · 難度 ★★★★',
+  start:'閉上眼睛',cont:'回到夢裡',endings:['早安','今晚見','清醒夢大師'],hiddenEnding:'清醒夢大師',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#121418"/><rect x="12" y="16" width="80" height="44" fill="#1f3128" stroke="#4a3a2a" stroke-width="3"/><text x="52" y="44" text-anchor="middle" font-family="serif" font-size="12" fill="#e8e2d6">第零節</text>${[0,1,2].map(i=>`<circle cx="${26+i*26}" cy="86" r="8" fill="#4a4c54"/><rect x="${16+i*26}" y="96" width="20" height="14" fill="#3a3024"/>`).join('')}<circle cx="80" cy="124" r="6" fill="#e8a0b0"/><text x="80" y="126" text-anchor="middle" font-family="monospace" font-size="4" fill="#2a2420">07:20</text></svg>`},
+ {id:'haunt',no:'捌',icon:'mask',short:'鬼屋客滿',title:'鬼屋客滿',tag:'校園驚悚 · 台灣傳說 · 高難度',fear:4,acc:'#ff7a3c',fg:'#1a0a04',btnBg:'#e0652c',href:'g/haunt.html',save:'haunt',
+  blurb:'八年八班的校慶鬼屋，開在全校最舊的家政教室。開張第一天就客滿，可是售票箱裡多了 47 枚四十幾年前的舊硬幣。',facts:'5 章 · 6 道謎題 · 4 種被留下 · 2 種結局 + 稱號 · 難度 ★★★★',
+  start:'鬼屋開張',cont:'回到鬼屋',endings:['年度熟客','閉館','最強總指揮'],hiddenEnding:'最強總指揮',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#1a1014"/><rect x="18" y="20" width="68" height="20" rx="3" fill="#c8322a"/><text x="52" y="34" text-anchor="middle" font-family="serif" font-size="10" font-weight="700" fill="#ffe6c8">八年八班 鬼屋</text><rect x="30" y="48" width="44" height="70" fill="#050304"/>${[0,1,2,3].map(i=>`<path d="M${32+i*12} 48 v70" stroke="#3a1a1a" stroke-width="3"/>`).join('')}<ellipse cx="52" cy="110" rx="7" ry="9" fill="#f0c83a"/><text x="52" y="130" text-anchor="middle" font-family="monospace" font-size="8" fill="#ff7a3c">87 / 40</text></svg>`},
+ {id:'loop',no:'玖',icon:'loop',short:'重來星期五',title:'重來的星期五',tag:'時間迴圈 · 校園懸疑 · 高難度',fear:4,acc:'#ffd36a',fg:'#1a1404',btnBg:'#e8b84a',href:'g/loop.html',save:'loop',
+  blurb:'段考前一天的星期五。中午 12:10 鐘聲一響，教室的吊扇掉了下來，然後一切回到早上 07:30。你以為只有你記得。',facts:'5 章 · 6 道謎題 · 4 種重來 · 2 種結局 + 稱號 · 難度 ★★★★',
+  start:'開始星期五',cont:'回到星期五',endings:['星期六','第 49 次','時間守護者'],hiddenEnding:'時間守護者',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#121820"/><rect x="14" y="18" width="76" height="30" fill="#1f3128" stroke="#4a3a2a" stroke-width="3"/><text x="52" y="38" text-anchor="middle" font-family="serif" font-size="11" fill="#e8e2d6">星期五</text><ellipse cx="52" cy="62" rx="26" ry="3" fill="#999"/><line x1="52" y1="48" x2="52" y2="62" stroke="#888" stroke-width="2"/><circle cx="52" cy="98" r="20" fill="#f4f0e6" stroke="#2a2420" stroke-width="3"/><line x1="52" y1="98" x2="52" y2="84" stroke="#c8402e" stroke-width="3"/><line x1="52" y1="98" x2="54" y2="90" stroke="#2a2420" stroke-width="2"/><text x="52" y="130" text-anchor="middle" font-family="monospace" font-size="8" fill="#ffd36a">12:10 → 07:30</text></svg>`},
+ {id:'eighth',no:'拾',icon:'glass',short:'第八節課',title:'第八節課',tag:'校園科幻 · 驚悚 · 高難度',fear:4,acc:'#5ae0ff',fg:'#04161e',btnBg:'#3ab8d8',href:'g/eighth.html',save:'eighth',
+  blurb:'星期五的第八節輔導課，再一分鐘就放學了。可是時鐘停在 17:29，同學一直重複同樣的話，窗外的操場，到了晚上就不見了。',facts:'5 章 · 6 道謎題 · 4 種重置 · 2 種結局 + 稱號 · 難度 ★★★★',
+  start:'上課',cont:'回到教室',endings:['下課','第八節','未來的旅人'],hiddenEnding:'未來的旅人',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#0e161e"/><rect x="10" y="14" width="84" height="100" fill="#22262c" stroke="#5ae0ff" stroke-width="2" opacity=".9"/><rect x="18" y="22" width="68" height="26" fill="#1f3128"/><text x="52" y="40" text-anchor="middle" font-family="serif" font-size="9" fill="#e8e2d6">第八節</text>${[0,1,2].map(i=>`<circle cx="${28+i*24}" cy="70" r="6" fill="#4a4c54"/><rect x="${20+i*24}" y="78" width="16" height="10" fill="#3a3024"/>`).join('')}<circle cx="82" cy="100" r="8" fill="#f4f0e6"/><text x="52" y="128" text-anchor="middle" font-family="monospace" font-size="7" fill="#5ae0ff">No.0902 · 2026</text></svg>`},
+ {id:'next',no:'拾壹',icon:'lock',short:'敬請期待',title:'上鎖的抽屜',tag:'尚未開啟',fear:0,acc:'#95a1b7',locked:true,
+  blurb:'第十一個抽屜還鎖著。可是昨天晚上，有人聽見它自己動了一下。',facts:'— · — · —',
+  cover:`<svg viewBox="0 0 104 136" aria-hidden="true"><rect width="104" height="136" fill="#2a1c12"/><rect x="12" y="34" width="80" height="68" rx="4" fill="#3b2a1f" stroke="#5a4232" stroke-width="3"/><rect x="12" y="34" width="80" height="16" fill="#4a3424"/><rect x="44" y="60" width="16" height="20" rx="3" fill="#1a120c"/><circle cx="52" cy="68" r="3" fill="#ff4a4a"/><circle cx="52" cy="68" r="7" fill="#ff4a4a" opacity=".25"/><text x="52" y="122" font-family="serif" font-size="11" fill="#95a1b7" text-anchor="middle">尚未開啟</text></svg>`}
+];
+const DEATH_NAMES={door:'開門',answer:'回應',hesitate:'猶豫',redvest:'紅背心',follow:'灰衣房務員',dark:'沒電',voice:'點名',mirror:'回頭',exit:'最後一眼'};
+const DEATH_HINT={door:'第一章',answer:'第一章',hesitate:'第一章',redvest:'第二章',follow:'第二章',dark:'第三章',voice:'第三章',mirror:'第四章',exit:'最終章'};
+const WHISPERS=['第十一個抽屜，昨天晚上好像動了一下。','時鐘停在 17:29，放學鐘一直沒響。','12:10 的鐘聲一響，一切又重來了。','鐘聲每 9 分鐘響一次。','售票箱裡，多了 47 枚舊硬幣。','點名的時候，多了一個人。','聊天室裡，有一個帳號比畫面早了 10 秒。','你確定，剛剛只有你一個人在看嗎？','23:00 了。收音機，又亮了。','別回頭。它就在你後面。','規則，有幾條是假的。','末班車上，少了一個人。','社辦裡，為什麼多了一張椅子？','有人在敲你的螢幕。'];
+
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ls=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+let sel=ls('mixia_sel');if(sel==null||!GAMES[sel])sel=0;
+let tab='box';
+
+/* ---------- hero art ---------- */
+function heroSVG(){
+  const stars=[[24,20],[58,36],[96,14],[140,30],[188,12],[226,40],[262,18],[372,26],[392,60],[110,58]].map(([x,y],i)=>`<circle class="tw" style="animation-delay:${i*.37}s" cx="${x}" cy="${y}" r="${i%3?0.9:1.4}" fill="#f2ead8"/>`).join('');
+  const rail=Array.from({length:6},(_,i)=>`<path d="M${236+i*30} 196 v-12 a14 14 0 0 1 28 0 v12" fill="none" stroke="#0e0b14" stroke-width="4"/>`).join('');
+  const fence=Array.from({length:34},(_,i)=>`<polygon points="${i*12},200 ${i*12+3},190 ${i*12+6},200" fill="#08060c"/>`).join('');
+  return `<svg class="sky" viewBox="0 0 400 214" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+   <defs><radialGradient id="mg"><stop offset="0" stop-color="#ebe0c6" stop-opacity=".4"/><stop offset="1" stop-color="#ebe0c6" stop-opacity="0"/></radialGradient></defs>
+   ${stars}
+   <circle cx="318" cy="58" r="64" fill="url(#mg)"/>
+   <circle cx="318" cy="58" r="25" fill="#e8ddc4"/><circle cx="309" cy="51" r="4.5" fill="#d2c6ac"/><circle cx="325" cy="65" r="6.5" fill="#d2c6ac"/><circle cx="328" cy="47" r="2.6" fill="#d2c6ac"/>
+   <g class="cloud"><ellipse cx="0" cy="60" rx="52" ry="9" fill="#2a2038" opacity=".9"/><ellipse cx="30" cy="54" rx="32" ry="8" fill="#2a2038" opacity=".9"/></g>
+   <g class="cloud c2"><ellipse cx="0" cy="36" rx="40" ry="6" fill="#211a2e" opacity=".85"/></g>
+   <path d="M0 158 Q60 128 120 144 T240 134 T400 146 V214 H0Z" fill="#191426"/>
+   <g stroke="#0f0c16" stroke-width="2" fill="none"><path d="M70 72 L54 160 M70 72 L86 160 M58 136 H82 M61 116 H79 M64 96 H76 M58 136 L79 116 M61 116 L76 96"/></g>
+   <circle cx="70" cy="70" r="3.2" fill="#ff3b30" class="blinkR"/><circle cx="70" cy="70" r="8" fill="#ff3b30" opacity=".25" class="blinkR"/>
+   <polygon points="132,118 200,86 268,118" fill="#0f0c16"/><rect x="146" y="116" width="108" height="64" fill="#0f0c16"/>
+   <rect x="192" y="68" width="16" height="22" fill="#0f0c16"/><circle cx="200" cy="80" r="5" fill="#1d1828" stroke="#2a2438" stroke-width="1"/>
+   ${[0,1,2,3].map(i=>`<rect x="${156+i*24}" y="128" width="12" height="14" fill="#1b1626"/>`).join('')}${[0,1,3].map(i=>`<rect x="${156+i*24}" y="152" width="12" height="14" fill="#1b1626"/>`).join('')}
+   <rect x="180" y="128" width="12" height="14" fill="#ff4a3d" class="winR" opacity=".85"/>
+   <g class="peek"><rect x="204" y="152" width="12" height="14" fill="#07050a"/><circle cx="207.5" cy="158" r="1.4" fill="#fff"/><circle cx="212.5" cy="158" r="1.4" fill="#fff"/></g>
+   <path d="M352 168 C350 140 354 124 350 104 M351 132 L330 112 M340 121 L332 104 M352 118 L372 112 M352 146 L376 134 M368 135 L382 124" stroke="#0c0910" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+   <g><path class="crow-w" d="M356 117 q8-7 14 0 q-7-1-14 0z" fill="#06040a"/><ellipse cx="364" cy="114" rx="7" ry="4.5" fill="#06040a"/>
+    <g class="crow-h"><circle cx="369" cy="110" r="3.4" fill="#06040a"/><path d="M372 110 l4 1 -4 1z" fill="#2a2a2a"/><circle cx="370" cy="109.4" r=".9" fill="#ff3b30"/></g>
+    <path d="M357 115 l-6 3 6 0z" fill="#06040a"/></g>
+   <rect x="230" y="178" width="170" height="7" fill="#0e0b14"/>${rail}
+   <g class="train"><rect x="0" y="166" width="150" height="13" rx="4" fill="#0e0b14"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${8+i*17}" y="169" width="10" height="5" fill="#f2c35a" opacity=".85"/>`).join('')}<circle cx="148" cy="173" r="2.5" fill="#fff6d0"/></g>
+   ${fence}<rect x="0" y="188" width="400" height="2.5" fill="#08060c"/><rect x="0" y="200" width="400" height="14" fill="#08060c"/>
+  </svg>`;
+}
+let fogT=0;
+function drawFog(cv){
+  const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;
+  const w=cv.width=200,h=cv.height=90;
+  const blobs=Array.from({length:12},(_,i)=>({x:Math.random()*w,y:h*.35+Math.random()*h*.6,r:30+Math.random()*40,s:.08+Math.random()*.15}));
+  const draw=()=>{ctx.clearRect(0,0,w,h);for(const b of blobs){b.x+=b.s;if(b.x-b.r>w)b.x=-b.r;const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);g.addColorStop(0,'rgba(190,175,215,.16)');g.addColorStop(1,'rgba(190,175,215,0)');ctx.fillStyle=g;ctx.fillRect(b.x-b.r,b.y-b.r,b.r*2,b.r*2)}};
+  draw();if(reduce)return;
+  clearInterval(fogT);fogT=setInterval(()=>{if(!document.body.contains(cv)){clearInterval(fogT);return}draw()},60);
+}
+
+/* ---------- ambient sound ---------- */
+const amb={ctx:null,on:false,m:null,
+  init(){if(this.ctx)return;try{const C=window.AudioContext||window.webkitAudioContext;const c=this.ctx=new C();
+    this.m=c.createGain();this.m.gain.value=0;this.m.connect(c.destination);
+    const len=c.sampleRate*2,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;this.nb=buf;
+    const src=c.createBufferSource();src.buffer=buf;src.loop=true;const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=500;bp.Q.value=.8;
+    const lfo=c.createOscillator();lfo.frequency.value=.07;const lg=c.createGain();lg.gain.value=300;lfo.connect(lg).connect(bp.frequency);lfo.start();
+    const wg=c.createGain();wg.gain.value=.18;src.connect(bp).connect(wg).connect(this.m);src.start();
+    const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=160;[[55,.035],[55.5,.035],[82.4,.02]].forEach(([hz,g])=>{const o=c.createOscillator();o.type='sawtooth';o.frequency.value=hz;const gg=c.createGain();gg.gain.value=g;o.connect(gg).connect(lp);o.start()});lp.connect(this.m);
+    setInterval(()=>{if(!this.on)return;const r=Math.random();if(r<.25)this.caw();else if(r<.5)this.musicbox()},6000);
+  }catch(e){this.ctx=null}},
+  tone(hz,a,d,g,type='sine',glide){if(!this.ctx)return;const c=this.ctx,t=c.currentTime,o=c.createOscillator(),e=c.createGain();o.type=type;o.frequency.setValueAtTime(hz,t);if(glide)o.frequency.exponentialRampToValueAtTime(hz*glide,t+a+d);e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+a);e.gain.exponentialRampToValueAtTime(.0001,t+a+d);o.connect(e).connect(this.m);o.start(t);o.stop(t+a+d+.05)},
+  caw(){[0,380].forEach(dl=>setTimeout(()=>this.tone(780,.02,.32,.05,'sawtooth',.6),dl))},
+  musicbox(){[659.25,783.99,739.99,493.88,587.33].forEach((hz,i)=>setTimeout(()=>this.tone(hz*1.5,.005,1.1,.03,'triangle'),i*420))},
+  rattle(){if(!this.on||!this.ctx)return;const c=this.ctx;[0,.09,.2].forEach(dt=>{const t=c.currentTime+dt,s=c.createBufferSource();s.buffer=this.nb;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=700;const e=c.createGain();e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.5,t+.005);e.gain.exponentialRampToValueAtTime(.001,t+.07);s.connect(lp).connect(e).connect(this.m);s.start(t,Math.random());s.stop(t+.08)})},
+  toggle(){this.init();if(!this.ctx)return false;this.ctx.resume&&this.ctx.resume();this.on=!this.on;this.m.gain.setTargetAtTime(this.on?.7:0,this.ctx.currentTime,.6);return this.on}
+};
+
+/* ---------- data helpers ---------- */
+function progressOf(g){
+  if(g.locked)return null;
+  const s=ls(g.save),ends=(ls('mixia_endings')||{})[g.id]||[];
+  const found=g.endings.filter(e=>ends.includes(e)).length;
+  if(!s||!s.i)return {started:false,chap:0,ends:found,pct:found?100:0};
+  return {started:true,chap:s.chap||1,ends:found,pct:found?100:Math.round(((s.chap||1)-1)/5*100)+8};
+}
+
+/* ---------- real video trailer ---------- */
+function playVideo(g){
+  const o=document.createElement('div');o.className='vt';o.setAttribute('role','dialog');o.setAttribute('aria-label',g.title+' 預告片');
+  o.innerHTML=`<button class="vt-x" aria-label="關閉">${ico('x')}</button><div class="vt-in"><video playsinline controls autoplay preload="auto"></video><div class="vt-end" hidden><b></b><a class="vt-go">${ico('play')}<span></span></a><button class="vt-re">再看一次</button></div></div>`;
+  document.body.appendChild(o);
+  const v=o.querySelector('video'),end=o.querySelector('.vt-end'),go=o.querySelector('.vt-go');
+  v.src=g.video;end.querySelector('b').textContent='《'+g.title+'》';go.href=g.href;go.querySelector('span').textContent=g.start||'開始';
+  if(g.btnBg)go.style.background=g.btnBg;go.style.color=g.fg||'#111';
+  const close=()=>{v.pause();o.remove();document.removeEventListener('keydown',esc_)};
+  const esc_=e=>{if(e.key==='Escape')close()};document.addEventListener('keydown',esc_);
+  o.querySelector('.vt-x').onclick=close;o.onclick=e=>{if(e.target===o)close()};
+  v.onended=()=>{end.hidden=false};o.querySelector('.vt-re').onclick=()=>{end.hidden=true;v.currentTime=0;v.play()};
+  const p=v.play();if(p&&p.catch)p.catch(()=>{});
+}
+
+/* ---------- views ---------- */
+function hero(){
+  const opened=GAMES.filter(g=>!g.locked&&progressOf(g).started).length,total=GAMES.filter(g=>!g.locked).length;
+  return `<header class="hero">${heroSVG()}<canvas id="fog" aria-hidden="true"></canvas>
+   <div class="hero-top"><div class="mark"><small>RIDDLE BOX</small><h1 data-t="謎匣">謎匣</h1><i class="drip" style="left:21px;animation-delay:.8s"></i><i class="drip" style="left:66px;animation-delay:3.4s"></i></div>
+    <div class="hero-act"><button class="snd" id="snd" aria-pressed="${amb.on}">${ico(amb.on?'speaker':'mute')}${amb.on?'音效開':'音效'}</button><div class="pill">${ico(opened?'unlock':'lock')}${opened} / ${total}</div></div></div>
+   <p class="whisper" id="whisper"></p></header>`;
+}
+function boxView(){
+  const g=GAMES[sel],p=progressOf(g),T=window.MIXIA_TRAILER;
+  const drawers=GAMES.map((x,i)=>`<button class="drawer${x.locked?' locked':''}" data-i="${i}" aria-pressed="${i===sel}" style="--acc:${x.acc};--glow:${x.acc}33" aria-label="${x.locked?'第'+x.no+'匣：尚未開啟':'打開第'+x.no+'匣：'+x.title}"><b>${x.no}</b>${ico(x.icon,'di')}<span>${x.short}</span><i class="kh"></i></button>`).join('');
+  const fear=g.locked?'':`<div class="fear" style="color:${g.fear>=4?'#ff4a4a':'#f2ab4c'}"><span style="color:var(--muted);margin-right:4px">恐怖指數</span>${[0,1,2,3,4].map(k=>skull(k<g.fear)).join('')}</div>`;
+  let action='';
+  if(g.locked)action=`<div class="cta dis">${ico('hourglass')}敬請期待</div>`;
+  else{
+    const label=p.started?`${g.cont}・第 ${p.chap} 章`:g.start;
+    const endTxt=p.ends?`${ico('trophy')}已收集 ${p.ends} / ${g.endings.length} 個結局`:(p.started?`${ico('clock')}進行到第 ${p.chap} 章`:`${ico('eye')}尚未開始`);
+    action=`<div class="prog"><div class="row"><span>${endTxt}</span><span>${p.started?Math.min(5,p.chap)+' / 5 章':''}</span></div><div class="bar"><i style="width:${Math.min(100,p.pct)}%;background:${g.acc};box-shadow:0 0 8px ${g.acc}"></i></div></div>
+     <a class="cta" href="${g.href}" style="background:${g.btnBg||g.acc};color:${g.fg}">${ico('play')}${label}</a>`;
+  }
+  return `<section class="box" aria-label="劇本抽屜"><div class="box-h"><span>${ico('key')}選一個抽屜</span><span>NO. 001–011</span></div><div class="drawers">${drawers}</div></section>
+  <article class="card">
+    <div class="cover poster${g.video?' photo':''}" id="cover">${T?T.posterSVG(g.id,g.locked?'即將上映':g.title):g.cover}<div class="nz"></div><div class="gen"><span>生成中</span><b>0%</b></div>
+      ${!g.locked&&T?`<button class="play" id="playTr" aria-label="播放《${esc(g.title)}》預告"><i>${ico('play')}</i>${g.video?'AI 預告片 0:'+String(g.vlen).padStart(2,'0'):'播放預告 0:'+String(T.trailerSecs(g.id)).padStart(2,'0')}</button>`:''}</div>
+    <div class="meta"><div class="k" style="color:${g.acc}">${ico(g.icon)}第${g.no}匣 · ${g.locked?'上鎖':'可遊玩'}</div><h2>${esc(g.title)}</h2><div class="tag">${g.tag}</div>${fear}</div>
+    <p class="blurb">${g.blurb}</p><div class="facts">${ico('film')}${g.facts}</div>${action}
+    ${!g.locked&&T?`<div class="eps" style="--acc:${g.acc}"><h4>${ico('film')}全 ${T.episodes(g.id).length} 集 · 點一集直接開始</h4>${T.episodes(g.id).map((e,i)=>`<a class="ep" href="${g.href}#ch${i+1}"><b>EP.${String(i+1).padStart(2,'0')}</b><span><strong>${e[0]}</strong><small>${e[1]}</small></span>${ico('play')}</a>`).join('')}</div>`:''}
+  </article>`;
+}
+function endingsView(){
+  const all=ls('mixia_endings')||{};const live=GAMES.filter(g=>!g.locked);
+  const total=live.reduce((a,g)=>a+g.endings.length,0),got=live.reduce((a,g)=>a+g.endings.filter(e=>(all[g.id]||[]).includes(e)).length,0);
+  return `<p class="intro">${ico('trophy')}<span>每個故事的結局，由你的選擇決定。目前收集 ${got} / ${total}。</span></p><div class="list">${live.map(g=>{const have=all[g.id]||[];
+    return `<section class="sec"><h3 style="color:${g.acc}">${ico(g.icon)}<span style="color:var(--paper)">第${g.no}匣 · ${g.title}</span></h3><div class="items">${g.endings.map(e=>have.includes(e)
+      ?`<div class="item"><span>${ico('check')}${e}</span><span class="chip" style="color:${g.acc}">${e===g.hiddenEnding?'隱藏':'已達成'}</span></div>`
+      :`<div class="item lock"><span>${ico('lock')}${e===g.hiddenEnding?'？？？（隱藏）':'？？？'}</span><small>未解鎖</small></div>`).join('')}</div></section>`}).join('')}</div>`;
+}
+const GAME_DEATHS={"live":[["pinwheel","走向摩天輪","第二章"],["ignore","錯過的訊息","第二章"],["fakemod","迷路","第三章"],["believe","照劇本走","第四章"],["wheel","最高點","最終章"],["levers","失控","最終章"]],"seventh":[["eat","冰涼的飯糰","第二章"],["kick","被推出門的人","第二章"],["answer","回應","第三章"],["confront","拆穿","第四章"],["lookback","回頭","最終章"]],"nightmare":[["pen","寫下名字","第一章"],["stairs","往下掉","第二章"],["sleep","睡著","第三章"],["door","早安","第四章"],["stay","留下來","最終章"]],"haunt":[["open9","第九個衣櫃","第二章"],["run","在黑暗裡奔跑","第三章"],["reach","伸手","第四章"],["home","跟我回家","最終章"]],"loop":[["fan","12:10","第二章"],["roof","第十三階","最終章"],["wish","第二個願望","第四章"],["alone","一個人跑","最終章"]],"eighth":[["knock","拍打玻璃","第二章"],["sit","回到座位","第三章"],["tell","說出真相","第四章"],["stay","06:00","最終章"]]};
+function deathsView(){
+  const yd=ls('yunding_dex')||[],ids=Object.keys(DEATH_NAMES),all=ls('mixia_deaths')||{};
+  const secs=[{g:GAMES.find(x=>x.id==='yunding'),list:ids.map(id=>[id,DEATH_NAMES[id],DEATH_HINT[id]]),have:yd}]
+    .concat(Object.keys(GAME_DEATHS).map(id=>({g:GAMES.find(x=>x.id===id),list:GAME_DEATHS[id],have:all[id]||[]})));
+  const tot=secs.reduce((n,x)=>n+x.list.length,0),got=secs.reduce((n,x)=>n+x.list.filter(e=>x.have.includes(e[0])).length,0);
+  return `<p class="intro">${ico('skull')}<span>每一次走錯的路，都會記在這裡。目前收集 ${got} / ${tot}。《雲頂旅社》收集完整，才能看見隱藏結局。</span></p><div class="list">${secs.map(({g,list,have})=>{const n=list.filter(e=>have.includes(e[0])).length;
+    return `<section class="sec"><h3 style="color:${g.acc}">${ico(g.icon)}<span style="color:var(--paper)">第${g.no}匣 · ${g.title}</span><small style="margin-left:auto;color:var(--muted);font-weight:400">${n} / ${list.length}</small></h3><div class="items">${list.map(([id,name,hint])=>have.includes(id)
+    ?`<div class="item"><span style="color:#ff8a8a">${ico('skull')}${name}</span><span class="chip" style="color:${g.acc}">${hint}</span></div>`
+    :`<div class="item lock"><span>${ico('lock')}？？？</span><small>${hint}</small></div>`).join('')}</div></section>`}).join('')}</div>`;
+}
+
+let genTimer=0;
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+  const m=document.getElementById('main');
+  m.innerHTML=hero()+(tab==='box'?boxView():tab==='endings'?endingsView():deathsView());
+  m.scrollTop=0;
+  drawFog(document.getElementById('fog'));
+  document.getElementById('snd').onclick=()=>{amb.toggle();render()};
+  if(tab==='box'){
+    m.querySelectorAll('.drawer').forEach(d=>d.onclick=()=>{sel=+d.dataset.i;lsSet('mixia_sel',sel);if(amb.on)amb.rattle();render()});
+    const pt=document.getElementById('playTr');if(pt){const g=GAMES[sel];pt.onclick=()=>{if(amb.on)amb.toggle();if(g.video)return playVideo(g);window.MIXIA_TRAILER.playTrailer(g.id,{title:g.title,href:g.href,fg:g.fg,btnBg:g.btnBg})}}
+    const cv=document.getElementById('cover'),b=cv.querySelector('.gen b');
+    if(reduce){cv.classList.add('done')}else{const t0=performance.now();cancelAnimationFrame(genTimer);(function tk(t){const p=Math.min(1,(t-t0)/1000);b.textContent=Math.round(p*100)+'%';if(p<1)genTimer=requestAnimationFrame(tk);else cv.classList.add('done')})(t0)}
+  }
+  whisperTick(true);
+}
+let wI=Math.floor(Math.random()*WHISPERS.length),wTimer=0;
+function whisperTick(reset){
+  const w=document.getElementById('whisper');if(!w)return;
+  clearTimeout(wTimer);
+  const show=()=>{const el=document.getElementById('whisper');if(!el)return;el.textContent=WHISPERS[wI%WHISPERS.length];wI++;el.classList.add('on');wTimer=setTimeout(()=>{el.classList.remove('on');wTimer=setTimeout(show,5000)},4200)};
+  wTimer=setTimeout(show,reset?1800:0);
+}
+setInterval(()=>{
+  if(tab!=='box'||document.hidden||reduce)return;
+  const ds=[...document.querySelectorAll('.drawer:not([aria-pressed=true])')];if(!ds.length)return;
+  const d=ds[Math.floor(Math.random()*ds.length)];d.classList.add('rattle');amb.rattle();setTimeout(()=>d.classList.remove('rattle'),650);
+},7000);
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render()});
+window.addEventListener('pageshow',render);
+render();
+</script>
