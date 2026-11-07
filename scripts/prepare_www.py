@@ -16,6 +16,7 @@ APP_CSS = ('<style id="ios-app">html,body{-webkit-touch-callout:none;-webkit-tap
 if os.path.exists(WWW):
     shutil.rmtree(WWW)
 shutil.copytree(SRC, WWW, ignore=shutil.ignore_patterns('_*', '.*'))
+shutil.copy(os.path.join(ROOT, 'app', 'native.js'), os.path.join(WWW, 'native.js'))
 
 n = 0
 for d, _, files in os.walk(WWW):
@@ -33,6 +34,15 @@ for d, _, files in os.walk(WWW):
             first = s.find('<div id="app"')
             assert first > 0, p
             s = s[:first] + '</head>\n<body>\n' + s[first:] + '\n</body>\n</html>\n'
+        rel = os.path.relpath(WWW, d).replace(os.sep, '/')
+        rel = '' if rel == '.' else rel + '/'
+        # Google Fonts 改用 App 內建字型（離線也正常）
+        s = re.sub(r'<link[^>]*fonts\.(googleapis|gstatic)\.com[^>]*>\n?', '', s)
+        if 'fonts/fonts.css' not in s:
+            s = s.replace('</head>', f'<link rel="stylesheet" href="{rel}fonts/fonts.css">\n</head>', 1)
+        # 音效與震動：要比遊戲程式更早載入
+        if 'native.js' not in s:
+            s = re.sub(r'(<head[^>]*>)', lambda m: m.group(1) + f'\n<script src="{rel}native.js"></script>', s, count=1)
         if 'id="ios-app"' not in s:
             s = re.sub(r'</head>', APP_CSS + '\n</head>', s, count=1)
             open(p, 'w', encoding='utf8').write(s)
