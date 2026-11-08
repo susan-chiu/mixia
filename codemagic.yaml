@@ -25,7 +25,7 @@ workflows:
         XCODE_PROJECT: ios/App/App.xcodeproj
         XCODE_SCHEME: App
         # App Store Connect → 謎匣 → App 資訊 → Apple ID（一串數字）。把 none 換成那串數字，才會自動接續 build 號
-        APP_STORE_APPLE_ID: none
+        APP_STORE_APPLE_ID: 6832249694
     triggering:
       events:
         - push
