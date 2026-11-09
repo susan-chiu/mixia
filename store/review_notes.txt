@@ -1,0 +1,26 @@
+Thank you for reviewing 謎匣 (Riddle Box). Answers to your questions:
+
+1. Screen recording
+A screen recording captured on a physical iPhone running the latest iOS is attached to this App Review Information section. It starts from launching the app and shows the typical flow: home screen, opening a story, solving a puzzle, a timed choice, the Hint button, Chapter Select, an ending and the Death Collection. The app has no account registration, login, account deletion, user-generated content, in-app purchases or paid content.
+
+2. Purpose and target audience
+謎匣 is an offline, story-driven horror/mystery puzzle game for teenagers (13+) and adults who enjoy interactive fiction. It contains 10 original stories ("drawers"). Players read clues, compare evidence and solve puzzles (code locks, timeline reasoning) to move the story forward, and make timed choices that lead to multiple endings. The value: a complete, ad-free reading-and-puzzle experience that trains careful reading and logical reasoning, playable anywhere without an internet connection.
+
+3. How to access the main features
+No login, account or sample files are required.
+- Launch the app and tap any drawer on the home screen, then tap the play/start button on the card.
+- Inside a story, tap the first (highlighted) button to begin. Tap the text area to continue.
+- Puzzles: enter the answer in the input box. The toolbar at the top has a Hint (提示) button, Sound (音效) toggle and Chapter Select (選擇章節).
+- Endings and deaths are recorded on the home screen tabs (結局 / 死亡圖鑑).
+
+4. External services, tools or platforms
+None. The app does not connect to any server, does not use any third-party SDK, analytics, advertising, authentication, payment processor or AI service. All stories, images, audio and videos are bundled inside the app. The app is built with the open-source Capacitor framework (with its Splash Screen, Status Bar and Haptics plugins). Fonts are bundled and licensed under the SIL Open Font License. Game progress is stored only on the device.
+
+5. Regional differences
+None. The app works the same in all regions. The content is in Traditional Chinese.
+
+6. Regulated industry / third-party material
+Not applicable. The app is not in a regulated industry. All stories, illustrations, music, sound effects and video clips are original content created by the developer; no protected third-party material is used.
+
+—
+本 App 為單機故事解謎遊戲，不需要登入帳號，不連線任何伺服器。點首頁任一抽屜 → 卡片上的開始按鈕 → 進入故事後按第一顆主按鈕開始；上方工具列有「提示」「音效」「選擇章節」。
