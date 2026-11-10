@@ -1,7 +1,7 @@
 Thank you for reviewing 謎匣 (Riddle Box). Answers to your questions:
 
 1. Screen recording
-A screen recording captured on a physical iPhone running the latest iOS is attached to this App Review Information section. It starts from launching the app and shows the typical flow: home screen, opening a story, solving a puzzle, a timed choice, the Hint button, Chapter Select, an ending and the Death Collection. The app has no account registration, login, account deletion, user-generated content, in-app purchases or paid content.
+The attached file mixia_review_recording.mp4 (about 3 minutes) was captured on a physical iPhone running the latest iOS. It starts from launching the app from the Home Screen (launch screen) and shows the typical user flow: the home screen with the 10 story drawers, opening Story 1 "1996 的訊號" (story page and trailer), starting Chapter 1 (in-story video clip and story text), and Chapter 2 where the player reads the clues and solves a 4-digit code-lock puzzle to continue. The app has no account registration, login, account deletion, user-generated content, in-app purchases or paid content.
 
 2. Purpose and target audience
 謎匣 is an offline, story-driven horror/mystery puzzle game for teenagers (13+) and adults who enjoy interactive fiction. It contains 10 original stories ("drawers"). Players read clues, compare evidence and solve puzzles (code locks, timeline reasoning) to move the story forward, and make timed choices that lead to multiple endings. The value: a complete, ad-free reading-and-puzzle experience that trains careful reading and logical reasoning, playable anywhere without an internet connection.
