@@ -9,6 +9,7 @@
 
   /* 2. 記住每個 AudioContext：切到背景時暫停，回來時恢復 */
   var ctxs = [];
+  window.__mixiaCtxs = ctxs;
   var Base = window.AudioContext || window.webkitAudioContext;
   if (Base) {
     var Tracked = function () {
@@ -33,6 +34,9 @@
   /* 3. 驚嚇點與死亡時震動 */
   function haptic(kind) {
     if (!native) return;
+    var st = window.__mixiaSettings ? window.__mixiaSettings() : {};
+    if (st.haptics === false) return;
+    if (kind === 'scare' && st.scare === 'soft') return;
     var H = cap.Plugins && cap.Plugins.Haptics;
     if (!H) return;
     try {
