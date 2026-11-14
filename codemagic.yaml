@@ -65,6 +65,8 @@ workflows:
           IPA=$(ls build/ios/ipa/*.ipa | head -1)
           unzip -l "$IPA" | grep -q "App.app/PrivacyInfo.xcprivacy" && echo "✓ PrivacyInfo.xcprivacy 已打包進 App"
           unzip -l "$IPA" | grep -q "App.app/public/g/eighth.html" && echo "✓ 10 個故事已打包進 App"
+          unzip -l "$IPA" | grep -q "App.app/public/ads.js" && echo "✓ 廣告程式已打包進 App"
+          /usr/libexec/PlistBuddy -c "Print :GADApplicationIdentifier" ios/App/App/Info.plist | grep -q "^ca-app-pub-9380365042342904" && echo "✓ 正式 AdMob App ID 已設定"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
