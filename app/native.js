@@ -1,4 +1,4 @@
-/* 謎匣 iOS App 專用：音效與震動（只在 App 裡載入，網頁版不會用到） */
+/* 謎匣 iOS App 專用：音效、震動與廣告橋接（只在 App 裡載入） */
 (function () {
   'use strict';
   var cap = window.Capacitor;
@@ -28,7 +28,6 @@
     if (document.hidden) ctxs.forEach(function (c) { if (c.state === 'running') { try { c.suspend(); } catch (e) {} } });
     else resumeAll();
   });
-  /* 來電或鬧鐘打斷後，iOS 會讓聲音停在 interrupted，下一次點擊時接回來 */
   ['touchend', 'click'].forEach(function (ev) { document.addEventListener(ev, resumeAll, true); });
 
   /* 3. 驚嚇點與死亡時震動 */
@@ -52,11 +51,109 @@
         return;
       }
       m.addedNodes.forEach(function (n) {
-        /* 驚嚇畫面會被移到 body 底下，依它的 --d 延遲時間在畫面跳出的瞬間震動 */
         if (reduce || n.nodeType !== 1 || n.parentNode !== document.body || !n.classList.contains('jump')) return;
         var d = parseFloat(getComputedStyle(n).getPropertyValue('--d')) || 5;
         setTimeout(function () { if (n.isConnected) haptic('scare'); }, d * 1000);
       });
     });
   }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'] });
+
+  /* 4. AdMob：測試模式預設開啟；正式上架前將 useTestAds 關閉並替換 ad unit ID。 */
+  var ads = cap && cap.Plugins && cap.Plugins.AdMob;
+  var adConfig = {
+    useTestAds: true,
+    nonPersonalized: true,
+    rewardedId: 'ca-app-pub-3940256099942544/1712485313',
+    interstitialId: 'ca-app-pub-3940256099942544/4411468910',
+    interstitialEvery: 2
+  };
+  var adsReady;
+
+  function prepareRewarded() {
+    if (!ads) return Promise.reject(new Error('AdMob unavailable'));
+    return ads.prepareRewardVideoAd({ adId: adConfig.rewardedId, isTesting: adConfig.useTestAds, npa: adConfig.nonPersonalized });
+  }
+  function prepareInterstitial() {
+    if (!ads) return Promise.reject(new Error('AdMob unavailable'));
+    return ads.prepareInterstitial({ adId: adConfig.interstitialId, isTesting: adConfig.useTestAds, npa: adConfig.nonPersonalized });
+  }
+  function initAds() {
+    if (!native || !ads) return Promise.reject(new Error('Not running natively'));
+    if (!adsReady) {
+      adsReady = Promise.resolve(ads.initialize()).then(function () {
+        return Promise.all([prepareRewarded().catch(function () {}), prepareInterstitial().catch(function () {})]);
+      });
+    }
+    return adsReady;
+  }
+  function runThenReward(run) {
+    initAds().then(prepareRewarded).then(function () {
+      return ads.showRewardVideoAd();
+    }).then(function () {
+      run();
+      prepareRewarded().catch(function () {});
+    }).catch(function () {
+      /* 廣告無法取得時仍提供提示，不能把主線進度鎖在廣告後。 */
+      run();
+    });
+  }
+  function runThenInterstitial(run) {
+    initAds().then(prepareInterstitial).then(function () {
+      return ads.showInterstitial();
+    }).catch(function () {}).then(function () {
+      run();
+      prepareInterstitial().catch(function () {});
+    });
+  }
+  function unlockedHintCount(button) {
+    var sheet = button.closest('#sheet');
+    return sheet ? sheet.querySelectorAll('li:not(.locked)').length : 0;
+  }
+  function labelRewardedHints() {
+    document.querySelectorAll('#moreHint').forEach(function (button) {
+      if (unlockedHintCount(button) >= 1 && !button.dataset.mixiaAdGranted) {
+        button.textContent = '觀看短片開啟提示';
+      }
+    });
+  }
+  document.addEventListener('click', function (event) {
+    var hint = event.target.closest && event.target.closest('#moreHint');
+    if (hint) {
+      if (hint.dataset.mixiaAdGranted) {
+        delete hint.dataset.mixiaAdGranted;
+        return;
+      }
+      if (unlockedHintCount(hint) < 1) return; /* 第一段提示永遠免費 */
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hint.disabled = true;
+      hint.textContent = '正在載入短片…';
+      runThenReward(function () {
+        hint.dataset.mixiaAdGranted = '1';
+        hint.disabled = false;
+        hint.click();
+      });
+      return;
+    }
+
+    var next = event.target.closest && event.target.closest('#nextChap');
+    if (!next || next.dataset.mixiaAdGranted) {
+      if (next && next.dataset.mixiaAdGranted) delete next.dataset.mixiaAdGranted;
+      return;
+    }
+    var transitions = +(localStorage.getItem('mixia_ad_chapter_transitions') || 0) + 1;
+    localStorage.setItem('mixia_ad_chapter_transitions', String(transitions));
+    if (transitions % adConfig.interstitialEvery !== 0) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    next.disabled = true;
+    runThenInterstitial(function () {
+      next.dataset.mixiaAdGranted = '1';
+      next.disabled = false;
+      next.click();
+    });
+  }, true);
+  new MutationObserver(labelRewardedHints).observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener('pointerdown', function () { initAds().catch(function () {}); }, { once: true, capture: true });
+  window.MIXIA_ADS = { config: adConfig, initialize: initAds };
 })();
