@@ -22,8 +22,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>謎匣用「看短片換提示」維持免費。允許後，短片會比較貼近你的興趣；不允許也能正常遊玩。</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-9380365042342904~6948564955</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
