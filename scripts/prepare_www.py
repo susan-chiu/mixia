@@ -18,6 +18,7 @@ if os.path.exists(WWW):
 shutil.copytree(SRC, WWW, ignore=shutil.ignore_patterns('_*', '.*'))
 shutil.copy(os.path.join(ROOT, 'app', 'native.js'), os.path.join(WWW, 'native.js'))
 shutil.copy(os.path.join(ROOT, 'app', 'ux.js'), os.path.join(WWW, 'ux.js'))
+shutil.copy(os.path.join(ROOT, 'app', 'ads.js'), os.path.join(WWW, 'ads.js'))
 
 n = 0
 for d, _, files in os.walk(WWW):
@@ -41,9 +42,9 @@ for d, _, files in os.walk(WWW):
         s = re.sub(r'<link[^>]*fonts\.(googleapis|gstatic)\.com[^>]*>\n?', '', s)
         if 'fonts/fonts.css' not in s:
             s = s.replace('</head>', f'<link rel="stylesheet" href="{rel}fonts/fonts.css">\n</head>', 1)
-        # 音效與震動：要比遊戲程式更早載入
+        # 音效與震動、體驗設定、廣告：要比遊戲程式更早載入
         if 'native.js' not in s:
-            s = re.sub(r'(<head[^>]*>)', lambda m: m.group(1) + f'\n<script src="{rel}native.js"></script>\n<script src="{rel}ux.js"></script>', s, count=1)
+            s = re.sub(r'(<head[^>]*>)', lambda m: m.group(1) + f'\n<script src="{rel}native.js"></script>\n<script src="{rel}ux.js"></script>\n<script src="{rel}ads.js"></script>', s, count=1)
         if 'id="ios-app"' not in s:
             s = re.sub(r'</head>', APP_CSS + '\n</head>', s, count=1)
             open(p, 'w', encoding='utf8').write(s)
