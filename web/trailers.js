@@ -128,7 +128,7 @@ const DATA={
    {bg:'tower',fx:'flicker',chars:[{c:'me',f:'shock',pos:'c'}],cap:['\u4e09\u5341\u5e74\u524d\u7559\u4e0b\u7684\u7dda\u7d22\uff0c','\u5168\u90fd\u6307\u5411[\u540c\u4e00\u500b\u4eba]\u3002']},
    {bg:'classroom',fx:'flash',chars:[{c:'mom',f:'t',pos:'c'}],cap:['\u7576\u5abd\u5abd\u770b\u898b\u9019\u53f0\u6536\u97f3\u6a5f\u2014\u2014','\u5979[\u54ed\u4e86]\u3002']}]},
  'yunding':{acc:'#ff4a4a',tagline:'\u9055\u53cd\u4e00\u689d\uff0c\u4f60\u5c31\u56de\u4e0d\u53bb\u4e86',tags:['\u898f\u5247\u602a\u8ac7','\u6703\u6b7b\u4ea1','\u591a\u7d50\u5c40'],
-  poster:{bg:'ryokan',chars:[{c:'sil',f:'n',x:96,y:120,s:170,glow:true},{c:'yq',f:'a',x:-10,y:250,s:150},{c:'xk',f:'s',x:220,y:255,s:150}]},
+  poster:{bg:'ryokan',img:'v/yunding_poster.jpg',chars:[]},
   eps:[['\u5165\u4f4f','\u4e5d\u689d\u898f\u5247\uff0c\u56db\u689d\u662f\u5047\u7684'],['\u7b2c\u4e00\u591c','\u5ba4\u53cb\u4e0d\u898b\u4e86\uff0c\u88ab\u5b50\u537b\u647a\u597d\u4e86'],['\u505c\u96fb','\u9ed1\u6697\u88e1\uff0c\u6709\u4eba\u53eb\u4f60\u7684\u540d\u5b57'],['\u4e0d\u5b58\u5728\u7684\u56db\u6a13','\u96fb\u68af\u505c\u5728\u4e86 4'],['\u5929\u4eae\u4e4b\u524d','22 \u5206\u9418\uff0c\u6551\u56de\u6240\u6709\u4eba']],
   shots:[
    {bg:'ryokan',fx:'rain',cap:['\u98b1\u98a8\u591c\uff0c\u5168\u73ed\u88ab\u56f0\u9032','\u4e00\u9593[\u5ee2\u68c4 40 \u5e74]\u7684\u65c5\u793e\u3002']},
@@ -137,7 +137,7 @@ const DATA={
    {bg:'corridor',chars:[{c:'xk',f:'shock',pos:'c'}],cap:['\u9694\u5929\u51cc\u6668\uff0c\u5ba4\u53cb\u7684\u5e8a\u2026\u2026','[\u7a7a\u4e86]\u3002']},
    {bg:'elevator',fx:'glitch',cap:['\u65c5\u793e\uff0c\u53ea\u6709\u4e09\u5c64\u6a13\u3002','\u53ef\u662f\u96fb\u68af\uff0c[\u505c\u5728\u4e86 4 \u6a13]\u3002'],red:1}]},
  'metro':{acc:'#2fb3a3',tagline:'\u7b54\u6848\uff0c\u9084\u5728\u9019\u7bc0\u8eca\u5ec2\u88e1',tags:['\u63a8\u7406','\u8fa6\u6848','\u53cd\u8f49'],
-  poster:{bg:'traincar',chars:[{c:'rt',f:'s',x:96,y:140,s:200},{c:'kevin',f:'sly',x:-14,y:250,s:150,dim:true},{c:'hat',f:'a',x:224,y:250,s:150,dim:true}]},
+  poster:{bg:'traincar',img:'v/metro_poster.jpg',chars:[]},
   eps:[['\u672b\u73ed\u8eca','\u65b7\u96fb 40 \u79d2\uff0c\u5979\u6d88\u5931\u4e86'],['\u5979\u7684\u624b\u6a5f','\u89e3\u9396\u5bc6\u78bc\uff0c\u85cf\u5728\u5979\u7684\u6a02\u8b5c\u88e1'],['\u5be9\u554f','\u4e94\u500b\u4eba\uff0c\u4e00\u500b\u5728\u8aaa\u8b0a'],['\u6d88\u5931\u7684\u56db\u5341\u79d2','\u8eca\u7a97\u5916\uff0c\u8cbc\u8457\u4e00\u5f35\u81c9'],['\u5c0d\u8cea','\u6234\u53e3\u7f69\u7684\u7537\u4eba\uff0c\u6458\u4e0b\u4e86\u53e3\u7f69']],
   shots:[
    {bg:'platform',fx:'dust',cap:['\u672b\u73ed\u8eca\uff0c','\u8eca\u5ec2\u88e1\u53ea\u5269 [7 \u500b\u4eba]\u3002']},
@@ -146,7 +146,7 @@ const DATA={
    {bg:'traincar',chars:[{c:'kevin',f:'sly',pos:'c'}],cap:['\u6bcf\u500b\u4eba\u90fd\u8aaa\uff0c\u4ec0\u9ebc\u90fd\u6c92\u770b\u5230\u3002','\u4f46[\u6709\u4e00\u500b\u4eba\u5728\u8aaa\u8b0a]\u3002']},
    {bg:'traincar',fx:'redpulse',chars:[{c:'hat',f:'a',pos:'c'}],cap:['\u800c\u90a3\u500b\u6234\u53e3\u7f69\u7684\u7537\u4eba\uff0c','\u4e00\u76f4[\u76ef\u8457\u4ed6]\u3002']}]},
  'wonders':{acc:'#b48ef0',tagline:'\u89e3\u958b\u4e03\u500b\u8b0e\uff0c\u5be6\u73fe\u4e00\u500b\u9858\u671b',tags:['\u6821\u5712','\u8f15\u6050\u6016','\u63a8\u7406'],
-  poster:{bg:'board',chars:[{c:'qq',f:'s',x:100,y:160,s:190},{c:'an',f:'sly',x:-10,y:250,s:145},{c:'dm',f:'shock',x:226,y:250,s:145}]},
+  poster:{bg:'board',img:'v/wonders_poster.jpg',chars:[]},
   eps:[['\u5165\u793e','\u7434\u8072\uff0c\u5728 11 \u9ede\u6e96\u6642\u97ff\u8d77'],['\u7728\u773c\u7684\u756b\u50cf','\u5b83\u7684\u773c\u775b\uff0c\u8ddf\u8457\u4f60\u79fb\u52d5'],['\u7b2c\u4e09\u9593','\u5973\u5ec1\u7b2c\u4e09\u9593\uff0c\u50b3\u4f86\u6572\u9580\u8072'],['\u7406\u5316\u6559\u5ba4','\u4eba\u9ad4\u6a21\u578b\uff0c\u671d\u4f60\u5011\u5012\u4e0b\u4f86'],['\u7b2c\u4e03\u500b\u4e0d\u53ef\u601d\u8b70','\u4e94\u500b\u793e\u54e1\uff0c\u516d\u5f35\u6905\u5b50']],
   shots:[
    {bg:'board',cap:['\u4e00\u591c\u4e4b\u9593\uff0c\u5168\u6821\u8cbc\u6eff','[\u4e03\u5927\u4e0d\u53ef\u601d\u8b70]\u3002']},
@@ -155,7 +155,7 @@ const DATA={
    {bg:'chairs',chars:[{c:'qq',f:'t',pos:'c'}],who:'\u5468\u828a\u828a',cap:['\u300c\u793e\u5718\u8981\u662f\u88ab\u5ee2\u6389\u2026\u2026\u300d','\u300c\u6211\u5c31[\u6c92\u6709\u5730\u65b9\u53ef\u4ee5\u53bb\u4e86]\u3002\u300d']},
    {bg:'chairs',fx:'redpulse',chars:[{c:'dm',f:'shock',pos:'c'}],cap:['\u6211\u5011\u793e\u5718\uff0c\u660e\u660e\u53ea\u6709\u4e94\u500b\u4eba\u2026\u2026','\u70ba\u4ec0\u9ebc\u6709[\u516d\u5f35\u6905\u5b50]\uff1f'],red:1}]},
 'live':{acc:'#ff3d7f',tagline:'\u6709\u4e00\u500b\u5e33\u865f\uff0c\u6bd4\u756b\u9762\u65e9\u4e86 10 \u79d2',tags:['\u76f4\u64ad','\u7db2\u8def\u61f8\u7591','\u9a5a\u609a'],
-  poster:{bg:'lferris',chars:[{c:'yoru',f:'t',x:96,y:170,s:190},{c:'sil',f:'n',x:-6,y:250,s:140,glow:true},{c:'bao',f:'sly',x:226,y:256,s:140,dim:true}]},
+  poster:{bg:'lferris',img:'v/live_poster.jpg',chars:[]},
   eps:[['\u958b\u64ad','\u5bc6\u78bc\uff0c\u8981\u7528\u300c\u6211\u5011\u7684\u5beb\u6cd5\u300d'],['\u65cb\u8f49\u6728\u99ac','\u5979\u6bd4\u73fe\u5834\u65e9\u4e86 10 \u79d2'],['\u93e1\u5b50\u8ff7\u5bae','\u93e1\u5b50\u88e1\uff0c\u591a\u4e86\u4e00\u5c0d\u8033\u6735'],['\u54e1\u5de5\u4f11\u606f\u5ba4','\u5047\u5e33\u865f\u80cc\u5f8c\u7684\u4eba'],['\u6469\u5929\u8f2a','\u5c0f\u5149_0817 \u662f\u8ab0\uff1f']],
   shots:[
    {bg:'lgate',cap:['\u5ee2\u68c4 17 \u5e74\u7684\u661f\u5149\u6a02\u5712\uff0c','\u4eca\u665a[\u958b\u64ad]\u3002']},
@@ -165,7 +165,7 @@ const DATA={
    {bg:'lferris',fx:'redpulse',cap:['\u4f60\u62da\u547d\u4fdd\u8b77\u7684\u90a3\u500b\u4eba\uff0c','[\u771f\u7684\u503c\u5f97\u4f60\u76f8\u4fe1\u55ce]\uff1f'],red:1},
    {bg:'lvod',fx:'dust',cap:['\u76f4\u64ad\u7d50\u675f\u4e4b\u5f8c\uff0c','\u56de\u653e\u88e1\u591a\u4e86[\u4e00\u5247\u7559\u8a00]\u3002']}]},
 'seventh':{acc:'#8fd18a',tagline:'\u9ede\u540d\u7684\u6642\u5019\uff0c\u591a\u4e86\u4e00\u500b\u4eba',tags:['\u5c71\u6797','\u53f0\u7063\u50b3\u8aaa','\u9b54\u795e\u4ed4'],
-  poster:{bg:'s7hut',chars:[{c:'mi',f:'s',x:96,y:170,s:190},{c:'zhe',f:'sly',x:-10,y:252,s:145,dim:true},{c:'sil',f:'n',x:226,y:252,s:140,glow:true}]},
+  poster:{bg:'s7hut',img:'v/seventh_poster.jpg',chars:[]},
   eps:[['\u767b\u5c71\u53e3','\u5f71\u5b50\u6307\u5411\u6771\u5317'],['\u5de5\u5bee','\u516d\u500b\u4eba\uff0c\u9ede\u51fa\u4e86\u4e03\u500b'],['\u534a\u591c','\u7a97\u5916\u6709\u4eba\u53eb\u4f60\u7684\u540d\u5b57'],['\u7167\u7247','\u653e\u5927\u4e4b\u5f8c\uff0c\u5f71\u5b50\u4e0d\u898b\u4e86'],['\u5929\u4eae\u524d','\u4e0d\u8981\u56de\u982d']],
   shots:[
    {bg:'s7trail',cap:['\u767b\u5c71\u793e\u516d\u500b\u4eba\uff0c','\u8d70\u9032\u4e86[\u9b3c\u6e56\u6b65\u9053]\u3002']},
@@ -175,7 +175,7 @@ const DATA={
    {bg:'s7window',fx:'redpulse',cap:['\u534a\u591c\u5169\u9ede\u5341\u4e09\u5206\uff0c','\u7a97\u5916\u6709\u4eba[\u5728\u53eb\u4f60]\u3002'],red:1},
    {bg:'s7ridge',fx:'dust',cap:['\u5929\u4eae\u4e4b\u524d\uff0c','[\u5343\u842c\u4e0d\u8981\u56de\u982d]\u3002']}]},
 'nightmare':{acc:'#ff6b5a',tagline:'\u4e0b\u4e00\u6b21\u9418\u8072\u4e4b\u524d\uff0c\u4e00\u5b9a\u8981\u9192\u4f86',tags:['\u5b78\u751f\u60e1\u5922','\u6703\u8003','\u5fc3\u7406\u61f8\u7591'],
-  poster:{bg:'s8class',chars:[{c:'xj',f:'sly',x:96,y:180,s:190},{c:'sil',f:'n',x:-6,y:252,s:140,glow:true},{c:'momn',f:'t',x:226,y:256,s:140,dim:true}]},
+  poster:{bg:'s8class',img:'v/nightmare_poster.jpg',chars:[]},
   eps:[['\u7b2c\u96f6\u7bc0','\u9ed1\u677f\u4e0a\u5beb\u8457\uff1a\u7b2c\u96f6\u7bc0'],['\u7121\u76e1\u6a13\u68af','\u5f80\u4e0b\u4e00\u5c64\uff0c\u9084\u662f 4 \u6a13'],['\u4fdd\u5065\u5ba4','\u93e1\u5b50\u88e1\uff0c\u6709\u4e00\u500b\u6c92\u6709\u81c9\u7684\u4eba'],['\u65e9\u5b89','\u9192\u4e86\uff1f\u9084\u662f\u9084\u5728\u5922\u88e1\uff1f'],['\u9192\u4f86','\u5169\u96bb\u4f38\u904e\u4f86\u7684\u624b']],
   shots:[
    {bg:'s8desk',cap:['\u6703\u8003\u524d\u4e00\u665a\uff0c','\u300c\u597d\u60f3\u7761\u8457\uff0c[\u4e0d\u8981\u9192\u4f86]\u3002\u300d']},
@@ -185,7 +185,7 @@ const DATA={
    {bg:'s8mirror',fx:'redpulse',cap:['\u93e1\u5b50\u88e1\uff0c','\u4f60\u7684\u8eab\u5f8c[\u7ad9\u8457\u4e00\u500b\u4eba]\u3002'],red:1},
    {bg:'s8desk',fx:'dust',cap:['\u9418\u8072\u6bcf 9 \u5206\u9418\u97ff\u4e00\u6b21\u3002','[\u4e0b\u4e00\u6b21\u4e4b\u524d\uff0c\u4e00\u5b9a\u8981\u9192\u4f86]\u3002']}]},
  'haunt':{acc:'#ff7a3c',tagline:'\u6211\u5011\u60f3\u5687\u4eba\uff0c\u7d50\u679c\u5ba2\u4eba\u4e0d\u662f\u4eba',tags:['\u6821\u6176','\u9b3c\u5c4b','\u53f0\u7063\u50b3\u8aaa'],
-  poster:{bg:'h9gate',chars:[{c:'xiu',f:'n',x:100,y:190,s:180},{c:'bh',f:'sly',x:-10,y:252,s:145,dim:true},{c:'py',f:'shock',x:226,y:252,s:145}]},
+  poster:{bg:'h9gate',img:'v/haunt_poster.jpg',chars:[]},
   eps:[['\u958b\u5f35','\u4e94\u500b\u95dc\u5361\uff0c\u4e00\u500b\u4e0d\u80fd\u6253\u958b\u7684\u8863\u6ac3'],['\u5e33\u4e0d\u5c0d','47 \u679a\u56db\u5341\u5e7e\u5e74\u524d\u7684\u786c\u5e63'],['\u505c\u96fb','\u6293\u4f4f\u4f60\u7684\uff0c\u4e0d\u53ea\u4e00\u96bb\u624b'],['\u7b2c\u4e5d\u500b\u8863\u6ac3','\u5979\u7684\u540d\u5b57\uff0c\u4e00\u7b46\u4e00\u7b46\u5730\u5beb'],['\u9589\u9928','\u592a\u967d\u4e0b\u5c71\u4ee5\u524d\uff0c\u8981\u597d\u597d\u9589\u9928']],
   shots:[
    {bg:'h9gate',cap:['\u516b\u5e74\u516b\u73ed\u7684\u6821\u6176\u9b3c\u5c4b\uff0c','\u958b\u5728\u5168\u6821[\u6700\u820a\u7684\u5bb6\u653f\u6559\u5ba4]\u3002']},
@@ -195,7 +195,7 @@ const DATA={
    {bg:'h9dark',fx:'redpulse',cap:['\u505c\u96fb\u7684\u90a3\u4e00\u523b\uff0c','\u6709\u4eba\u6293\u4f4f\u4e86\u4f60\u7684[\u5169\u96bb\u624b]\u3002'],red:1},
    {bg:'h9wardrobe',fx:'dust',cap:['\u7b2c\u4e5d\u500b\u8863\u6ac3\uff0c','[\u7d55\u5c0d\u4e0d\u80fd\u6253\u958b]\u3002']}]},
 'loop':{acc:'#ffd36a',tagline:'12:10\uff0c\u4e00\u5207\u53c8\u91cd\u4f86\u4e86',tags:['\u6642\u9593\u8ff4\u5708','\u6821\u5712','\u61f8\u7591'],
-  poster:{bg:'l10class',chars:[{c:'kui',f:'t',x:96,y:190,s:190},{c:'me',f:'s',x:-10,y:256,s:145,dim:true},{c:'da',f:'h',x:226,y:256,s:140,dim:true}]},
+  poster:{bg:'l10class',img:'v/loop_poster.jpg',chars:[]},
   eps:[['\u661f\u671f\u4e94','12:10\uff0c\u4e00\u5207\u91cd\u4f86'],['\u540a\u6247','\u53ea\u6709\u4e00\u500b\u4eba\u8aaa\u8b0a'],['\u56db\u5c0f\u6642','12:10 \u4e4b\u524d\uff0c\u4fee\u597d\u5b83'],['\u6b63\u5b57','\u5979\u756b\u4e86 47 \u7b46'],['\u7b2c\u5341\u4e09\u968e','\u8b93\u660e\u5929\u4f86\u5427']],
   shots:[
    {bg:'l10class',cap:['\u6bb5\u8003\u524d\u4e00\u5929\u7684\u661f\u671f\u4e94\u3002','\u6559\u5ba4\u7684\u540a\u6247\uff0c[\u560e\u5566\u560e\u5566]\u5730\u8f49\u3002']},
@@ -205,7 +205,7 @@ const DATA={
    {bg:'l10tally',fx:'dust',cap:['\u5979\u7684\u7b46\u8a18\u672c\u4e0a\uff0c','\u756b\u6eff\u4e86[\u6b63\u5b57]\u3002']},
    {bg:'l10stairs',cap:['\u4e2d\u5348\u7684\u9418\u8072\u4e4b\u524d\uff0c','\u820a\u5927\u6a13\u6703\u591a\u51fa[\u7b2c\u5341\u4e09\u968e]\u3002']}]},
 'eighth':{acc:'#5ae0ff',tagline:'\u653e\u5b78\u9418\uff0c\u4e00\u76f4\u6c92\u6709\u97ff',tags:['\u6821\u5712','\u79d1\u5e7b','\u9a5a\u609a'],
-  poster:{bg:'e11class',chars:[{c:'yu8',f:'s',x:96,y:190,s:190},{c:'me',f:'t',x:-10,y:256,s:145,dim:true},{c:'ming',f:'h',x:226,y:256,s:140,dim:true}]},
+  poster:{bg:'e11class',img:'v/eighth_poster.jpg',chars:[]},
   eps:[['\u7b2c\u516b\u7bc0','\u6642\u9418\u505c\u5728 17:29'],['\u91cd\u8907','\u53ea\u6709\u4e00\u500b\u4eba\u6c92\u6709\u91cd\u8907'],['\u73bb\u7483','\u53cd\u904e\u4f86\u7684\u5c55\u793a\u724c'],['\u806f\u7d61\u7c3f','\u8cc7\u6599\u88e1\u6c92\u6709\u7684\uff0c\u6211\u90fd\u6c92\u6709'],['\u9589\u9928','\u5f80\u6709\u98a8\u7684\u5730\u65b9']],
   shots:[
    {bg:'e11class',cap:['\u661f\u671f\u4e94\uff0c\u7b2c\u516b\u7bc0\u8f14\u5c0e\u8ab2\u3002','\u518d[\u4e00\u5206\u9418]\u5c31\u653e\u5b78\u4e86\u3002']},

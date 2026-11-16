@@ -222,6 +222,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px so
 .frz-v{font-family:var(--f-mono);font-size:14px;color:var(--red)}
 .jump{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#000;pointer-events:none;opacity:0;animation:jmp 1.4s var(--d,5s) both}
 .jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(120vw,620px);height:auto;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+.jump img{position:absolute;left:50%;top:50%;translate:-50% -50%;width:100%;height:100%;object-fit:cover;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
 @keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#3a0008}14%{background:#000}70%{opacity:1}100%{opacity:0}}
 @keyframes jz{0%{transform:scale(.25) rotate(-6deg)}12%{transform:scale(1.15) rotate(3deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.jump{display:none}.frz-fig{opacity:1}}
@@ -919,7 +920,7 @@ const CUTS={
   sound(){setTimeout(()=>{audio.thud();quake()},1200);setTimeout(()=>audio.thud(),1500);setTimeout(()=>audio.staticBurst(),1700)}},
  count:{dur:5200,html:()=>`<svg viewBox="0 0 320 120" width="320" height="120" aria-hidden="true">${rep(7,i=>`<g class="cnt" style="--d:${.3+i*.55}s">${sil(28+i*44,i===6?'#3a1410':'#1c2a24',false)}<text x="${28+i*44}" y="18" text-anchor="middle" font-family="monospace" font-size="13" fill="${i===6?'#ff5a4a':'#e8b04a'}">${i+1}</text></g>`)}</svg><div class="cap2" style="--d:4.2s">一、二、三、四、五、六……七。</div>`,
   sound(){for(let i=0;i<7;i++)setTimeout(()=>{audio.click();if(i===6){audio.heart();fxRestart($('vig'),'red')}},300+i*550)}},
- window:{dur:6600,html:()=>`<div class="win"><div class="win-glass"><div class="win-light"></div><div class="win-hand"></div></div><div class="win-tag">02:21</div></div><div class="cap2" style="--d:2.4s">光停在窗戶外面。玻璃上，慢慢印出一隻手掌。</div><div class="jump" style="--d:4.8s">${FACE}</div>`,
+ window:{dur:6600,html:()=>`<div class="win"><div class="win-glass"><div class="win-light"></div><div class="win-hand"></div></div><div class="win-tag">02:21</div></div><div class="cap2" style="--d:2.4s">光停在窗戶外面。玻璃上，慢慢印出一隻手掌。</div><div class="jump" style="--d:4.8s"><img src="../v/seventh_scare.jpg" alt=""></div>`,
   sound(){const j=document.querySelector('.cut .jump');if(j){document.body.appendChild(j);setTimeout(()=>j.remove(),7000)}
    [500,1400,2200,2900,3500,4000,4400].forEach(t=>setTimeout(()=>audio.heart(),t));setTimeout(()=>audio.knock&&audio.knock(),2600);
    setTimeout(()=>{audio.scare();audio.scare();quake();fxRestart($('vig'),'red');fxRestart($('flash'),'static')},4800)}},

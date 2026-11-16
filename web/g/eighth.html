@@ -222,6 +222,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px so
 .frz-v{font-family:var(--f-mono);font-size:14px;color:var(--red)}
 .jump{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#000;pointer-events:none;opacity:0;animation:jmp 1.4s var(--d,5s) both}
 .jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(120vw,620px);height:auto;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+.jump img{position:absolute;left:50%;top:50%;translate:-50% -50%;width:100%;height:100%;object-fit:cover;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
 @keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#3a0008}14%{background:#000}70%{opacity:1}100%{opacity:0}}
 @keyframes jz{0%{transform:scale(.25) rotate(-6deg)}12%{transform:scale(1.15) rotate(3deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.jump{display:none}.frz-fig{opacity:1}}
@@ -893,7 +894,7 @@ const PUZZLES={
 /* ================= cutscenes ================= */
 const FACE=`<svg viewBox="0 0 200 240" aria-hidden="true"><defs><radialGradient id="fg1" cx=".5" cy=".85" r=".8"><stop offset="0" stop-color="#d8f2ff"/><stop offset=".6" stop-color="#8aa8c0"/><stop offset="1" stop-color="#2a3a4a"/></radialGradient></defs><path d="M100 22 Q150 22 156 96 Q160 170 100 204 Q40 170 44 96 Q50 22 100 22Z" fill="url(#fg1)"/><path d="M48 92 Q52 30 100 28 Q148 30 152 92 Q140 50 100 48 Q60 50 48 92Z" fill="#141c24"/><path d="M60 112 Q76 96 92 112 Q76 126 60 112Z" fill="#020406"/><path d="M108 112 Q124 96 140 112 Q124 126 108 112Z" fill="#020406"/><circle cx="72" cy="108" r="1.6" fill="#bfe8ff"/><circle cx="120" cy="108" r="1.6" fill="#bfe8ff"/><path d="M98 128 l-3 22 h8z" fill="#7a96ac" opacity=".5"/><path d="M78 172 Q100 182 122 172" stroke="#1a2430" stroke-width="2.4" fill="none"/><ellipse cx="100" cy="150" rx="40" ry="24" fill="#fff" opacity=".08"/><g fill="#a8c4d8" opacity=".85"><path d="M14 150 q-2-28 6-30 q6 0 6 20 q2-26 9-26 q6 1 5 26 q3-22 9-21 q6 2 3 26 q4-14 9-12 q5 3-2 24 q-6 30-26 36 q-20-4-19-43z"/><path d="M186 150 q2-28-6-30 q-6 0-6 20 q-2-26-9-26 q-6 1-5 26 q-3-22-9-21 q-6 2-3 26 q-4-14-9-12 q-5 3 2 24 q6 30 26 36 q20-4 19-43z"/></g><rect x="4" y="4" width="192" height="232" rx="10" fill="none" stroke="#bfe8ff" stroke-width="2" opacity=".25"/></svg>`;
 const CUTS={
- face:{dur:6200,html:()=>`<div class="win"><div class="win-glass"><div class="win-light"></div></div><div class="win-tag">02:13</div></div><div class="cap2" style="--d:2.2s">光停在窗外。有東西，貼上了玻璃。</div><div class="jump" style="--d:4.4s">${FACE}</div>`,
+ face:{dur:6200,html:()=>`<div class="win"><div class="win-glass"><div class="win-light"></div></div><div class="win-tag">02:13</div></div><div class="cap2" style="--d:2.2s">光停在窗外。有東西，貼上了玻璃。</div><div class="jump" style="--d:4.4s"><img src="../v/eighth_scare.jpg" alt=""></div>`,
   sound(){const j=document.querySelector('.cut .jump');if(j){document.body.appendChild(j);setTimeout(()=>j.remove(),7000)}
    [400,1200,2000,2700,3300,3800,4100].forEach(t=>setTimeout(()=>audio.heart(),t));setTimeout(()=>audio.knock&&audio.knock(),2400);
    setTimeout(()=>{audio.scare();audio.scare();quake();fxRestart($('vig'),'red');fxRestart($('flash'),'static')},4400)}},

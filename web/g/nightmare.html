@@ -222,6 +222,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px so
 .frz-v{font-family:var(--f-mono);font-size:14px;color:var(--red)}
 .jump{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#000;pointer-events:none;opacity:0;animation:jmp 1.4s var(--d,5s) both}
 .jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(120vw,620px);height:auto;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+.jump img{position:absolute;left:50%;top:50%;translate:-50% -50%;width:100%;height:100%;object-fit:cover;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
 @keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#3a0008}14%{background:#000}70%{opacity:1}100%{opacity:0}}
 @keyframes jz{0%{transform:scale(.25) rotate(-6deg)}12%{transform:scale(1.15) rotate(3deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.jump{display:none}.frz-fig{opacity:1}}
@@ -938,7 +939,7 @@ const CUTS={
   sound(){setTimeout(()=>audio.tone(220,{a:1,d:2.5,g:.02,glide:.5}),300);setTimeout(()=>audio.bell(),3200)}},
  loop:{dur:3600,html:()=>`<div class="loop">${rep(5,i=>`<div class="lp" style="--d:${.2+i*.5}s"><b>4F</b></div>`)}</div><div class="cap2" style="--d:2.8s">往下一層，還是 4 樓。</div>`,
   sound(){for(let i=0;i<5;i++)setTimeout(()=>audio.click(),200+i*500)}},
- mirror:{dur:6600,html:()=>`<div class="mir"><svg viewBox="0 0 200 260" aria-hidden="true"><rect x="10" y="10" width="180" height="240" rx="8" fill="#1a2228" stroke="#8a9aa2" stroke-width="8"/><ellipse cx="100" cy="110" rx="26" ry="32" fill="#e8e2d6" opacity=".4"/><path d="M58 250 q42-80 84 0" fill="#e8e2d6" opacity=".3"/><g class="mir-fig"><ellipse cx="146" cy="96" rx="22" ry="28" fill="#cfc8bc"/><circle cx="146" cy="60" r="10" fill="#2a2220"/><path d="M112 250 q34-90 68 0" fill="#5a5a60"/></g></svg></div><div class="cap2" style="--d:2.6s">鏡子裡，你的右後方，站著一個沒有臉的人。</div><div class="jump" style="--d:4.8s">${FACE}</div>`,
+ mirror:{dur:6600,html:()=>`<div class="mir"><svg viewBox="0 0 200 260" aria-hidden="true"><rect x="10" y="10" width="180" height="240" rx="8" fill="#1a2228" stroke="#8a9aa2" stroke-width="8"/><ellipse cx="100" cy="110" rx="26" ry="32" fill="#e8e2d6" opacity=".4"/><path d="M58 250 q42-80 84 0" fill="#e8e2d6" opacity=".3"/><g class="mir-fig"><ellipse cx="146" cy="96" rx="22" ry="28" fill="#cfc8bc"/><circle cx="146" cy="60" r="10" fill="#2a2220"/><path d="M112 250 q34-90 68 0" fill="#5a5a60"/></g></svg></div><div class="cap2" style="--d:2.6s">鏡子裡，你的右後方，站著一個沒有臉的人。</div><div class="jump" style="--d:4.8s"><img src="../v/nightmare_scare.jpg" alt=""></div>`,
   sound(){const j=document.querySelector('.cut .jump');if(j){document.body.appendChild(j);setTimeout(()=>j.remove(),7000)}
    [500,1300,2100,2800,3400,3900,4300].forEach(t=>setTimeout(()=>audio.heart(),t));setTimeout(()=>audio.staticBurst(),2600);
    setTimeout(()=>{audio.scare();audio.scare();quake();fxRestart($('vig'),'red');fxRestart($('flash'),'static')},4800)}},

@@ -222,6 +222,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px so
 .frz-v{font-family:var(--f-mono);font-size:14px;color:var(--red)}
 .jump{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#000;pointer-events:none;opacity:0;animation:jmp 1.4s var(--d,5s) both}
 .jump svg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(120vw,620px);height:auto;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
+.jump img{position:absolute;left:50%;top:50%;translate:-50% -50%;width:100%;height:100%;object-fit:cover;animation:jz 1.4s var(--d,5s) cubic-bezier(.2,1.6,.4,1) both}
 @keyframes jmp{0%{opacity:0}2%{opacity:1}10%{opacity:1;background:#3a0008}14%{background:#000}70%{opacity:1}100%{opacity:0}}
 @keyframes jz{0%{transform:scale(.25) rotate(-6deg)}12%{transform:scale(1.15) rotate(3deg)}20%{transform:scale(1.05) translate(-6px,4px)}26%{transform:scale(1.1) translate(6px,-4px)}100%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.jump{display:none}.frz-fig{opacity:1}}
@@ -916,7 +917,7 @@ const CUTS={
  civet:{dur:3600,html:()=>`<div class="eyes2"><i></i><i></i></div><div class="cap2" style="--d:1.2s">鏡子後面，有一雙眼睛。</div><div class="bang" style="--d:2.1s"></div>`,
   sound(){setTimeout(()=>audio.heart(),600);setTimeout(()=>{audio.scare();quake();fxRestart($('vig'),'red')},2100)}},
  freeze:{dur:6800,html:()=>`<div class="frz"><div class="frz-scr"><svg viewBox="0 0 240 160" aria-hidden="true"><rect width="240" height="160" fill="#0c0b16"/><rect x="60" y="10" width="120" height="146" rx="56" fill="#1a2430" stroke="#6b7b8a" stroke-width="4"/><ellipse cx="120" cy="96" rx="14" ry="17" fill="#e8e2d6" opacity=".35"/><path d="M98 156 q22-30 44 0" fill="#e8e2d6" opacity=".25"/><g class="frz-fig"><path d="M138 44 c-4-22 2-30 6-28 c4 2 3 18 2 28z M152 44 c4-22-2-30-6-28 c-4 2-3 18-2 28z" fill="#cfc8bc"/><ellipse cx="145" cy="60" rx="13" ry="14" fill="#cfc8bc"/><circle cx="140" cy="58" r="2.6" fill="#000"/><circle cx="150" cy="58" r="2.6" fill="#000"/><path d="M132 74 h26 v60 h-26z" fill="#050407"/></g></svg><div class="frz-noise"></div><div class="frz-tag">畫面停住了</div></div>
-   <div class="frz-v" id="fv">4,210 人在看</div><div class="cap2" style="--d:2.8s">鏡子裡，小夜的肩膀後面，多了一對耳朵。</div></div><div class="jump" style="--d:5s">${RABBIT}</div>`,
+   <div class="frz-v" id="fv">4,210 人在看</div><div class="cap2" style="--d:2.8s">鏡子裡，小夜的肩膀後面，多了一對耳朵。</div></div><div class="jump" style="--d:5s"><img src="../v/live_scare.jpg" alt=""></div>`,
   sound(){const j=document.querySelector('.cut .jump');if(j){document.body.appendChild(j);setTimeout(()=>j.remove(),7200)}
    [600,1500,2300,3000,3600,4100,4500,4800].forEach(t=>setTimeout(()=>audio.heart(),t));setTimeout(()=>audio.staticBurst(),2600);
    const fv=$('fv');let v=4210;const iv=setInterval(()=>{v=Math.max(0,v-Math.round(180+Math.random()*240));fv.textContent=v.toLocaleString('en-US')+' 人在看';if(v<=0)clearInterval(iv)},180);timers.push(iv);
